@@ -73,3 +73,39 @@ pad = sum(np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(2 * np.pi * f * 2 * tt) for 
 br = pad * 0.25; br[:len(hi)] += hi * 0.8
 save('brand.wav', br, -6)
 print('sfx:', sorted(os.listdir(OUT)))
+
+# ---- aviation atmospheres for the hooks ----
+def bandnoise(n, lo, hi):
+    x = rng.standard_normal(n)
+    return onepole_lp(x, hi) - onepole_lp(x, lo)
+
+# Jet fly-past: turbine whine with doppler drop + broadband roar, panned left -> right
+d = 2.6; tt = t(d); n = len(tt); c = 1.1  # closest approach at 1.1 s
+dist = np.sqrt(((tt - c) * 1.0) ** 2 + 0.12 ** 2)
+amp = 0.12 / dist
+dop = 1 + 0.12 * np.tanh(-(tt - c) * 3)  # pitch high on approach, low after
+whine = np.sin(2 * np.pi * np.cumsum(2400 * dop) / SR) * 0.25 + np.sin(2 * np.pi * np.cumsum(3900 * dop) / SR) * 0.1
+roar = bandnoise(n, 60, 900 + 2500 * np.clip(amp, 0, 1))
+sig = (roar * 1.0 + whine) * amp * env(n, 0.05, 0.6)
+pan = 1 / (1 + np.exp(-(tt - c) * 4))
+save('jet_flyby.wav', np.stack([sig * (1.1 - pan), sig * (0.1 + pan)], 1), -3)
+
+# Engine approach: rising turbine + roar that builds straight at camera (cut hard in the edit)
+d = 1.4; tt = t(d); n = len(tt)
+g = (tt / d) ** 2.5
+whine = np.sin(2 * np.pi * np.cumsum(1800 + 1400 * tt / d) / SR) * 0.2
+roar = bandnoise(n, 50, 400 + 6000 * g)
+save('jet_approach.wav', (roar + whine) * g * env(n, 0.02, 0.01), -2)
+
+# Cabin ambience: steady low air-conditioning / engine drone (brown-ish noise + faint hum)
+d = 4.0; tt = t(d); n = len(tt)
+br = onepole_lp(rng.standard_normal(n), 180) * 6 + bandnoise(n, 300, 1200) * 0.25
+hum = np.sin(2 * np.pi * 118 * tt) * 0.05 + np.sin(2 * np.pi * 236 * tt) * 0.02
+save('cabin_amb.wav', (br + hum) * env(n, 0.5, 0.8), -14)
+
+# Warm swell: soft string-like pad rising into the reveal
+d = 2.6; tt = t(d)
+notes = [146.8, 220.0, 293.7, 370.0]
+pad = sum(np.sin(2 * np.pi * f0 * tt + 0.3 * np.sin(2 * np.pi * 5 * tt)) + 0.4 * np.sin(2 * np.pi * f0 * 2.003 * tt) for f0 in notes)
+save('swell.wav', pad * (tt / d) ** 1.6 * env(len(tt), 0.05, 0.15), -8)
+print('hook sfx ok')

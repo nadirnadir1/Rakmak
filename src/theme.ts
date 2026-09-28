@@ -13,6 +13,11 @@ for (const w of ['800', '900']) {
 }
 for (const w of ['500', '700', '800']) face('Montserrat', `montserrat-latin-${w}-normal.woff2`, w);
 
+for (const w of ['300', '500', '600']) face('PlexAr', `ibm-plex-sans-arabic-arabic-${w}-normal.woff2`, w);
+for (const w of ['800', '900']) face('KufiAr', `noto-kufi-arabic-arabic-${w}-normal.woff2`, w);
+
+export const plexFont = 'PlexAr, CairoAr, sans-serif'; // refined modern Arabic
+export const kufiFont = 'KufiAr, CairoAr, sans-serif'; // geometric Kufi, livery weight
 export const arabicFont = 'CairoAr, CairoLat, sans-serif';
 export const latinFont = 'Montserrat, sans-serif';
 
