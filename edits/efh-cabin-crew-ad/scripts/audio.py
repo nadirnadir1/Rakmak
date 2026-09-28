@@ -215,6 +215,10 @@ add(sfx, stereo_verb(whoosh(0.5), 0.2), T_MAIN - 0.3, 0.8)
 add(sfx, stereo_verb(impact(), 0.3), T_MAIN, 0.55)
 for w in WIPES:
     add(sfx, stereo_verb(whoosh(0.5), 0.2), src2out(w) - 0.2, 0.45, )
+for w in IRIS:
+    add(sfx, stereo_verb(whoosh(0.4), 0.25), src2out(w) - 0.12, 0.4)
+# hook: jet passing behind the presenter
+add(sfx, stereo_verb(whoosh(1.6), 0.3), 0.15, 0.5)
 for s in DING:
     add(sfx, stereo_verb(ding(), 0.35), src2out(s), 0.35)
 # end card
