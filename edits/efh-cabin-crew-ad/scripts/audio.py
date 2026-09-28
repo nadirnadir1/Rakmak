@@ -210,7 +210,6 @@ def stereo_verb(x, wet=0.3):
 
 
 add(sfx, stereo_verb(impact(), 0.3), 0.0, 0.8)                 # hook slam
-add(sfx, stereo_verb(pop(), 0.2), 0.05, 0.6)
 add(sfx, stereo_verb(riser(T_MAIN - 0.3), 0.2), 0.3, 0.35)      # build to drop
 add(sfx, stereo_verb(whoosh(0.5), 0.2), T_MAIN - 0.3, 0.8)
 add(sfx, stereo_verb(impact(), 0.3), T_MAIN, 0.55)

@@ -11,6 +11,7 @@ CAIRO9, CAIRO7 = FD + 'Cairo-900.ttf', FD + 'Cairo-700.ttf'
 MONT = FD + 'Montserrat-800.ttf'
 EMOJI = '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf'
 GOLD = (255, 193, 40)
+SHOW_ADDED_TEXT = False   # original video already carries its own captions
 NAVY = (14, 42, 105)
 
 
@@ -348,14 +349,14 @@ def render(out_path, stills=None):
             if k > 1.6:
                 pass
         # ---- overlays common
-        if t < T_MAIN + 0.2:
+        if SHOW_ADDED_TEXT and t < T_MAIN + 0.2:
             k = t
             out = clamp01((t - (T_MAIN - 0.18)) / 0.3)
             s1 = 1.06 - 0.06 * ease_out(k / 0.3) + 0.25 * out
             L['hook1'].draw(f, 540, 200, s1, 1 - out)
             s2 = 0.94 + 0.06 * ease_back(k / 0.4) + 0.25 * out
             L['hook2'].draw(f, 540, 318, s2, 1 - out)
-        if T_MAIN + 2.6 < t < T_END - 0.1:
+        if SHOW_ADDED_TEXT and T_MAIN + 2.6 < t < T_END - 0.1:
             u = clamp01((t - T_MAIN - 2.6) / 0.4)
             v = clamp01((T_END - 0.1 - t) / 0.3)
             L['chip'].draw(f, 40 + L['chip'].w / 2 - 60 * (1 - ease_out(u)), 205, 1.0, min(u, v))
