@@ -1,4 +1,4 @@
-"""Fighter-pilot vertical edit v3: original orientation, exposure-balanced grade,
+"""Airshow vertical edit v4 (radio-only audio), brighter grade: original orientation, exposure-balanced grade,
 waving UAE flag + title intro (rotated to the footage orientation)."""
 import subprocess, sys, math
 import numpy as np
@@ -15,18 +15,18 @@ END_EXTRA = 1.0
 TOTAL = 22 * BAR + END_EXTRA
 FD = "/usr/share/fonts/opentype/inter/"
 
-BASE_CURVE = "curves=master='0/0 0.06/0.04 0.5/0.52 0.94/0.96 1/1'"
+BASE_CURVE = "curves=master='0/0.02 0.25/0.28 0.5/0.56 0.75/0.8 1/1'"
 GRADE = {
-    "sky": "eq=contrast=1.12:brightness=0.02:saturation=1.38:gamma=1.03,vibrance=intensity=0.3,"
+    "sky": "eq=contrast=1.14:brightness=0.05:saturation=1.55:gamma=1.08,vibrance=intensity=0.3,"
            + BASE_CURVE + ",colorbalance=bs=0.05:bm=0.02",
-    "pink": "eq=contrast=1.12:brightness=0.02:saturation=1.12:gamma=1.03,vibrance=intensity=0.2,"
+    "pink": "eq=contrast=1.12:brightness=0.05:saturation=1.22:gamma=1.08,vibrance=intensity=0.2,"
             + BASE_CURVE + ",colorbalance=bs=0.03:rm=-0.02",
-    "ground": "eq=contrast=1.12:brightness=0.02:saturation=1.3:gamma=1.03,vibrance=intensity=0.25,"
+    "ground": "eq=contrast=1.14:brightness=0.05:saturation=1.42:gamma=1.08,vibrance=intensity=0.25,"
               + BASE_CURVE + ",colorbalance=rm=0.02:bs=0.03",
-    "ground_pink": "eq=contrast=1.12:brightness=0.02:saturation=1.1:gamma=1.03,vibrance=intensity=0.15,"
+    "ground_pink": "eq=contrast=1.12:brightness=0.05:saturation=1.2:gamma=1.08,vibrance=intensity=0.15,"
                    + BASE_CURVE + ",colorbalance=bs=0.03:rm=-0.03",
 }
-TARGET_LUMA = {"sky": 0.53, "pink": 0.52, "ground": 0.50, "ground_pink": 0.50}
+TARGET_LUMA = {"sky": 0.58, "pink": 0.58, "ground": 0.56, "ground_pink": 0.56}
 
 # (start_bar, n_bars, src_start, speed, kind, hit, interp)
 SEGS = [
@@ -72,7 +72,7 @@ def decode(i):
     k = 25
     pad = np.pad(lum, (k, k), mode="edge")
     sm = np.convolve(pad, np.ones(2 * k + 1) / (2 * k + 1), mode="same")[k:-k]
-    gam = np.clip(np.log(TARGET_LUMA[kind]) / np.log(np.clip(sm, 0.05, 0.95)), 0.72, 1.12)
+    gam = np.clip(np.log(TARGET_LUMA[kind]) / np.log(np.clip(sm, 0.05, 0.95)), 0.62, 1.0)
     return frames, gam, kind
 
 LUTX = np.arange(256) / 255.0
@@ -84,7 +84,7 @@ def apply_gamma(img, g):
 
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
 rr = np.sqrt(((xx - W / 2) / (W / 2)) ** 2 + ((yy - H / 2) / (H / 2)) ** 2)
-VIGNETTE = (1 - 0.16 * np.clip((rr - 0.6) / 0.8, 0, 1) ** 1.8)[..., None].astype(np.float32)
+VIGNETTE = (1 - 0.06 * np.clip((rr - 0.6) / 0.8, 0, 1) ** 1.8)[..., None].astype(np.float32)
 
 def zoom_crop(img, z, dx=0.0, dy=0.0):
     ih, iw = img.shape[:2]
@@ -245,7 +245,7 @@ def main():
         "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-profile:v", "high", "-pix_fmt", "yuv420p",
         "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
         "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-t", f"{t_end - t_start:.3f}",
-        "-af", f"afade=t=out:st={max(0, TOTAL - 1.6 - t_start):.3f}:d=1.6",
+        "-af", f"afade=t=out:st={max(0, TOTAL - 0.5 - t_start):.3f}:d=0.5",
         "-movflags", "+faststart", OUT], stdin=subprocess.PIPE)
     n = 0
     for i, (sb, nb, src, speed, kind, hit, interp) in enumerate(SEGS):
@@ -262,21 +262,14 @@ def main():
             tl = k / max(1, len(frames) - 1)
             img = apply_gamma(img, gam[k])
             z = 1.0 + 0.06 * tl
-            z *= 1.0 + (0.10 if hit else 0.03) * math.exp(-ts / 0.18)
-            dx = dy = 0.0
-            if hit and ts < 0.5 and i > 0:
-                amp = 10 * math.exp(-ts / 0.12)
-                dx, dy = amp * math.sin(ts * 90), amp * math.cos(ts * 70)
-            canvas = zoom_crop(img, z, dx, dy)
+            z *= 1.0 + 0.03 * math.exp(-ts / 0.18)
+            canvas = zoom_crop(img, z)
             arr = np.asarray(canvas, np.float32) * VIGNETTE
-            if hit and ts < 0.35 and i > 0:
-                fl = 0.5 * math.exp(-ts / 0.07)
-                arr = arr * (1 - fl) + 255 * fl
             dim = 1.0
             if T < 0.25:
                 dim = T / 0.25
-            if T > TOTAL - 1.2:
-                dim = max(0.0, (TOTAL - T) / 1.2)
+            if T > TOTAL - 0.8:
+                dim = max(0.0, (TOTAL - T) / 0.8)
             arr *= dim
             canvas = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).convert("RGBA")
             overlay(canvas, T)
