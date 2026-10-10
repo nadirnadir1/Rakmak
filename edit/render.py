@@ -1,5 +1,5 @@
-"""Cinematic vertical edit v2: original orientation, exposure-balanced grade,
-minimal motion design, modern typography and HYANI watermark."""
+"""Fighter-pilot vertical edit v3: original orientation, exposure-balanced grade,
+waving UAE flag + title intro (rotated to the footage orientation)."""
 import subprocess, sys, math
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -150,56 +150,90 @@ def letters(canvas, txt, fname, size, tracking, cx, cy, t, stagger=0.045, dur=0.
             put(canvas, g, x + w_ / 2, cy + 40 * (1 - u), alpha * u, 1.0, 6 * (1 - u))
         x += w_ + tracking
 
-FLAG = [(206, 17, 38), (0, 122, 61), (255, 255, 255), (20, 20, 20)]
-def flag_line(canvas, cx, cy, width, alpha):
-    if width < 2 or alpha <= 0.01:
-        return
-    d = ImageDraw.Draw(canvas)
-    seg = width / 4
-    x0 = cx - width / 2
-    for i, c in enumerate(FLAG):
-        d.rectangle((x0 + i * seg, cy - 3, x0 + (i + 1) * seg - 2, cy + 3), fill=c + (int(255 * alpha),))
+# Overlays are designed in landscape space (the footage's own orientation:
+# ground on the left of the portrait frame) and rotated 90 deg clockwise.
+LW, LH = H, W  # 1920 x 1080
 
-WM = text_layer("HYANI", "Inter-SemiBold.otf", 44, 14)
+# --- waving UAE flag ---------------------------------------------------------
+FL_W, FL_H = 520, 260
+def flag_texture():
+    tex = np.zeros((FL_H, FL_W, 3), np.float32)
+    red, green, white, black = (206, 17, 38), (0, 115, 47), (255, 255, 255), (0, 0, 0)
+    tex[: FL_H // 3] = green
+    tex[FL_H // 3: 2 * FL_H // 3] = white
+    tex[2 * FL_H // 3:] = black
+    tex[:, : FL_W // 4] = red
+    return tex
+FLAG_TEX = flag_texture()
+PAD_X, PAD_Y = 40, 70
+FY, FX = np.mgrid[0:FL_H + 2 * PAD_Y, 0:FL_W + PAD_X].astype(np.float32)
 
-def window(T, t0, t1, fin=0.4, fout=0.4):
-    return min(ease_out((T - t0) / fin), ease_out((t1 - T) / fout)) if t0 <= T <= t1 else 0.0
+def waving_flag(t, reveal=1.0):
+    """Cloth-like wave: travelling sine with amplitude growing from the hoist, plus shading."""
+    u = np.clip(FX / FL_W, 0, 1.2)
+    ph = 2 * np.pi * (1.6 * u - 0.9 * t)
+    amp = 16 * u ** 1.2
+    dy = amp * np.sin(ph) + 5 * u * np.sin(2 * np.pi * (3.1 * u - 1.4 * t) + 1.0)
+    dx = -6 * u * (1 - np.cos(ph))  # slight foreshortening
+    sy = FY - PAD_Y - dy
+    sx = FX - dx
+    valid = (sy >= 0) & (sy < FL_H - 1) & (sx >= 0) & (sx < FL_W - 1) & (FX < FL_W * reveal)
+    syc = np.clip(sy, 0, FL_H - 1).astype(np.int32)
+    sxc = np.clip(sx, 0, FL_W - 1).astype(np.int32)
+    rgb = FLAG_TEX[syc, sxc]
+    slope = np.cos(ph) * u
+    shade = 1 + 0.32 * slope - 0.1 * u * (1 - np.cos(ph)) / 2
+    rgb = np.clip(rgb * shade[..., None] + 18 * np.clip(slope, 0, 1)[..., None], 0, 255)
+    a = valid.astype(np.float32)
+    a = np.asarray(Image.fromarray((a * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8)))
+    img = np.dstack([rgb, a]).astype(np.uint8)
+    out = Image.new("RGBA", (FL_W + PAD_X + 30, FL_H + 2 * PAD_Y + 60), (0, 0, 0, 0))
+    # pole + finial
+    d = ImageDraw.Draw(out)
+    d.rectangle((14, 10, 24, out.height - 1), fill=(205, 208, 214, 255))
+    d.rectangle((20, 10, 24, out.height - 1), fill=(150, 154, 160, 255))
+    d.ellipse((9, 0, 29, 20), fill=(222, 190, 110, 255))
+    fl = Image.fromarray(img, "RGBA")
+    sh = Image.new("RGBA", fl.size, (0, 0, 0, 0))
+    sh.putalpha(fl.getchannel("A").point(lambda v: int(v * 0.45)).filter(ImageFilter.GaussianBlur(12)))
+    out.alpha_composite(sh, (34, 34))
+    out.alpha_composite(fl, (24, 20))
+    return out
 
-_g = Image.new("L", (W, 700), 0)
-ImageDraw.Draw(_g).ellipse((60, 120, W - 60, 580), fill=110)
-GLOW = Image.new("RGBA", (W, 700), (0, 0, 0, 0))
-GLOW.putalpha(_g.filter(ImageFilter.GaussianBlur(90)))
+_g = Image.new("L", (LW, LH), 0)
+ImageDraw.Draw(_g).ellipse((420, 110, LW - 420, LH - 120), fill=120)
+GLOW = Image.new("RGBA", (LW, LH), (0, 0, 0, 0))
+GLOW.putalpha(_g.filter(ImageFilter.GaussianBlur(120)))
+
+INTRO_END = 4.0
+
+def intro_layer(T):
+    lay = Image.new("RGBA", (LW, LH), (0, 0, 0, 0))
+    out = ease_out((T - 3.35) / 0.6) if T > 3.35 else 0.0
+    put(lay, GLOW, LW / 2, LH / 2, ease_out((T - 0.05) / 0.5) * (1 - out))
+    # flag: slides in from the pole side and unfurls
+    fa = ease_out((T - 0.1) / 0.5) * (1 - out)
+    if fa > 0:
+        fl = waving_flag(T, reveal=0.15 + 0.9 * ease_out((T - 0.1) / 0.8))
+        put(lay, fl, LW / 2 + 40 * (1 - ease_out((T - 0.1) / 0.6)), 270, fa, 0.85 * (1 + 0.04 * out))
+    # title: per-letter reveal
+    letters(lay, "AL FURSAN", "InterDisplay-Black.otf", 176, 10, LW / 2, 590, T - 0.55, alpha=1 - out)
+    # subtitle: tracking closes in
+    sa = ease_out((T - 1.0) / 0.5) * (1 - out)
+    if sa > 0:
+        trk = 14 + 30 * (1 - ease_out((T - 1.0) / 1.0))
+        put(lay, text_layer("MARRAKECH AIR SHOW 2026", "Inter-Medium.otf", 46, int(trk), (255, 222, 160)),
+            LW / 2, 730, sa)
+        # thin rule under the subtitle
+        wv = 520 * ease_out((T - 1.2) / 0.7)
+        if wv > 2:
+            ImageDraw.Draw(lay).rectangle((LW / 2 - wv / 2, 790, LW / 2 + wv / 2, 792),
+                                          fill=(255, 222, 160, int(200 * sa)))
+    return lay.transpose(Image.Transpose.ROTATE_270)  # 90 deg clockwise -> portrait
 
 def overlay(canvas, T):
-    # hook: "THEY PAINTED / THE SKY"
-    if T < 3.9:
-        out = ease_out((T - 3.3) / 0.6) if T > 3.3 else 0.0
-        put(canvas, GLOW, W / 2, 890, ease_out((T - 0.1) / 0.5) * (1 - out))
-        a1 = ease_out((T - 0.15) / 0.5) * (1 - out)
-        if a1 > 0:
-            trk = 22 + 26 * (1 - ease_out((T - 0.15) / 0.9)) + 20 * out
-            put(canvas, text_layer("THEY PAINTED", "InterDisplay-Regular.otf", 70, int(trk)), W / 2,
-                760 - 30 * (1 - ease_out((T - 0.15) / 0.5)), a1, 1.0, 4 * out)
-        a2 = ease_out((T - 0.5) / 0.5) * (1 - out)
-        if a2 > 0:
-            s = 1.08 - 0.08 * ease_out((T - 0.5) / 0.7) + 0.06 * out
-            put(canvas, text_layer("THE SKY", "InterDisplay-Black.otf", 210, 6), W / 2, 905, a2, s,
-                8 * (1 - ease_out((T - 0.5) / 0.5)) + 8 * out)
-        flag_line(canvas, W / 2, 1035, 380 * ease_out((T - 0.9) / 0.6), (1 - out))
-    # title at the drop
-    t0 = 6 * BAR
-    if t0 <= T < t0 + 2.8:
-        al = window(T, t0, t0 + 2.8, 0.01, 0.45)
-        put(canvas, text_layer("UAE AEROBATIC TEAM", "Inter-Medium.otf", 40, 16, (255, 222, 160)),
-            W / 2, 700 - 20 * (1 - ease_out((T - t0 - 0.35) / 0.5)), al * ease_out((T - t0 - 0.35) / 0.5))
-        letters(canvas, "AL FURSAN", "InterDisplay-Black.otf", 150, 8, W / 2, 805, T - t0, alpha=al)
-        flag_line(canvas, W / 2, 905, 420 * ease_out((T - t0 - 0.5) / 0.6), al)
-    # watermark
-    wa = 0.7
-    if T > TOTAL - 1.2:
-        wa *= max(0.0, (TOTAL - T) / 1.2)
-    ImageDraw.Draw(canvas).rectangle((60, 166, 64, 206), fill=(255, 255, 255, int(255 * wa)))
-    put(canvas, WM, 80 + WM.width / 2, 186, wa)
+    if T < INTRO_END:
+        canvas.alpha_composite(intro_layer(T))
 
 # ------------------------------------------------------------------ main
 def main():

@@ -1,0 +1,9 @@
+[
+ ["r0_smoke", "am_michael", 1.05, "Fursan... smoke on... now."],
+ ["r1_ready", "am_michael", 1.2, "Marrakech Tower, Fursan One, flight of seven, ready for departure."],
+ ["r2_cleared", "bm_george", 1.2, "Fursan One, runway one zero, cleared for takeoff."],
+ ["r4_loop", "am_michael", 1.05, "Fursan, loop... go."],
+ ["r5_break", "am_michael", 1.05, "Fursan... break, break... now!"],
+ ["r6_complete", "am_michael", 1.2, "Tower, Fursan One, display complete."],
+ ["r7_land", "bm_george", 1.15, "Fursan One, cleared to land. Welcome to Marrakech."]
+]
