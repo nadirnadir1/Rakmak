@@ -147,23 +147,31 @@ SCENES.push({
 function crewBust(x, y, kind, p, t) {
   X.save(); X.translate(x, y);
   const s = E.outBack(P(p, 0, .6), 1.5);
+  const ph = IMG[kind ? 'steward' : 'hostess'];
+  if (ph) { // real portrait (transparent PNG) on the brand circle
+    const sIn = E.ioC(P(p, 0, .7));                 // eased scale-in for the frame
+    const fIn = E.smooth(P(p, .08, .6));            // opacity reveal for the person
+    const push = E.ioC(P(p, 0, 1));                 // slow cinematic push-in
+    X.save(); X.globalAlpha *= clamp(sIn * 1.6); X.scale(lerp(.82, 1, sIn), lerp(.82, 1, sIn));
+    const bg = X.createRadialGradient(0, -60, 20, 0, 0, 230); bg.addColorStop(0, '#3a7cf0'); bg.addColorStop(.7, '#1446b8'); bg.addColorStop(1, '#0b2a7a');
+    X.fillStyle = bg; circle(0, 0, 220); X.fill();
+    X.save(); circle(0, 0, 216); X.clip();
+    const k = 0.46 * lerp(1.06, 1.0, push), w = ph.width * k, h = ph.height * k;
+    const anchorY = kind ? 400 : 440;               // source-pixel row that sits at the circle centre (around the eyes/nose)
+    X.globalAlpha *= fIn;
+    X.drawImage(ph, -w / 2, -anchorY * k + 22 + (1 - fIn) * 26, w, h);
+    const v = X.createRadialGradient(0, -20, 165, 0, 0, 222); v.addColorStop(0, 'rgba(5,13,36,0)'); v.addColorStop(1, 'rgba(5,13,36,.35)');
+    X.fillStyle = v; X.fillRect(-230, -230, 460, 460);
+    X.restore();
+    X.strokeStyle = COL.orange; X.lineWidth = 7; circle(0, 0, 220); X.stroke();
+    X.restore();
+    X.restore(); return;
+  }
   X.save(); X.scale(s, s);
   const bg = X.createLinearGradient(0, -230, 0, 230); bg.addColorStop(0, '#2a6ae6'); bg.addColorStop(1, '#0b2a7a');
   X.fillStyle = bg; circle(0, 0, 220); X.fill();
   X.strokeStyle = COL.orange; X.lineWidth = 6; circle(0, 0, 220); X.stroke();
   X.restore();
-  const ph = IMG[kind ? 'steward' : 'hostess'];
-  if (ph) { // real photo, cover-fit inside the circle with a slow push-in
-    X.save(); circle(0, 0, 217 * s); X.clip();
-    const k = 440 / Math.min(ph.width, ph.height) * (1.08 + .06 * P(p, 0, 1)), w = ph.width * k, h = ph.height * k;
-    X.globalAlpha *= clamp(P(p, .05, .45) * 1.5);
-    X.drawImage(ph, -w / 2, -220 - (h - 440) * .25 + (1 - E.outC(P(p, .05, .7))) * 60, w, h);
-    const v = X.createRadialGradient(0, 0, 150, 0, 0, 225); v.addColorStop(0, 'rgba(5,13,36,0)'); v.addColorStop(1, 'rgba(5,13,36,.45)');
-    X.fillStyle = v; X.fillRect(-230, -230, 460, 460);
-    X.restore();
-    X.save(); X.scale(s, s); X.strokeStyle = COL.orange; X.lineWidth = 7; circle(0, 0, 220); X.stroke(); X.restore();
-    X.restore(); return;
-  }
   X.save(); circle(0, 0, 217 * s); X.clip();
   X.translate(0, (1 - E.outC(P(p, .1, .8))) * 420 + 225);
   const skin = kind ? '#C68642' : '#E8B48A', hair = kind ? '#1b120c' : '#3b2416';
@@ -227,7 +235,7 @@ SCENES.push({
     const lab = (x, s, p) => { if (p <= 0) return; X.save(); X.translate(x, 1125); X.scale(E.outBack(p), E.outBack(p)); const w = measure(s, '800 28px Montserrat', 5) + 60; rr(-w / 2, -30, w, 60, 30); X.fillStyle = 'rgba(5,12,30,.85)'; X.fill(); X.strokeStyle = COL.orange; X.lineWidth = 3; X.stroke(); T(s, 3, 2, { font: '800 28px Montserrat', ls: 5 }); X.restore(); };
     lab(770, 'HÔTESSES DE L\'AIR', P(t, 37.0, 37.3));
     lab(310, 'STEWARDS', P(t, 37.6, 37.9));
-    for (let k = 0; k < 10; k++) { const r = mulberry(k + 900); sparkle(100 + r() * 880, 560 + r() * 600, 18 * Math.max(0, Math.sin((t - 36.8) * 3 + k)), P(t, 37, 37.4), k % 2 ? '#fff' : COL.gold); }
+    if (!IMG.hostess) for (let k = 0; k < 10; k++) { const r = mulberry(k + 900); sparkle(100 + r() * 880, 560 + r() * 600, 18 * Math.max(0, Math.sin((t - 36.8) * 3 + k)), P(t, 37, 37.4), k % 2 ? '#fff' : COL.gold); }
   }
 });
 
