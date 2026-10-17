@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#f0f}
+#cab{position:absolute;inset:0;overflow:hidden;transform-origin:0 0}
+#cab img{position:absolute}
+canvas{position:absolute;left:0;top:0;width:1080px;height:1920px}</style></head><body>
+<div id="cab"><img src="/assets/img/cabin.jpg" style="left:-108px;top:-192px;width:1296px;height:2304px">
+<img src="/assets/img/fa3.png" style="left:110px;top:640px;width:860px"></div>
+<canvas id="c"></canvas>
+<script src="/src/js/plane3d.js"></script>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const q = new URLSearchParams(location.search);
+const num = (k, d) => (q.has(k) ? +q.get(k) : d);
+const api = await window.buildPlane(THREE, document.getElementById('c'), { asset: '/assets/img/', fov: num('fov', 70), exposure: num('exp', 1), sun: [num('sx', -0.55), num('sy', 0.42), num('sz', 0.72)], sunI: num('si', 2.6), hemiI: num('hi', 0.55), envI: num('ei', 0.8) });
+const W0 = api.W0, N = api.N;
+// camera: offset from the hero window along its normal (dn), along the fuselage (dx) and up (dy)
+const dn = num('dn', 1.0), dx = num('dx', 0.7), dy = num('dy', 0.1);
+const pos = [W0.x + N.x * dn + dx, W0.y + N.y * dn + dy, W0.z + N.z * dn];
+const look = [W0.x + num('lx', 0), W0.y + num('ly', 0), W0.z];
+api.render({ pos, look, roll: num('roll', 0), fov: num('fov', 70) });
+const c = api.project([W0.x, W0.y, W0.z]);
+const top = api.project(api.windowPoint(0, api.WIN[1])), bot = api.project(api.windowPoint(0, -api.WIN[1]));
+window.INFO = JSON.stringify({ c: c.map((v) => +v.toFixed(1)), hpx: +(bot[1] - top[1]).toFixed(1) });
+// place the cabin layer so the hostess face sits in the window
+const s = num('cs', 0.45);
+const F = [540, 900];
+document.getElementById('cab').style.transform = `translate(${c[0] - F[0] * s}px, ${c[1] - F[1] * s}px) scale(${s})`;
+window.DONE = true;
+</script></body></html>

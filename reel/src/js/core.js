@@ -83,6 +83,13 @@
     return s;
   };
 
+  // ---- async resources the renderer must wait for (three.js scenes, ...)
+  R.waitFor = [];
+  R.threeReady = new Promise((res) => {
+    if (window.THREE) res(window.THREE);
+    else window.addEventListener('three-ready', () => res(window.THREE), { once: true });
+  });
+
   // ---- per-frame updaters (canvas, flip boards, counters...)
   R.updaters = [];
   R.onFrame = (fn) => R.updaters.push(fn);

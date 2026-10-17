@@ -2,7 +2,7 @@
 /* Frame-accurate renderer for src/index.html (GSAP timeline seeked per frame).
  *
  *   node tools/render.js stills --times 1.2,16.1 [--out out/stills] [--debug]
- *   node tools/render.js video  [--from 0] [--to 48.5] [--fps 30] [--sub 4] [--workers 4] [--out out/video.mp4]
+ *   node tools/render.js video  [--from 0] [--to 53.4] [--fps 30] [--sub 4] [--workers 4] [--out out/video.mp4]
  *   node tools/render.js cues   [--out out/cues.json]       (sound cue list registered by the scenes)
  *
  * Motion blur: each output frame is the average of `sub` captures spread over a 180° shutter.
@@ -32,11 +32,11 @@ function serve() {
 }
 
 async function openPage(port) {
-  const browser = await chromium.launch({ args: ['--disable-gpu-vsync', '--disable-frame-rate-limit', '--font-render-hinting=none'] });
+  const browser = await chromium.launch({ args: ['--disable-gpu-vsync', '--disable-frame-rate-limit', '--font-render-hinting=none', '--enable-unsafe-swiftshader'] });
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) console.error('[page]', m.text()); });
   page.on('pageerror', (e) => console.error('[pageerror]', e.message));
-  await page.goto(`http://127.0.0.1:${port}/src/index.html`);
+  await page.goto(`http://127.0.0.1:${port}/src/index.html`, { timeout: 600000 });
   await page.evaluate(() => window.REEL.ready);
   const cdp = await page.context().newCDPSession(page);
   return { browser, page, cdp };
@@ -114,7 +114,7 @@ async function worker(port, k, f0, f1, o) {
 
 async function video(port) {
   const o = {
-    from: +opt('from', 0), to: +opt('to', 48.5), fps: +opt('fps', 30), sub: +opt('sub', 4), shutter: +opt('shutter', 0.5),
+    from: +opt('from', 0), to: +opt('to', 53.4), fps: +opt('fps', 30), sub: +opt('sub', 4), shutter: +opt('shutter', 0.5),
     workers: +opt('workers', 4), crf: +opt('crf', 16), q: +opt('q', 95),
   };
   const out = path.resolve(opt('out', path.join(ROOT, 'out/video_noaudio.mp4')));

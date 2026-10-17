@@ -17,6 +17,7 @@
     R.buildCaptions(42.99 + 0.35);  // after fonts: captions measure their width
     await Promise.all(R.images.map((i) => (i.complete ? Promise.resolve() : new Promise((res) => { i.onload = i.onerror = res; }))
       .then(() => i.decode().catch(() => {}))));
+    await Promise.all(R.waitFor);
     if (Math.abs(R.sentinel.startTime() - 1.0) > 1e-6) throw new Error('timeline shifted by ' + (R.sentinel.startTime() - 1.0));
     // warm-up: run through the whole timeline once so every tween records its start values in order
     for (let t = 0; t <= R.DURATION; t += 0.25) R.seek(t);

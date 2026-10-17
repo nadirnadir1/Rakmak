@@ -273,3 +273,32 @@ svg.icon { display: block; fill: none; stroke: currentColor; stroke-linecap: rou
   border: 4px solid rgba(255,255,255,.9); box-shadow: 0 6px 24px rgba(0,0,0,.35); z-index: 9; }
 .cta-ig { position: absolute; left: 0; right: 0; text-align: center; font: 800 54px 'Alexandria'; color: #fff; direction: rtl;
   text-shadow: 0 6px 24px rgba(0,0,0,.45); }
+
+/* ---------- v3: intro ---------- */
+.chip.kicker { font: 800 26px 'Montserrat'; letter-spacing: 5px; padding: 10px 22px 10px 16px; color: #fff;
+  background: rgba(5,18,48,.58); border: 2px solid rgba(255,255,255,.28); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.mpill { position: absolute; top: 0; width: 64px; height: 58px; border-radius: 16px; display: flex; align-items: center;
+  justify-content: center; font: 800 26px 'Montserrat'; color: rgba(255,255,255,.78); background: rgba(255,255,255,.12);
+  border: 2px solid rgba(255,255,255,.24); }
+.mpill.day { width: 98px; height: 70px; border-radius: 20px; font-size: 32px; }
+
+/* ---------- v3: passport ---------- */
+.pp-page { position: absolute; overflow: hidden; background: linear-gradient(160deg, #faf6ea 0%, #f1e9d6 100%); }
+.pp-emblem { position: absolute; left: 95px; top: 190px; width: 310px; height: 314px; background: #3d7a5c; opacity: .10;
+  -webkit-mask: url('../../assets/img/passport_emblem.png') center / contain no-repeat;
+  mask: url('../../assets/img/passport_emblem.png') center / contain no-repeat; }
+.pp-head { position: absolute; left: 0; right: 0; top: 20px; text-align: center; font: 800 22px 'Montserrat'; letter-spacing: 8px; color: #3d6b55; }
+.pp-head .ar { font: 700 22px 'Alexandria'; letter-spacing: 0; margin-left: 8px; }
+.pp-num { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; font: 700 20px 'Montserrat'; color: #6b7d70; }
+.pp-gutter { position: absolute; top: 0; bottom: 0; width: 70px; }
+.pp-gutter.R { left: 0; background: linear-gradient(90deg, rgba(70,45,10,.26), rgba(70,45,10,0)); }
+.pp-gutter.L { right: 0; background: linear-gradient(270deg, rgba(70,45,10,.26), rgba(70,45,10,0)); }
+.pp-leaf { position: absolute; left: 500px; top: 0; width: 500px; height: 710px; transform-style: preserve-3d; }
+.pp-front, .pp-back { position: absolute; left: 0; top: 0; width: 500px; height: 710px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.pp-front { border-radius: 0 16px 16px 0; box-shadow: 4px 0 0 #213b27, 0 0 0 1px rgba(0,0,0,.25); }
+.pp-back { transform: rotateY(180deg); }
+.pp-shadow { position: absolute; left: 30px; right: 30px; top: 40px; bottom: -30px; border-radius: 30px; background: rgba(0,0,0,.55);
+  filter: blur(34px); transform: translateZ(-2px); }
+.pp-stamp { position: absolute; }
+.pp-visa { position: absolute; border-radius: 10px; overflow: hidden; background: linear-gradient(115deg, #fbe3ec 0%, #e9f4ec 48%, #e1ebfa 100%);
+  border: 1px solid rgba(110,90,70,.28); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 4px 10px rgba(60,40,10,.18); }

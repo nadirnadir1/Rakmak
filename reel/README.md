@@ -12,8 +12,13 @@ Vertical 1080×1920 / 30 fps motion-graphics reel (53.4 s) built around the Dari
 | `EFH_reel_cover.jpg` | Suggested Instagram cover frame |
 
 v2 (client feedback): logo pinned in a top header for the whole reel, layout re-balanced (content
-lower, captions lower), new photographic opening, the school's travel photos in the feed scene, and an
-Instagram "Follow + scroll" ending in an iPhone 18 Pro Max mockup.
+lower, captions lower), the school's travel photos in the feed scene, and an Instagram "Follow + scroll"
+ending in an iPhone 18 Pro Max mockup.
+
+v3 (client feedback): a new opening that shows the concept from the first frame (an airliner window with
+a hostess inside, the camera flies into the cabin; no beach photo any more), and the "تجربة مختلفة"
+stamps now land in the school's Moroccan passport (cover supplied by the school) with a visa and
+entry stamps.
 
 ## Script (as spoken, force-aligned word by word)
 
@@ -37,10 +42,11 @@ Instagram "Follow + scroll" ending in an iPhone 18 Pro Max mockup.
 
 | Time | Scene |
 | --- | --- |
-| 0 – 3.6 | **Hook (tourist)**: full-bleed beach photo, "12 MOIS D'ÉCONOMIES… → …POUR 7 JOURS ?", savings counter, 7-day strip, "1 SEMAINE" stamp, photo drains of colour |
-| 3.6 – 7.5 | **Hook (crew)**: whip pan to a hostess above the clouds, "ET SI VOYAGER ÉTAIT TON MÉTIER ?", London/Tokyo/Dubai postcards, "Salaire reçu ✓" + coin cannons |
+| 0 – 0.6 | **Hook**: frame 1 is an airliner in a blue sky with a hostess smiling through a window (live 3D); the camera flies through the window into the cabin |
+| 0.6 – 3.6 | **The passengers**: hostess in the cabin (shallow focus), "LES PASSAGERS · 12 MOIS D'ÉCONOMIES… → …POUR 7 JOURS ?", 12 month pills fill with the savings counter, collapse into a 7-day week, +18 000 DH → −18 000 DH |
+| 3.6 – 7.5 | **Cabin crew**: pan to a cabin window and push through it into the sky, "CABIN CREW · ET SI VOYAGER ÉTAIT TON MÉTIER ?", London/Tokyo/Dubai postcards, "Salaire reçu ✓" + coin cannons |
 | 7 – 11.4 | **Dotted 3D globe**: Marrakech pin, flight arcs fan out to 13 cities, plane flies to Dubai |
-| 11 – 15 | **Airport**: split-flap departures board → new faces → passport stamps |
+| 11 – 15 | **Airport**: split-flap departures board → new faces → the Moroccan passport flies in, opens, a Schengen visa and CDG / DXB / IST / HND stamps land |
 | 14.6 – 19 | **Title drop on the beat**: CABIN behind the hostess, CREW in front, crew joins |
 | 18.6 – 23 | **Phone feed**: the title freezes into post 1, then flicks through the school's travel photos (Paris, Santorin, New York, Rome, Los Angeles, Marrakech), shutter, likes… **"لا!"** freeze + red X |
 | 22.5 – 28.6 | **Behind the elegance**: portrait scanned into a blueprint, 4 pillars land on each word |
@@ -55,6 +61,10 @@ Instagram "Follow + scroll" ending in an iPhone 18 Pro Max mockup.
 * **Picture**: `src/` is an HTML/CSS/GSAP scene graph driven by one paused timeline. `tools/render.js`
   seeks it frame by frame in headless Chromium (4 parallel workers) and pipes frames to ffmpeg;
   every frame averages 4 sub-frames (180° shutter) for real motion blur.
+* **3D**: the opening airliner is rendered live with three.js (`src/js/plane3d.js`): the livery, windows
+  and seams are computed per pixel so they stay sharp at any distance, and the hero window is punched
+  out of the canvas so the DOM cabin behind it shows through. The cabin background is a three.js render
+  (`tools/cabin/cabin.html`) with lens blur added in `tools/make_cabin.py`.
 * **Captions**: words were force-aligned to the audio (Meta Omnilingual ASR, CTC) after transcription
   with Whisper large-v3; ambiguous Darija words were decided by scoring alternatives against the audio.
 * **Sound**: `audio/music.py` composes the music (120 BPM, two drops locked to the edit) and
@@ -68,7 +78,7 @@ Instagram "Follow + scroll" ending in an iPhone 18 Pro Max mockup.
 ## Rebuild
 
 ```bash
-npm install                                  # gsap, playwright, world-atlas, lucide-static ...
+npm install                                  # gsap, three, playwright, world-atlas, lucide-static ...
 node tools/build_data.js                     # icons, word timings, logo paths -> src/data
 node tools/render.js stills --times 16.2     # preview frames
 node tools/render.js cues --out audio/cues.json
@@ -82,5 +92,6 @@ Python deps: numpy scipy soundfile pedalboard pyloudnorm pillow opencv-contrib-p
 ## Credits
 
 Fonts: Alexandria, Montserrat, Barlow Condensed, JetBrains Mono (SIL OFL, Google Fonts) ·
-Animation: GSAP · Icons: Lucide (ISC) · Land data: Natural Earth via world-atlas ·
+Animation: GSAP · 3D: three.js (MIT) · Icons: Lucide (ISC) · Land data: Natural Earth via world-atlas ·
+Passport cover: supplied by the school; visa and stamps are illustrative artwork ·
 Map imagery © Google (school location screenshot) · Music and sound effects: original, synthesised for this reel.

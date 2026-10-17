@@ -1,76 +1,82 @@
 [
  {
   "t": 0,
-  "name": "swoosh_up",
-  "gain": 0.35
+  "name": "jet_rumble",
+  "gain": 0.55,
+  "dur": 1.2
  },
  {
-  "t": 0.52,
+  "t": 0.48,
+  "name": "impact_small",
+  "gain": 0.32
+ },
+ {
+  "t": 0.9,
   "name": "coins_stream",
-  "dur": 1.22,
-  "gain": 0.42
+  "dur": 0.84,
+  "gain": 0.4
  },
  {
-  "t": 1.71,
+  "t": 1.87,
   "name": "whoosh_small",
-  "gain": 0.42
+  "gain": 0.4
  },
  {
-  "t": 2.5,
+  "t": 2.74,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1
  },
  {
-  "t": 2.605,
+  "t": 2.84,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1.07
  },
  {
-  "t": 2.71,
+  "t": 2.94,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1.1400000000000001
  },
  {
-  "t": 2.815,
+  "t": 3.04,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1.21
  },
  {
-  "t": 2.92,
+  "t": 3.08,
+  "name": "tick",
+  "gain": 0.45
+ },
+ {
+  "t": 3.14,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1.28
  },
  {
-  "t": 3,
-  "name": "stamp",
-  "gain": 0.75
- },
- {
-  "t": 3.025,
+  "t": 3.24,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1.35
  },
  {
-  "t": 3.13,
+  "t": 3.34,
   "name": "pop",
-  "gain": 0.28,
+  "gain": 0.26,
   "pitch": 1.42
  },
  {
-  "t": 3.56,
+  "t": 3.54,
   "name": "whoosh",
-  "gain": 0.6
+  "gain": 0.55
  },
  {
   "t": 3.78,
-  "name": "impact_small",
-  "gain": 0.45
+  "name": "swoosh_up",
+  "gain": 0.3
  },
  {
   "t": 4.92,
@@ -217,19 +223,40 @@
   "pitch": 1.3599999999999999
  },
  {
-  "t": 13.36,
-  "name": "stamp",
-  "gain": 0.85
+  "t": 12.96,
+  "name": "whoosh_small",
+  "gain": 0.42
+ },
+ {
+  "t": 13.2,
+  "name": "page_flip",
+  "gain": 0.5
+ },
+ {
+  "t": 13.38,
+  "name": "card",
+  "gain": 0.5,
+  "pitch": 0.8
  },
  {
   "t": 13.62,
   "name": "stamp",
-  "gain": 0.85
+  "gain": 0.62
  },
  {
-  "t": 13.92,
+  "t": 13.9,
   "name": "stamp",
-  "gain": 0.85
+  "gain": 0.62
+ },
+ {
+  "t": 14.14,
+  "name": "stamp",
+  "gain": 0.62
+ },
+ {
+  "t": 14.34,
+  "name": "stamp",
+  "gain": 0.62
  },
  {
   "t": 14.52,

@@ -400,6 +400,16 @@ def jet_flyby(dur=3.2, **k):
     return norm(reverb(out, room=0.8, wet=0.3, tail=1.0))
 
 
+def jet_rumble(dur=1.3, **k):
+    # engine air without the turbine whine: stays below the speech band
+    n = n_of(dur)
+    x = np.linspace(0, 1, n)
+    prox = np.exp(-((x - 0.45) / 0.3) ** 2)
+    rumble = sweep(pink(dur, 57), 160 + 700 * prox, 'lp', res=0.1)
+    out = pan(rumble * (0.25 + 0.75 * prox), np.linspace(0.5, -0.5, n))
+    return norm(reverb(out, room=0.7, wet=0.25, tail=0.8))
+
+
 def plane_pass(dur=1.3, **k):
     return jet_flyby(dur)
 
