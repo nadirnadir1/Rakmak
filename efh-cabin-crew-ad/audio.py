@@ -211,20 +211,17 @@ def riser(d=1.2):
     return (x + tone) * (tt / d) ** 2
 
 
-# S1: coin clinks + drain
-for i in range(46):
-    place(fx, clink(2600 + rng.random() * 1600), 0.22 + i * 0.043 + 0.43, 0.035, pan=rng.uniform(-.4, .4))
-place(fx, whoosh(0.7, 300, 5000), 2.75, 0.25)
-for i in range(7):
-    place(fx, blip(700 + i * 90, 900 + i * 90, 0.08), 2.72 + i * 0.075, 0.08)
+# S1: soft tick per month, gentle swell on the comparison bars
+for k in range(12):
+    place(fx, bell(midi(84 + [0, 2, 4, 7][k % 4]), 0.5), 0.32 + k * 0.17, 0.025, pan=(k - 5.5) / 8)
+place(fx, whoosh(0.6, 300, 2500), 2.4, 0.12)
+place(fx, blip(600, 900, 0.12), 2.75, 0.08)
 # swipes
 for t0 in [3.7, 11.1, 14.8, 18.62, 28.45, 38.7, 41.48]:
     place(fx, whoosh(0.6, 250, 5000), t0 - 0.32, 0.38)
 # boarding pass entry / stamp / coins
 place(fx, whoosh(0.45, 400, 3000), 3.75, 0.25)
 place(fx, thump(0.4, 60, 0.9), 5.38, 0.75)
-for i in range(16):
-    place(fx, clink(3000 + rng.random() * 1500), 6.1 + i * 0.045 + 0.45, 0.03, pan=0.3)
 place(fx, bell(midi(84), 1.2), 6.45, 0.12)
 place(fx, bell(midi(88), 1.2), 6.55, 0.10)
 # window shade + dive through

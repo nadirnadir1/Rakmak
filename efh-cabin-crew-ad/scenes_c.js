@@ -152,6 +152,18 @@ function crewBust(x, y, kind, p, t) {
   X.fillStyle = bg; circle(0, 0, 220); X.fill();
   X.strokeStyle = COL.orange; X.lineWidth = 6; circle(0, 0, 220); X.stroke();
   X.restore();
+  const ph = IMG[kind ? 'steward' : 'hostess'];
+  if (ph) { // real photo, cover-fit inside the circle with a slow push-in
+    X.save(); circle(0, 0, 217 * s); X.clip();
+    const k = 440 / Math.min(ph.width, ph.height) * (1.08 + .06 * P(p, 0, 1)), w = ph.width * k, h = ph.height * k;
+    X.globalAlpha *= clamp(P(p, .05, .45) * 1.5);
+    X.drawImage(ph, -w / 2, -220 - (h - 440) * .25 + (1 - E.outC(P(p, .05, .7))) * 60, w, h);
+    const v = X.createRadialGradient(0, 0, 150, 0, 0, 225); v.addColorStop(0, 'rgba(5,13,36,0)'); v.addColorStop(1, 'rgba(5,13,36,.45)');
+    X.fillStyle = v; X.fillRect(-230, -230, 460, 460);
+    X.restore();
+    X.save(); X.scale(s, s); X.strokeStyle = COL.orange; X.lineWidth = 7; circle(0, 0, 220); X.stroke(); X.restore();
+    X.restore(); return;
+  }
   X.save(); circle(0, 0, 217 * s); X.clip();
   X.translate(0, (1 - E.outC(P(p, .1, .8))) * 420 + 225);
   const skin = kind ? '#C68642' : '#E8B48A', hair = kind ? '#1b120c' : '#3b2416';

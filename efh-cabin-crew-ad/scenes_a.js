@@ -1,93 +1,68 @@
 // ---------- Scenes 1-5 ----------
 const SCENES = [];
 
-// ===== S1: saving for months, spending in one week (0 - 3.72)
+// ===== S1: months of saving vs one week of travel (0 - 3.72)
 const MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'ماي', 'يونيو', 'يوليوز', 'غشت', 'شتنبر', 'أكتوبر', 'نونبر', 'دجنبر'];
-const S1C = (() => {
-  const r = mulberry(11), out = [];
-  for (let i = 0; i < 46; i++) {
-    const row = Math.floor(i / 5), col = i % 5;
-    out.push({
-      tx: 395 + col * 72 + (r() - .5) * 18 + (row % 2) * 16, ty: 1138 - row * 21 - r() * 4,
-      sx: 420 + r() * 240, sy: 655 - r() * 50, t0: 0.22 + i * 0.043 + r() * .03, spin: 6 + r() * 8,
-      ex: (r() - .5) * 1400, ey: -900 - r() * 700, et: 2.78 + r() * .32, er: (r() - .5) * 8,
-    });
-  }
-  return out;
-})();
+const S1_SEG = k => 0.32 + k * 0.17; // month k lights up
+function suitcase(x, y, s, a = 1) {
+  X.save(); X.translate(x, y); X.scale(s, s); X.globalAlpha *= a;
+  X.strokeStyle = '#fff'; X.lineWidth = 7; rr(-22, -62, 44, 30, 10); X.stroke();
+  const g = X.createLinearGradient(0, -40, 0, 50); g.addColorStop(0, '#FFAA3A'); g.addColorStop(1, '#F07A00');
+  X.fillStyle = g; rr(-55, -40, 110, 90, 16); X.fill();
+  X.fillStyle = 'rgba(255,255,255,.85)'; X.fillRect(-30, -40, 9, 90); X.fillRect(21, -40, 9, 90);
+  X.fillStyle = '#0A1C4A'; circle(-34, 56, 8); X.fill(); circle(34, 56, 8); X.fill();
+  X.restore();
+}
 SCENES.push({
   a: 0, b: 3.72, draw(t) {
-    const ent = E.outBack(P(t, 0, .45));
-    const exitP = P(t, 3.45, 3.72);
-    X.translate(540, 900); X.scale(lerp(.8, 1, ent) * (1 + exitP * .1), lerp(.8, 1, ent) * (1 + exitP * .1)); X.translate(-540, -900);
-    X.globalAlpha = clamp(ent * 1.4) * (1 - exitP);
-    // month split-flap card
-    const changes = [[0.0, MONTHS[0]]];
-    for (let k = 1; k < 12; k++) changes.push([0.3 + k * 0.185, MONTHS[k]]);
-    X.save();
-    X.shadowColor = 'rgba(0,0,0,.5)'; X.shadowBlur = 30; X.shadowOffsetY = 12;
-    rr(300, 245, 480, 150, 18); X.fillStyle = '#0d1426'; X.fill(); X.restore();
-    flapCell(t, 300, 245, 480, 150, changes, '800 74px Alexandria', { dir: 'rtl', dur: .14, r: 18, dy: 6 });
-    // rings on top of calendar
-    for (const rx of [380, 700]) { X.fillStyle = '#c9d4ea'; rr(rx - 9, 225, 18, 46, 9); X.fill(); }
-    T('شهور', 540, 215, { font: '700 30px Alexandria', dir: 'rtl', color: COL.orange, alpha: P(t, 1.2, 1.4) * (1 - P(t, 2.6, 2.8)) });
-
-    // counter
-    const up = E.outC(P(t, .3, 2.55)), down = E.ioC(P(t, 2.8, 3.4));
-    const val = Math.round(15000 * up * (1 - down) / 50) * 50;
-    const sval = val.toLocaleString('en-US').replace(/,/g, ' ');
-    const cc = down > 0 ? mixHex('#ffffff', '#FF5A3C', clamp(down * 2)) : '#fff';
-    T(sval, 500, 520, { font: '900 120px Montserrat', color: cc, align: 'center', shadow: 'rgba(0,0,0,.4)', blur: 20 });
-    const w = measure(sval, '900 120px Montserrat');
-    T('DH', 500 + w / 2 + 18, 540, { font: '900 54px Montserrat', color: COL.orange, align: 'left' });
-
-    // jar
-    X.save();
-    X.strokeStyle = 'rgba(255,255,255,.55)'; X.lineWidth = 7;
-    X.beginPath(); X.moveTo(350, 690); X.lineTo(350, 1120); X.quadraticCurveTo(350, 1180, 410, 1180); X.lineTo(670, 1180);
-    X.quadraticCurveTo(730, 1180, 730, 1120); X.lineTo(730, 690); X.stroke();
-    X.fillStyle = 'rgba(160,200,255,.07)'; X.fill();
-    X.fillStyle = 'rgba(255,255,255,.75)'; rr(328, 676, 44, 18, 9); X.fill(); rr(708, 676, 44, 18, 9); X.fill();
-    X.restore();
-    // coins
-    const sorted = S1C.map((c, i) => ({ c, i })).sort((a, b) => b.c.ty - a.c.ty);
-    for (const { c } of sorted) {
-      const pf = P(t, c.t0, c.t0 + .42);
-      if (pf <= 0) continue;
-      let x, y, flip, tilt, a = 1;
-      if (pf < 1) {
-        const q = E.inQ(pf);
-        x = lerp(c.sx, c.tx, E.outQ(pf)); y = lerp(c.sy, c.ty, q);
-        flip = Math.cos((t - c.t0) * c.spin); tilt = lerp(1, .55, q);
-      } else {
-        x = c.tx; y = c.ty; flip = 1; tilt = .32;
-        const land = P(t, c.t0 + .42, c.t0 + .55); y -= Math.sin(land * Math.PI) * 10;
+    const ent = E.outC(P(t, 0, .5)), ex = P(t, 3.45, 3.72);
+    X.globalAlpha = ent * (1 - ex);
+    const cx = 540, cy = 640, R = 255;
+    // gentle year ring: 12 months fill one by one
+    X.save(); X.translate(cx, cy); X.scale(lerp(.9, 1, ent) * (1 - ex * .1), lerp(.9, 1, ent) * (1 - ex * .1));
+    const gapA = .05;
+    for (let k = 0; k < 12; k++) {
+      const a0 = -Math.PI / 2 + k * TAU / 12 + gapA, a1 = a0 + TAU / 12 - gapA * 2;
+      X.lineCap = 'round'; X.lineWidth = 34;
+      X.strokeStyle = 'rgba(255,255,255,.10)'; X.beginPath(); X.arc(0, 0, R, a0, a1); X.stroke();
+      const p = E.ioC(P(t, S1_SEG(k), S1_SEG(k) + .22));
+      if (p > 0) {
+        X.strokeStyle = mixHex('#5AA8FF', '#1E5BD8', k / 11); X.beginPath(); X.arc(0, 0, R, a0, a0 + (a1 - a0) * p); X.stroke();
       }
-      const pe = P(t, c.et, c.et + .55);
-      if (pe > 0) { const q = E.inQ(pe); x += c.ex * q; y += c.ey * q * .7 + 400 * q * q; flip = Math.cos(pe * c.er * 4); tilt = lerp(tilt, 1, pe); a = 1 - pe; }
-      coin(x, y, 34, flip, tilt, a * clamp(pf * 8));
+      // month label
+      const am = (a0 + a1) / 2, lr = R + 66, lit = P(t, S1_SEG(k), S1_SEG(k) + .2);
+      T(MONTHS[k], Math.cos(am) * lr, Math.sin(am) * lr, { font: '700 27px Alexandria', dir: 'rtl', color: lit > 0 ? '#fff' : 'rgba(255,255,255,.35)', alpha: .5 + .5 * lit });
     }
-    // glass shine
-    X.fillStyle = 'rgba(255,255,255,.10)'; rr(372, 720, 26, 400, 13); X.fill();
+    // centre: month counter
+    const n = clamp(Math.floor((t - S1_SEG(0)) / 0.17) + 1, 0, 12);
+    T(String(n), 0, -28, { font: '900 150px Montserrat', color: '#fff', shadow: 'rgba(0,0,0,.35)', blur: 20 });
+    T('شهر ديال التوفير', 0, 82, { font: '700 36px Alexandria', dir: 'rtl', color: 'rgba(255,255,255,.75)' });
+    X.restore();
 
-    // one week strip
-    const wk = P(t, 2.6, 2.85);
-    if (wk > 0) {
-      X.save(); X.globalAlpha *= E.outC(wk);
-      X.translate(0, (1 - E.outBack(wk)) * 60);
-      rr(190, 1230, 700, 120, 60); X.fillStyle = 'rgba(5,12,30,.85)'; X.fill();
-      X.strokeStyle = rgba(COL.orange, .8); X.lineWidth = 3; X.stroke();
-      for (let d = 0; d < 7; d++) {
-        const on = P(t, 2.72 + d * .075, 2.8 + d * .075);
-        const cx = 820 - d * 92;
-        X.fillStyle = mixHex('#2a3656', COL.orange, on); circle(cx, 1290, 30 + 6 * Math.sin(on * Math.PI)); X.fill();
-        T(String(d + 1), cx, 1292, { font: '900 30px Montserrat', color: on > .5 ? '#fff' : '#8090b0' });
-      }
+    // comparison: 12 months saving vs 1 week travelling
+    const b1 = E.outExpo(P(t, 2.42, 2.9)), b2 = E.outBack(P(t, 2.7, 3.05), 2);
+    const left = 120, full = 840;
+    if (b1 > 0) {
+      X.save(); X.globalAlpha *= clamp(b1 * 2);
+      T('التوفير', 960, 1090, { font: '800 34px Alexandria', align: 'right', dir: 'rtl' });
+      T('12 MOIS', left, 1090, { font: '800 28px Montserrat', align: 'left', ls: 4, color: 'rgba(255,255,255,.6)' });
+      X.fillStyle = 'rgba(255,255,255,.10)'; rr(left, 1120, full, 44, 22); X.fill();
+      const g = X.createLinearGradient(left, 0, left + full, 0); g.addColorStop(0, '#1E5BD8'); g.addColorStop(1, '#5AA8FF');
+      X.fillStyle = g; rr(left + full * (1 - b1), 1120, full * b1, 44, 22); X.fill();
+      X.restore();
+    }
+    if (b2 > 0) {
+      X.save(); X.globalAlpha *= clamp(b2 * 2);
+      T('السفر', 960, 1225, { font: '800 34px Alexandria', align: 'right', dir: 'rtl', color: COL.orange });
+      T('7 JOURS', left, 1225, { font: '800 28px Montserrat', align: 'left', ls: 4, color: 'rgba(255,255,255,.6)' });
+      X.fillStyle = 'rgba(255,255,255,.10)'; rr(left, 1255, full, 44, 22); X.fill();
+      const w = full * 7 / 365 * 4 + 30; // tiny on purpose
+      X.fillStyle = COL.orange; rr(left + full - w * b2, 1255, w * b2, 44, 22); X.fill();
+      suitcase(left + full - w - 80, 1262, .62 * b2);
       X.restore();
     }
   }
 });
-
 // ===== S2: travel is their job & they get paid (3.66 - 7.32)
 const DESTS = [['CDG', 'PARIS'], ['DXB', 'DUBAI'], ['IST', 'ISTANBUL'], ['JFK', 'NEW YORK'], ['LHR', 'LONDON'], ['DOH', 'DOHA']];
 const BARCODE = (() => { const r = mulberry(3), b = []; let x = 0; while (x < 300) { const w = 2 + Math.floor(r() * 7); b.push([x, w]); x += w + 3 + Math.floor(r() * 5); } return b; })();
@@ -176,13 +151,6 @@ SCENES.push({
       X.restore();
     }
     X.restore();
-    // coins flying in toward stub
-    for (const c of S2COINS) {
-      const p = P(t, c.t0, c.t0 + .45); if (p <= 0 || p >= 1) continue;
-      const e = E.ioC(p), tx = 540 + 325, ty = 800;
-      const x = lerp(c.sx, tx, e) + Math.sin(p * Math.PI) * c.c, y = lerp(c.sy, ty, e);
-      coin(x, y, 30 * (1 - p * .5), Math.cos(p * 12), 1, 1 - E.inC(p));
-    }
     // salary pill
     const sp = P(t, 6.5, 6.8);
     if (sp > 0) {

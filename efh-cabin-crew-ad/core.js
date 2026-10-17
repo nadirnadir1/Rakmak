@@ -184,7 +184,7 @@ function coin(x, y, r, flip = 1, tilt = 1, alpha = 1) {
 
 // images
 const IMG = {};
-function loadImg(name, src) { return new Promise(res => { const i = new Image(); i.onload = () => { IMG[name] = i; res(); }; i.src = src; }); }
+function loadImg(name, src) { return new Promise(res => { const i = new Image(); i.onload = () => { IMG[name] = i; res(); }; i.onerror = () => res(); i.src = src; }); }
 
 // offscreen canvas helper
 function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }

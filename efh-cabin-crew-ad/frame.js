@@ -127,7 +127,7 @@ function render(t) {
 }
 
 window.READY = (async () => {
-  await Promise.all([loadImg('full', 'assets/logo_full.png'), loadImg('swoosh', 'assets/swoosh_orange.png'), loadImg('white', 'assets/logo_white_parts.png')]);
+  await Promise.all([loadImg('full', 'assets/logo_full.png'), loadImg('swoosh', 'assets/swoosh_orange.png'), loadImg('white', 'assets/logo_white_parts.png'), loadImg('hostess', 'assets/crew_hostess.jpg'), loadImg('steward', 'assets/crew_steward.jpg')]);
   const specs = ['400 40px Lalezar', '400 40px Alexandria', '700 40px Alexandria', '800 40px Alexandria', '900 40px Alexandria', '800 40px Cairo',
     '600 40px Montserrat', '700 40px Montserrat', '800 40px Montserrat', '900 40px Montserrat', '800 40px JBM'];
   await Promise.all(specs.map(s => document.fonts.load(s, 'Aaمرحبا')));
