@@ -11,7 +11,7 @@ from dsp import SR, n_of, lp, hp, place, db
 import sfx as SFXLIB
 
 voice_path, cues_path, mdir, out_path = sys.argv[1:5]
-DUR = float(sys.argv[5]) if len(sys.argv) > 5 else 48.5
+DUR = float(sys.argv[5]) if len(sys.argv) > 5 else 53.4
 N = n_of(DUR)
 meter = pyln.Meter(SR)
 

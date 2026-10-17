@@ -72,7 +72,7 @@ npm install                                  # gsap, playwright, world-atlas, lu
 node tools/build_data.js                     # icons, word timings, logo paths -> src/data
 node tools/render.js stills --times 16.2     # preview frames
 node tools/render.js cues --out audio/cues.json
-(cd audio && python3 music.py build && python3 mix.py ../assets/audio/voice_original.mp3 cues.json build build/mix_final.wav 48.5)
+(cd audio && python3 music.py build && python3 mix.py ../assets/audio/voice_original.mp3 cues.json build build/mix_final.wav 53.4)
 node tools/render.js video --sub 4 --workers 4 --crf 17 --out out/video_noaudio.mp4
 tools/mux.sh out/video_noaudio.mp4 audio/build/mix_final.wav out/EFH_reel_final.mp4
 ```
