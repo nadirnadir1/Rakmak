@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>EFH Marrakech Spot</title>
+<style>
+@font-face { font-family: 'Cairo'; src: url(fonts/Cairo.ttf); font-weight: 200 1000; }
+@font-face { font-family: 'Lalezar'; src: url(fonts/Lalezar.ttf); }
+@font-face { font-family: 'Reem Kufi'; src: url(fonts/ReemKufi.ttf); font-weight: 400 700; }
+@font-face { font-family: 'Marhey'; src: url(fonts/Marhey.ttf); font-weight: 300 700; }
+@font-face { font-family: 'Poppins'; src: url(fonts/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: 'Poppins'; src: url(fonts/Poppins-ExtraBold.ttf); font-weight: 800; }
+@font-face { font-family: 'Poppins'; src: url(fonts/Poppins-Black.ttf); font-weight: 900; }
+
+:root {
+  --navy: #0B2E7A; --blue: #0A4BC4; --brand: #003A9B; --sky: #59C3FF; --orange: #F38100;
+  --saffron: #FFC21A; --coral: #FF7A59; --terra: #EA7E4E; --teal: #14B8A6; --green: #22B45E;
+  --cream: #FFF7EC;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #FFF7EC; }
+body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--cream); }
+.abs { position: absolute; }
+.scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; visibility: hidden; }
+.full { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.rtl { direction: rtl; }
+.lal { font-family: 'Lalezar', 'Cairo', sans-serif; font-weight: 400; }
+.kufi { font-family: 'Reem Kufi', sans-serif; font-weight: 700; }
+.pop { font-family: 'Poppins', sans-serif; }
+.nowrap { white-space: nowrap; }
+svg { display: block; overflow: visible; }
+img { display: block; }
+
+.card { background: #fff; border-radius: 40px; box-shadow: 0 10px 0 rgba(11,46,122,.10), 0 26px 50px rgba(11,46,122,.18); }
+.pill { border-radius: 999px; padding: 8px 34px 14px; color: #fff; white-space: nowrap; }
+
+/* captions */
+#caps { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; z-index: 50; }
+.cap { position: absolute; left: 540px; top: 1462px; direction: rtl; white-space: nowrap; font-family: 'Cairo'; font-weight: 900;
+  font-size: 70px; line-height: 1.32; color: var(--navy); background: #fff; border-radius: 36px; padding: 6px 26px 14px;
+  box-shadow: 0 9px 0 #FFC21A, 0 22px 44px rgba(11,46,122,.22); visibility: hidden; }
+.cap .w { position: relative; display: inline-block; padding: 0 9px; z-index: 1; opacity: .42; }
+.cap .hl { position: absolute; left: 0; top: 12px; height: calc(100% - 22px); background: var(--saffron); border-radius: 22px; z-index: 0; }
+
+#bug { z-index: 40; }
+#fx { z-index: 60; pointer-events: none; }
+#flash { background: #fff; opacity: 0; z-index: 70; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/MotionPathPlugin.min.js"></script>
+<script src="node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="node_modules/gsap/dist/Physics2DPlugin.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="art.js"></script>
+<script src="captions.js"></script>
+<script src="main.js"></script>
+<script src="scenes2.js"></script>
+<script src="scenes3.js"></script>
+</body>
+</html>
