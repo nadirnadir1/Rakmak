@@ -1,0 +1,11 @@
+node_modules/
+out/parts/
+out/stills/
+out/preview_*
+out/*.log
+audio/build/
+audio/__pycache__/
+__pycache__/
+out/video_noaudio.mp4
+assets/audio/voice.wav
+assets/audio/voice16k.wav

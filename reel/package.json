@@ -1,0 +1,17 @@
+{
+  "name": "efh-reel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EFH - Ecole Fly Hyani Prive: motion graphics Instagram reel (HTML/GSAP rendered frame-by-frame with Playwright + ffmpeg)",
+  "scripts": {
+    "render": "node tools/render.js"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "gsap": "^3.15.0",
+    "lucide-static": "^1.59.0",
+    "playwright": "1.56.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  }
+}

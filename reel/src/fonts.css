@@ -1,0 +1,52 @@
+@font-face{font-family:'Cairo';font-weight:400;font-style:normal;src:url('../assets/fonts/Cairo-400.ttf') format('truetype');}
+@font-face{font-family:'Cairo';font-weight:600;font-style:normal;src:url('../assets/fonts/Cairo-600.ttf') format('truetype');}
+@font-face{font-family:'Cairo';font-weight:700;font-style:normal;src:url('../assets/fonts/Cairo-700.ttf') format('truetype');}
+@font-face{font-family:'Cairo';font-weight:800;font-style:normal;src:url('../assets/fonts/Cairo-800.ttf') format('truetype');}
+@font-face{font-family:'Cairo';font-weight:900;font-style:normal;src:url('../assets/fonts/Cairo-900.ttf') format('truetype');}
+@font-face{font-family:'Alexandria';font-weight:400;font-style:normal;src:url('../assets/fonts/Alexandria-400.ttf') format('truetype');}
+@font-face{font-family:'Alexandria';font-weight:600;font-style:normal;src:url('../assets/fonts/Alexandria-600.ttf') format('truetype');}
+@font-face{font-family:'Alexandria';font-weight:700;font-style:normal;src:url('../assets/fonts/Alexandria-700.ttf') format('truetype');}
+@font-face{font-family:'Alexandria';font-weight:800;font-style:normal;src:url('../assets/fonts/Alexandria-800.ttf') format('truetype');}
+@font-face{font-family:'Alexandria';font-weight:900;font-style:normal;src:url('../assets/fonts/Alexandria-900.ttf') format('truetype');}
+@font-face{font-family:'Noto Kufi Arabic';font-weight:400;font-style:normal;src:url('../assets/fonts/NotoKufiArabic-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Kufi Arabic';font-weight:700;font-style:normal;src:url('../assets/fonts/NotoKufiArabic-700.ttf') format('truetype');}
+@font-face{font-family:'Noto Kufi Arabic';font-weight:800;font-style:normal;src:url('../assets/fonts/NotoKufiArabic-800.ttf') format('truetype');}
+@font-face{font-family:'Noto Kufi Arabic';font-weight:900;font-style:normal;src:url('../assets/fonts/NotoKufiArabic-900.ttf') format('truetype');}
+@font-face{font-family:'Lalezar';font-weight:400;font-style:normal;src:url('../assets/fonts/Lalezar-400.ttf') format('truetype');}
+@font-face{font-family:'Almarai';font-weight:400;font-style:normal;src:url('../assets/fonts/Almarai-400.ttf') format('truetype');}
+@font-face{font-family:'Almarai';font-weight:700;font-style:normal;src:url('../assets/fonts/Almarai-700.ttf') format('truetype');}
+@font-face{font-family:'Almarai';font-weight:800;font-style:normal;src:url('../assets/fonts/Almarai-800.ttf') format('truetype');}
+@font-face{font-family:'Tajawal';font-weight:400;font-style:normal;src:url('../assets/fonts/Tajawal-400.ttf') format('truetype');}
+@font-face{font-family:'Tajawal';font-weight:700;font-style:normal;src:url('../assets/fonts/Tajawal-700.ttf') format('truetype');}
+@font-face{font-family:'Tajawal';font-weight:800;font-style:normal;src:url('../assets/fonts/Tajawal-800.ttf') format('truetype');}
+@font-face{font-family:'Tajawal';font-weight:900;font-style:normal;src:url('../assets/fonts/Tajawal-900.ttf') format('truetype');}
+@font-face{font-family:'Baloo Bhaijaan 2';font-weight:500;font-style:normal;src:url('../assets/fonts/BalooBhaijaan2-500.ttf') format('truetype');}
+@font-face{font-family:'Baloo Bhaijaan 2';font-weight:700;font-style:normal;src:url('../assets/fonts/BalooBhaijaan2-700.ttf') format('truetype');}
+@font-face{font-family:'Baloo Bhaijaan 2';font-weight:800;font-style:normal;src:url('../assets/fonts/BalooBhaijaan2-800.ttf') format('truetype');}
+@font-face{font-family:'Aref Ruqaa';font-weight:400;font-style:normal;src:url('../assets/fonts/ArefRuqaa-400.ttf') format('truetype');}
+@font-face{font-family:'Aref Ruqaa';font-weight:700;font-style:normal;src:url('../assets/fonts/ArefRuqaa-700.ttf') format('truetype');}
+@font-face{font-family:'Reem Kufi';font-weight:400;font-style:normal;src:url('../assets/fonts/ReemKufi-400.ttf') format('truetype');}
+@font-face{font-family:'Reem Kufi';font-weight:700;font-style:normal;src:url('../assets/fonts/ReemKufi-700.ttf') format('truetype');}
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url('../assets/fonts/Montserrat-400.ttf') format('truetype');}
+@font-face{font-family:'Montserrat';font-weight:500;font-style:normal;src:url('../assets/fonts/Montserrat-500.ttf') format('truetype');}
+@font-face{font-family:'Montserrat';font-weight:600;font-style:normal;src:url('../assets/fonts/Montserrat-600.ttf') format('truetype');}
+@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url('../assets/fonts/Montserrat-700.ttf') format('truetype');}
+@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url('../assets/fonts/Montserrat-800.ttf') format('truetype');}
+@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url('../assets/fonts/Montserrat-900.ttf') format('truetype');}
+@font-face{font-family:'Barlow Condensed';font-weight:500;font-style:normal;src:url('../assets/fonts/BarlowCondensed-500.ttf') format('truetype');}
+@font-face{font-family:'Barlow Condensed';font-weight:600;font-style:normal;src:url('../assets/fonts/BarlowCondensed-600.ttf') format('truetype');}
+@font-face{font-family:'Barlow Condensed';font-weight:700;font-style:normal;src:url('../assets/fonts/BarlowCondensed-700.ttf') format('truetype');}
+@font-face{font-family:'Barlow Condensed';font-weight:800;font-style:normal;src:url('../assets/fonts/BarlowCondensed-800.ttf') format('truetype');}
+@font-face{font-family:'JetBrains Mono';font-weight:500;font-style:normal;src:url('../assets/fonts/JetBrainsMono-500.ttf') format('truetype');}
+@font-face{font-family:'JetBrains Mono';font-weight:700;font-style:normal;src:url('../assets/fonts/JetBrainsMono-700.ttf') format('truetype');}
+@font-face{font-family:'JetBrains Mono';font-weight:800;font-style:normal;src:url('../assets/fonts/JetBrainsMono-800.ttf') format('truetype');}
+@font-face{font-family:'Rubik';font-weight:500;font-style:normal;src:url('../assets/fonts/Rubik-500.ttf') format('truetype');}
+@font-face{font-family:'Rubik';font-weight:700;font-style:normal;src:url('../assets/fonts/Rubik-700.ttf') format('truetype');}
+@font-face{font-family:'Rubik';font-weight:800;font-style:normal;src:url('../assets/fonts/Rubik-800.ttf') format('truetype');}
+@font-face{font-family:'Rubik';font-weight:900;font-style:normal;src:url('../assets/fonts/Rubik-900.ttf') format('truetype');}
+@font-face{font-family:'Outfit';font-weight:300;font-style:normal;src:url('../assets/fonts/Outfit-300.ttf') format('truetype');}
+@font-face{font-family:'Outfit';font-weight:400;font-style:normal;src:url('../assets/fonts/Outfit-400.ttf') format('truetype');}
+@font-face{font-family:'Outfit';font-weight:600;font-style:normal;src:url('../assets/fonts/Outfit-600.ttf') format('truetype');}
+@font-face{font-family:'Outfit';font-weight:800;font-style:normal;src:url('../assets/fonts/Outfit-800.ttf') format('truetype');}
+@font-face{font-family:'Outfit';font-weight:900;font-style:normal;src:url('../assets/fonts/Outfit-900.ttf') format('truetype');}
+@font-face{font-family:'Bebas Neue';font-weight:400;font-style:normal;src:url('../assets/fonts/BebasNeue-400.ttf') format('truetype');}

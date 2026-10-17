@@ -1,0 +1,227 @@
+/* EFH reel — 1080x1920 stage. Brand: blue #003A9B, orange #F48100. */
+:root {
+  --navy-950: #020817;
+  --navy-900: #051230;
+  --navy-800: #0a1f4f;
+  --navy-700: #0f2c6b;
+  --blue: #003a9b;
+  --blue-bright: #1f6fff;
+  --sky: #7cc0ff;
+  --orange: #f48100;
+  --orange-light: #ffad3d;
+  --gold: #ffd28a;
+  --cream: #fff7ec;
+  --ink: #0b1430;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+body { -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+#stage {
+  position: relative; width: 1080px; height: 1920px; overflow: hidden;
+  background: var(--navy-950); color: #fff; font-family: 'Montserrat', sans-serif;
+}
+#world { position: absolute; inset: 0; transform-origin: 540px 800px; }
+.scene { position: absolute; inset: 0; visibility: hidden; overflow: hidden; }
+.abs { position: absolute; }
+.fill { position: absolute; inset: 0; }
+.ar { font-family: 'Alexandria', 'Cairo', sans-serif; direction: rtl; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.cond { font-family: 'Barlow Condensed', sans-serif; }
+.center-x { left: 50%; transform: translateX(-50%); }
+svg.icon { display: block; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.portrait { position: absolute; display: block; pointer-events: none; }
+
+/* ---------- global fx ---------- */
+#fx { position: absolute; inset: 0; pointer-events: none; z-index: 50; }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+#vignette { position: absolute; inset: 0;
+  background: radial-gradient(ellipse 75% 60% at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
+#grain { position: absolute; inset: -64px; background: url('../../assets/img/fx/grain.png');
+  opacity: .03; mix-blend-mode: overlay; }
+.leak { position: absolute; width: 1400px; height: 1400px; border-radius: 50%; opacity: 0; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255,170,60,.85) 0%, rgba(244,129,0,.35) 35%, rgba(244,129,0,0) 70%); }
+#leak2 { background: radial-gradient(circle, rgba(90,160,255,.8) 0%, rgba(31,111,255,.3) 35%, rgba(31,111,255,0) 70%); }
+#debug { position: absolute; left: 10px; top: 10px; font: 700 28px monospace; color: #0f0; z-index: 99; display: none; }
+
+/* ---------- captions ---------- */
+#captions { position: absolute; left: 0; right: 0; top: 1268px; height: 190px; z-index: 40; pointer-events: none; }
+.cap-page { position: absolute; left: 96px; right: 96px; top: 0; height: 190px; display: flex; align-items: center;
+  justify-content: center; flex-wrap: wrap; gap: 0 18px; direction: rtl; visibility: hidden; }
+.cap-word { position: relative; display: inline-block; font-family: 'Alexandria', sans-serif; font-weight: 800;
+  font-size: 76px; line-height: 1.32; color: #fff; padding: 0 10px; white-space: nowrap;
+  text-shadow: 0 3px 0 rgba(2,8,23,.35), 0 6px 22px rgba(2,8,23,.65), 0 0 2px rgba(2,8,23,.6); }
+.cap-word .hl { position: absolute; left: -4px; right: -4px; top: 14%; bottom: 10%; border-radius: 18px;
+  background: linear-gradient(180deg, #ff9a1f, #f07800); box-shadow: 0 8px 22px rgba(244,129,0,.45);
+  transform: scaleX(0); z-index: -1; }
+.cap-word span.t { position: relative; }
+
+/* ---------- shared bits ---------- */
+.chip { position: absolute; display: flex; align-items: center; gap: 12px; padding: 12px 24px 12px 18px;
+  border-radius: 999px; font: 800 30px 'Montserrat'; letter-spacing: 1px; white-space: nowrap; }
+.card-glass { background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+  border: 1.5px solid rgba(255,255,255,.22); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+.shadow-xl { box-shadow: 0 40px 90px rgba(2,8,23,.55), 0 10px 30px rgba(2,8,23,.35); }
+.stamp { position: absolute; border: 7px solid currentColor; border-radius: 18px; padding: 10px 26px;
+  font: 900 54px 'Montserrat'; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+
+/* ---------- S1: VS ---------- */
+.vs-panel { position: absolute; left: 40px; width: 1000px; height: 530px; border-radius: 46px; overflow: hidden; }
+#vsA { top: 168px; background: linear-gradient(165deg, #fffaf2 0%, #ffe9cf 100%); }
+#vsB { top: 718px; background: linear-gradient(180deg, #2f7fe6 0%, #74b8ff 62%, #ffd9a8 100%); }
+.vs-dim { position: absolute; inset: 0; background: rgba(5,18,48,.62); }
+#vsBadge { position: absolute; left: 540px; top: 708px; width: 128px; height: 128px; margin: -64px 0 0 -64px;
+  border-radius: 50%; background: linear-gradient(160deg, #ff9d2e, #e86f00); border: 7px solid #fff;
+  display: flex; align-items: center; justify-content: center; font: 900 50px 'Montserrat'; color: #fff;
+  box-shadow: 0 16px 40px rgba(0,0,0,.35); z-index: 5; letter-spacing: -1px; }
+.cal { position: absolute; width: 330px; height: 360px; perspective: 1200px; }
+.cal-page { position: absolute; inset: 0; border-radius: 30px; background: #fff; overflow: hidden;
+  transform-origin: 50% 0%; box-shadow: 0 14px 30px rgba(120,60,0,.18); backface-visibility: hidden; }
+.cal-head { height: 112px; background: linear-gradient(180deg, #ff8a12, #ea6f00); display: flex; align-items: center;
+  justify-content: center; font: 800 56px 'Alexandria'; color: #fff; direction: rtl; }
+.cal-num { text-align: center; font: 900 170px/248px 'Montserrat'; color: #1b2440; letter-spacing: -6px; }
+.cal-ring { position: absolute; top: -18px; width: 22px; height: 52px; border-radius: 11px; background: #3b4252;
+  box-shadow: inset 0 3px 4px rgba(255,255,255,.3); z-index: 3; }
+.coin { position: absolute; width: 112px; height: 40px; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 35%, #ffe28a 0%, #ffc43a 55%, #d18a00 100%);
+  box-shadow: 0 7px 0 #b06f00, 0 10px 12px rgba(120,60,0,.25); }
+.money-label { position: absolute; font: 900 64px 'Montserrat'; color: #1b2440; letter-spacing: -1px; white-space: nowrap; }
+.week { position: absolute; display: flex; gap: 8px; direction: ltr; }
+.week .d { width: 44px; height: 44px; border-radius: 12px; background: #f1e3cf; color: #9a7b55;
+  font: 800 22px 'Montserrat'; display: flex; align-items: center; justify-content: center; }
+.notif { position: absolute; width: 640px; padding: 22px 26px; border-radius: 34px; display: flex; align-items: center;
+  gap: 20px; background: rgba(255,255,255,.93); color: #101828; box-shadow: 0 24px 50px rgba(5,18,48,.35); }
+.notif .ic { width: 78px; height: 78px; border-radius: 22px; display: flex; align-items: center; justify-content: center; flex: none; }
+.notif .tt { font: 800 25px 'Montserrat'; color: #5c667a; letter-spacing: .5px; }
+.notif .mm { font: 800 33px 'Montserrat'; color: #101828; margin-top: 2px; }
+
+/* ---------- S4: globe ---------- */
+#globeCanvas { position: absolute; left: 0; top: 0; }
+.city-label { position: absolute; padding: 14px 26px; border-radius: 22px; background: rgba(5,18,48,.82);
+  border: 2px solid rgba(255,255,255,.25); white-space: nowrap; box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+.city-label .k { font: 700 22px 'Montserrat'; letter-spacing: 4px; color: var(--orange-light); }
+.city-label .v { font: 900 54px 'Montserrat'; letter-spacing: 1px; color: #fff; line-height: 1.05; }
+
+/* ---------- S5: airport ---------- */
+.board { position: absolute; left: 34px; width: 1012px; padding: 26px 22px 28px; border-radius: 28px;
+  background: linear-gradient(180deg, #11151d, #090c12); border: 2px solid #2a303c;
+  box-shadow: 0 40px 90px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
+.board-title { display: flex; align-items: center; justify-content: space-between; margin: 0 6px 20px;
+  font: 800 40px 'Barlow Condensed'; letter-spacing: 3px; color: #ffd25a; }
+.board-row { display: flex; gap: 4px; margin-bottom: 10px; direction: ltr; }
+.flap { position: relative; width: 33px; height: 62px; border-radius: 6px; background: linear-gradient(180deg, #232833 0%, #1a1e27 49%, #0d1016 51%, #191d25 100%);
+  font: 700 46px/62px 'Barlow Condensed'; color: #ffd25a; text-align: center; overflow: hidden; }
+.flap::after { content: ''; position: absolute; left: 0; right: 0; top: 30px; height: 2px; background: rgba(0,0,0,.65); }
+.flap.gap { width: 14px; background: none; }
+.flap.green { color: #3df58b; }
+.flap.orange { color: #ff9b2b; }
+.face { position: absolute; width: 230px; height: 230px; border-radius: 50%; overflow: hidden; border: 8px solid #fff;
+  background: linear-gradient(160deg, #6fb6ff, #2a6ad8); box-shadow: 0 20px 50px rgba(0,0,0,.45); }
+.face img { position: absolute; width: 330px; left: -58px; top: -6px; }
+.pstamp { position: absolute; color: #1747c9; mix-blend-mode: normal; }
+.pstamp .ring { position: absolute; inset: 0; border-radius: 50%; border: 8px solid currentColor; }
+.pstamp .ring2 { position: absolute; inset: 18px; border-radius: 50%; border: 3px solid currentColor; }
+.pstamp .txt { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font: 900 58px 'Montserrat'; letter-spacing: 1px; line-height: 1.08; text-align: center; }
+.pstamp .txt small { font: 800 25px 'Montserrat'; letter-spacing: 3px; }
+
+/* ---------- S6: title ---------- */
+.big-word { position: absolute; left: 0; right: 0; text-align: center; font: 900 268px/1 'Montserrat';
+  letter-spacing: -10px; white-space: nowrap; }
+.rays { position: absolute; left: 50%; top: 40%; width: 2600px; height: 2600px; margin: -1300px 0 0 -1300px;
+  background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.07) 0deg 6deg, rgba(255,255,255,0) 6deg 18deg);
+  -webkit-mask: radial-gradient(circle, #000 0%, rgba(0,0,0,0) 62%); mask: radial-gradient(circle, #000 0%, rgba(0,0,0,0) 62%); }
+.ring-wave { position: absolute; border-radius: 50%; border: 6px solid rgba(255,255,255,.8); }
+
+/* ---------- S7: insta ---------- */
+.phone { position: absolute; left: 190px; top: 150px; width: 700px; height: 1080px; border-radius: 80px; background: #0b0d12;
+  padding: 22px; box-shadow: 0 50px 120px rgba(0,0,0,.6), inset 0 0 0 3px #2b2f3a; }
+.phone-screen { position: absolute; inset: 22px; border-radius: 60px; overflow: hidden; background: #fff; }
+.feed { position: absolute; left: 0; right: 0; top: 0; }
+.post { position: relative; height: 780px; background: #fff; }
+.post-head { height: 104px; display: flex; align-items: center; gap: 16px; padding: 0 26px; }
+.post-av { width: 66px; height: 66px; border-radius: 50%; padding: 4px; background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7); }
+.post-av div { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; background: #ddd center/cover; }
+.post-user { font: 700 28px 'Montserrat'; color: #111; }
+.post-loc { font: 500 22px 'Montserrat'; color: #555; }
+.post-img { position: relative; height: 560px; overflow: hidden; }
+.post-actions { height: 116px; display: flex; align-items: center; gap: 26px; padding: 0 26px; color: #111; }
+.likes { font: 800 28px 'Montserrat'; color: #111; margin-left: auto; }
+.heart { position: absolute; width: 90px; height: 90px; color: #ff2d55; }
+.nope { position: absolute; left: 540px; top: 690px; width: 520px; height: 520px; margin: -260px 0 0 -260px; }
+
+/* ---------- S8: pillars ---------- */
+.blueprint { position: absolute; inset: 0; background-color: #061838;
+  background-image: linear-gradient(rgba(124,192,255,.09) 2px, transparent 2px), linear-gradient(90deg, rgba(124,192,255,.09) 2px, transparent 2px),
+  linear-gradient(rgba(124,192,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(124,192,255,.05) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; background-position: -2px -2px; }
+.pillar { position: absolute; width: 470px; height: 380px; border-radius: 40px; padding: 34px 30px; overflow: hidden;
+  background: linear-gradient(165deg, rgba(20,48,110,.95), rgba(8,24,62,.95)); border: 2px solid rgba(124,192,255,.28);
+  box-shadow: 0 30px 70px rgba(0,0,0,.45); }
+.pillar .ico { width: 116px; height: 116px; border-radius: 34px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #ff9d2e, #e86f00); color: #fff; box-shadow: 0 14px 30px rgba(244,129,0,.4); }
+.pillar .fr { margin-top: 30px; font: 900 44px 'Montserrat'; letter-spacing: .5px; color: #fff; white-space: nowrap; }
+.pillar .arl { margin-top: 8px; font: 700 40px 'Alexandria'; color: #9cc8ff; direction: rtl; text-align: left; }
+.pillar .num { position: absolute; right: 30px; top: 26px; font: 900 64px 'Montserrat'; color: rgba(255,255,255,.12); }
+.pillar.hot { background: linear-gradient(165deg, #ff9d2e, #d86400); border-color: rgba(255,230,190,.6); }
+.pillar.hot .ico { background: #fff; color: var(--orange); }
+.pillar.hot .arl { color: #fff3e0; }
+.pillar.hot .num { color: rgba(255,255,255,.25); }
+
+/* ---------- S9: boarding pass ---------- */
+.bpass { position: absolute; left: 60px; width: 960px; height: 560px; border-radius: 36px; overflow: hidden; background: #fff;
+  color: #0b1430; box-shadow: 0 40px 100px rgba(60,20,0,.45); display: flex; }
+.bp-main { position: relative; width: 690px; height: 100%; }
+.bp-stub { position: relative; width: 270px; height: 100%; border-left: 4px dashed #d5d9e3; background: #f6f7fb; }
+.bp-head { height: 112px; background: linear-gradient(90deg, #003a9b, #1f6fff); color: #fff; display: flex; align-items: center;
+  gap: 16px; padding: 0 34px; font: 900 34px 'Montserrat'; letter-spacing: 2px; }
+.bp-head small { font: 700 20px 'Montserrat'; letter-spacing: 3px; opacity: .85; display: block; }
+.bp-k { font: 700 19px 'Montserrat'; letter-spacing: 3px; color: #7a8399; }
+.bp-v { font: 900 46px 'Montserrat'; color: #0b1430; letter-spacing: 1px; white-space: nowrap; }
+.bp-f { position: absolute; }
+.barcode { position: absolute; left: 34px; right: 34px; height: 120px;
+  background: repeating-linear-gradient(90deg, #0b1430 0 4px, transparent 4px 7px, #0b1430 7px 9px, transparent 9px 14px, #0b1430 14px 20px, transparent 20px 23px); }
+.steps-path { position: absolute; left: 0; top: 0; overflow: visible; }
+.step { position: absolute; width: 150px; text-align: center; }
+.step .dot { width: 110px; height: 110px; margin: 0 auto; border-radius: 50%; background: #fff; color: var(--orange);
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 34px rgba(80,30,0,.35); border: 6px solid var(--orange); }
+.step .lb { margin-top: 14px; font: 900 30px 'Montserrat'; letter-spacing: 2px; color: #fff; text-shadow: 0 4px 14px rgba(80,30,0,.45); }
+
+/* ---------- S10: logo + crew ---------- */
+.logo-svg { position: absolute; overflow: visible; }
+.loc-chip { background: linear-gradient(90deg, #ff9d2e, #e86f00); color: #fff; box-shadow: 0 16px 40px rgba(244,129,0,.45); }
+.win { position: absolute; width: 300px; height: 420px; border-radius: 150px; overflow: hidden;
+  background: linear-gradient(180deg, #5aa8ff 0%, #a9d4ff 60%, #ffe0b5 100%);
+  box-shadow: 0 0 0 14px #eef2f8, 0 0 0 18px #c9d2e0, 0 30px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(0,30,80,.35); }
+.win img { position: absolute; left: 50%; bottom: -40px; width: 380px; transform: translateX(-50%); }
+.win .glare { position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 35%); }
+.fuselage { position: absolute; left: 0; height: 640px; background: linear-gradient(180deg, #ffffff 0%, #e9eef6 70%, #cfd8e6 100%);
+  box-shadow: 0 40px 80px rgba(0,0,0,.45); }
+.fuselage .stripe { position: absolute; left: 0; right: 0; height: 26px; }
+.crew-label { position: absolute; left: 0; right: 0; text-align: center; font: 900 46px 'Montserrat'; letter-spacing: 6px; }
+
+/* ---------- S11: CTA ---------- */
+.seatmap { position: absolute; }
+.seat { position: absolute; width: 92px; height: 88px; border-radius: 22px 22px 14px 14px; background: #2d6fe0;
+  box-shadow: inset 0 -12px 0 rgba(0,0,0,.18); }
+.seat.taken { background: #3a4357; }
+.contact { position: absolute; left: 70px; width: 940px; border-radius: 44px; background: #fff; color: #0b1430; padding: 34px 40px;
+  box-shadow: 0 40px 100px rgba(0,0,0,.5); }
+.c-row { display: flex; align-items: center; gap: 26px; height: 112px; direction: ltr; }
+.c-ic { width: 88px; height: 88px; border-radius: 26px; display: flex; align-items: center; justify-content: center; color: #fff; flex: none;
+  background: linear-gradient(160deg, #ff9d2e, #e86f00); box-shadow: 0 10px 24px rgba(244,129,0,.35); }
+.c-tx { font: 900 60px 'Montserrat'; letter-spacing: 1px; white-space: nowrap; }
+.c-tx.web { font-size: 52px; color: var(--blue); }
+
+/* ---------- S12: map + end card ---------- */
+.mapwrap { position: absolute; overflow: hidden; }
+.mapimg { position: absolute; left: 0; top: 0; width: 1079px; height: 1754px; transform-origin: 0 0; }
+.pin { position: absolute; width: 150px; height: 200px; margin: -200px 0 0 -75px; }
+.pin-shadow { position: absolute; width: 90px; height: 26px; margin: -13px 0 0 -45px; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(4px); }
+.pin-ring { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; border: 6px solid #ff9d2e; }
+.map-label { position: absolute; padding: 20px 28px; border-radius: 28px; background: #fff; color: #0b1430; white-space: nowrap;
+  box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+.map-label .t1 { font: 900 38px 'Montserrat'; color: #0b1430; }
+.map-label .t2 { font: 700 26px 'Montserrat'; color: #5c667a; margin-top: 4px; }
+.map-label .t3 { font: 700 30px 'Alexandria'; color: var(--orange); direction: rtl; margin-top: 4px; }
+.attrib { position: absolute; font: 600 16px 'Montserrat'; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.8); }
