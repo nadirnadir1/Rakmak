@@ -302,3 +302,14 @@ svg.icon { display: block; fill: none; stroke: currentColor; stroke-linecap: rou
 .pp-stamp { position: absolute; }
 .pp-visa { position: absolute; border-radius: 10px; overflow: hidden; background: linear-gradient(115deg, #fbe3ec 0%, #e9f4ec 48%, #e1ebfa 100%);
   border: 1px solid rgba(110,90,70,.28); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 4px 10px rgba(60,40,10,.18); }
+
+/* ---------- v4: split-screen hook ---------- */
+.hinge { position: absolute; left: 0; right: 0; overflow: hidden; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, #0c2457 0%, #061538 100%); border-top: 5px solid #f48100; border-bottom: 5px solid #f48100;
+  box-shadow: 0 0 50px rgba(0,0,0,.55); }
+.hinge-t { font: 900 54px 'Montserrat'; color: #fff; letter-spacing: -0.5px; white-space: nowrap; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
+.hinge-t .o { color: #ffad3d; }
+.hinge-shine { position: absolute; top: 0; bottom: 0; left: 0; width: 260px; transform: skewX(-20deg);
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0)); }
+.chip.kicker.crew { background: linear-gradient(90deg, #ff9d2e, #e86f00); border-color: rgba(255,220,170,.6); }
+.chip.kicker.big { font-size: 33px; letter-spacing: 4px; padding: 12px 26px 12px 20px; gap: 14px; }

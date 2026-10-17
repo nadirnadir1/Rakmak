@@ -1,25 +1,19 @@
 [
  {
   "t": 0,
-  "name": "jet_rumble",
-  "gain": 0.55,
-  "dur": 1.2
- },
- {
-  "t": 0.48,
   "name": "impact_small",
   "gain": 0.32
  },
  {
-  "t": 0.9,
+  "t": 0.52,
   "name": "coins_stream",
-  "dur": 0.84,
-  "gain": 0.4
+  "dur": 1.25,
+  "gain": 0.3
  },
  {
   "t": 1.87,
   "name": "whoosh_small",
-  "gain": 0.4
+  "gain": 0.38
  },
  {
   "t": 2.74,
@@ -74,9 +68,9 @@
   "gain": 0.55
  },
  {
-  "t": 3.78,
-  "name": "swoosh_up",
-  "gain": 0.3
+  "t": 3.88,
+  "name": "impact_small",
+  "gain": 0.35
  },
  {
   "t": 4.92,
