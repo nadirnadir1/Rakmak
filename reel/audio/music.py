@@ -9,7 +9,7 @@ import soundfile as sf
 from dsp import (SR, n_of, noise, pink, sine, saw, square, exp_env, adsr, lp, hp, bp, sweep, pan, st, reverb, delay,
                  chorus, sat, place, midi_hz, widen, db)
 
-DUR = 50.0
+DUR = 56.0
 N = n_of(DUR)
 BEAT = 0.5
 A0, B0 = 0.07, 23.39            # grid origins (bar 0)
@@ -30,7 +30,8 @@ for k, c in enumerate(['Am', 'F', 'C', 'G', 'Fmaj7', 'C', 'G', 'G', 'Am', 'F', '
 CHORDS += [(B_BAR(0), 'Am', 4), (B_BAR(1), 'F', 4), (B_BAR(2), 'E', 2), (B_BAR(2) + 1.0, 'C', 2),
            (B_BAR(3), 'Am', 2), (B_BAR(3) + 1.0, 'F', 2), (B_BAR(4), 'G', 4),
            (B_BAR(5), 'C', 4), (B_BAR(6), 'G', 4), (B_BAR(7), 'Am', 4), (B_BAR(8), 'F', 4), (B_BAR(9), 'G', 4),
-           (B_BAR(10), 'C', 4), (B_BAR(11), 'F', 2), (B_BAR(11) + 1.0, 'G', 2), (B_BAR(12), 'C', 8)]
+           (B_BAR(10), 'C', 4), (B_BAR(11), 'F', 2), (B_BAR(11) + 1.0, 'G', 2),
+           (B_BAR(12), 'Am', 4), (B_BAR(13), 'F', 2), (B_BAR(13) + 1.0, 'G', 2), (B_BAR(14), 'C', 8)]
 
 
 def chord_at(t):
@@ -52,7 +53,7 @@ def in_section(t):
     if t < B_BAR(5): return 'build2'
     if t < B_BAR(8): return 'drop2'
     if t < B_BAR(10): return 'cta'
-    if t < B_BAR(12): return 'outro'
+    if t < B_BAR(14): return 'outro'
     return 'end'
 
 
@@ -168,19 +169,19 @@ def drums():
         place(P, pan(snare_hit(300 + k, 1 + p * 0.6), 0), t, 0.25 + 0.75 * p)
         t += step; k += 1
     # drop 2 + cta + outro
-    for t in beats(B_BAR(5), B_BAR(12)):
+    for t in beats(B_BAR(5), B_BAR(14)):
         place(K, pan(KICK, 0), t, 0.9 if B_BAR(8) <= t < B_BAR(10) else 1.0)
-    for t in beats(B_BAR(5), B_BAR(12), 1.0, 0.5):
+    for t in beats(B_BAR(5), B_BAR(14), 1.0, 0.5):
         place(C, pan(CLAP, 0.05), t)
-    for t in beats(B_BAR(5), B_BAR(12), 0.5, 0.25):
+    for t in beats(B_BAR(5), B_BAR(14), 0.5, 0.25):
         place(H, pan(HAT_O, 0.2), t, 0.7)
-    for i, t in enumerate(beats(B_BAR(5), B_BAR(12), 0.125)):
+    for i, t in enumerate(beats(B_BAR(5), B_BAR(14), 0.125)):
         if i % 2: place(H, pan(HAT_C, -0.25), t, 0.35)
-    for tb in (B_BAR(5), B_BAR(10)):
+    for tb in (B_BAR(5), B_BAR(10), B_BAR(12)):
         place(stems['fx'], crash(), tb, 0.55)
     # final hit
-    place(K, pan(KICK, 0), B_BAR(12), 1.1)
-    place(stems['fx'], crash(3.0, 17), B_BAR(12), 0.7)
+    place(K, pan(KICK, 0), B_BAR(14), 1.1)
+    place(stems['fx'], crash(3.0, 17), B_BAR(14), 0.7)
 
 
 # ---------------- tonal voices ----------------
@@ -277,7 +278,7 @@ def plucks():
     Pk = stems['pluck']
     pat = [0, 1, 2, 3, 2, 1, 0, 2, 1, 3, 2, 1, 0, 1, 3, 2]
     spans = [(A0, A_BAR(4), 0.7), (A_BAR(4), A_BAR(7), 0.55), (B_BAR(2) + 1.0, B_BAR(4), 0.75),
-             (B_BAR(5), B_BAR(8), 0.5), (B_BAR(10), B_BAR(12), 0.6)]
+             (B_BAR(5), B_BAR(8), 0.5), (B_BAR(10), B_BAR(14), 0.6)]
     for s0, s1, lvl in spans:
         for i, t in enumerate(beats(s0, s1, 0.125)):
             ch = chord_at(t)
@@ -308,7 +309,7 @@ def lead():
     Ld = stems['lead']
     motif = [(0.0, 76, 0.5), (0.5, 79, 0.25), (0.75, 81, 0.5), (1.25, 79, 0.25), (1.5, 76, 0.5),
              (2.0, 74, 0.5), (2.5, 76, 0.25), (2.75, 79, 0.5), (3.25, 76, 0.25), (3.5, 74, 0.25), (3.75, 72, 0.25)]
-    for bar0 in (B_BAR(10), B_BAR(11)):
+    for bar0 in (B_BAR(10), B_BAR(11), B_BAR(12), B_BAR(13)):
         for o, m, d in motif:
             n = n_of(d + 0.15)
             x = np.arange(n) / SR

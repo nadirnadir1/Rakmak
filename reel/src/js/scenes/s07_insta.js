@@ -1,6 +1,6 @@
 /* S7 (18.55 – 22.95): "But is this job only travel and nice photos?" -> "No!"
-   S6 shrinks into the first post of a phone feed; feed scrolls; shutter flashes; hearts; then a
-   hard freeze with a red X. */
+   S6 freezes into the first post of a phone feed; the feed flicks through real-looking 4:5 travel
+   posts (the school's photos); shutter flashes; double-tap heart; then a hard freeze with a red X. */
 (function () {
   const R = window.R, tl = R.tl;
   const T0 = 18.55, T1 = 22.95;
@@ -8,36 +8,39 @@
   const bgw = R.div('fill', s, { background: 'linear-gradient(170deg, #ffb46b 0%, #f48100 28%, #b8447f 62%, #22318f 100%)' });
   R.particles(bgw, { n: 30, t0: T0, t1: T1, seed: 71, alpha: 0.4, speed: 30, maxR: 7 });
 
-  const phone = R.div('phone', s);
+  const PH = { left: 190, top: 262, w: 700, h: 1110 };          // phone frame
+  const SCR = { x: PH.left + 22, y: PH.top + 22, w: 656 };       // screen origin
+  const POST_H = 1040, HEAD_H = 104, IMG_H = 820;
+  const phone = R.div('phone', s, { left: PH.left + 'px', top: PH.top + 'px', width: PH.w + 'px', height: PH.h + 'px' });
   const screen = R.div('phone-screen', phone);
   const feed = R.div('feed', screen);
   const posts = [
-    { who: 'fa2', loc: 'Paris, France', likes: '12,4 k', clone: true },
-    { who: 'fa3', loc: 'Dubai, Émirats arabes unis', likes: '9 870', bg: 'linear-gradient(180deg,#ff9a5a 0%,#ffcf8a 55%,#ffe7c4 100%)' },
-    { who: 'st2', loc: 'Istanbul, Türkiye', likes: '15,1 k', bg: 'linear-gradient(180deg,#3b8cff 0%,#8cc4ff 60%,#d9ecff 100%)' },
-    { who: 'fa1', loc: 'Doha, Qatar', likes: '8 302', bg: 'linear-gradient(180deg,#6b5cff 0%,#ff8fb1 100%)' },
+    { clone: true, loc: 'Marrakech, Maroc', likes: '12,4 k', av: 'fa2.png' },
+    { img: 'paris', loc: 'Paris, France', likes: '18,2 k' },
+    { img: 'santorini', loc: 'Santorin, Grèce', likes: '24,9 k' },
+    { img: 'newyork', loc: 'New York, États-Unis', likes: '11,7 k' },
+    { img: 'rome', loc: 'Rome, Italie', likes: '9 860' },
+    { img: 'losangeles', loc: 'Los Angeles, États-Unis', likes: '15,3 k' },
+    { img: 'marrakech', loc: 'Marrakech, Maroc', likes: '21,4 k' },
+    { img: 'paris', loc: 'Paris, France', likes: '7 410', stub: true },
   ];
-  const postEls = posts.map((p, i) => {
-    const post = R.div('post', feed);
+  const postEls = posts.map((p) => {
+    const post = R.div('post p45', feed);
     const head = R.div('post-head', post);
     const av = R.div('post-av', head, null, '<div></div>');
-    av.firstChild.style.backgroundImage = `url(${R.A}${p.who}.png)`;
-    av.firstChild.style.backgroundSize = '160%'; av.firstChild.style.backgroundPosition = '50% 18%';
+    const avSrc = p.av ? `${R.A}${p.av}` : `${R.A}travel/${p.img}.jpg`;
+    Object.assign(av.firstChild.style, { backgroundImage: `url(${avSrc})`, backgroundSize: p.av ? '160%' : '230%', backgroundPosition: p.av ? '50% 18%' : '50% 22%' });
     R.div('', head, null, `<div class="post-user">flyhyani.crew</div><div class="post-loc">${R.icon('map-pin', 20, 2.4, 'style="display:inline;vertical-align:-3px"')} ${p.loc}</div>`);
     R.div('', head, { marginLeft: 'auto', font: "900 34px 'Montserrat'", color: '#333' }, '···');
-    const img = R.div('post-img', post, { background: p.bg || '#0a1f4f' });
-    if (!p.clone) {
-      R.div('abs', img, { left: '360px', top: '-120px', width: '420px', height: '420px', borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(255,255,255,.85) 0%, rgba(255,255,255,0) 65%)' });
-      R.img(`${R.A}${p.who}.png`, 'portrait', img, { width: '560px', left: '48px', top: '30px' });
-    }
+    const img = R.div('post-img', post, { background: '#0a1f4f' });
+    if (!p.clone && !p.stub) R.img(`${R.A}travel/${p.img}.jpg`, 'ph', img);
     const act = R.div('post-actions', post, null,
       `${R.icon('heart', 48, 2.2)}${R.icon('message-circle', 46, 2.2)}${R.icon('send', 44, 2.2)}<div class="likes">♥ <span>${p.likes}</span></div>`);
     return { post, img, act };
   });
 
   // freeze-frame clone of S6 into the first post (built after all scenes exist)
-  const SC = 656 / 1080, CROP = 250;
+  const SC = SCR.w / 1080, CROP = 290;
   R.afterBuild = R.afterBuild || [];
   R.afterBuild.push(() => {
     R.seek(18.5);
@@ -51,43 +54,44 @@
 
   // transition in: S6 shrinks exactly into post 1's image while the phone scales in around it
   const tIn = 18.57, dIn = 0.4;
-  tl.to(R.s6, { scale: SC, x: 212, y: 276 - CROP * SC, transformOrigin: '0 0', clipPath: `inset(${CROP}px 0px ${1920 - CROP - 560 / SC}px 0px round 0px)`,
-    duration: dIn, ease: 'power3.inOut' }, tIn);
+  const imgY = SCR.y + HEAD_H;
+  tl.to(R.s6, { scale: SC, x: SCR.x, y: imgY - CROP * SC, transformOrigin: '0 0',
+    clipPath: `inset(${CROP}px 0px ${1920 - CROP - IMG_H / SC}px 0px round 0px)`, duration: dIn, ease: 'power3.inOut' }, tIn);
   gsap.set(R.s6, { clipPath: 'inset(0px 0px 0px 0px round 0px)' });
-  gsap.set(phone, { scale: 1.9, opacity: 0, transformOrigin: '50% 37%' });
+  gsap.set(phone, { scale: 1.9, opacity: 0, transformOrigin: `${PH.w / 2}px ${imgY - PH.top + IMG_H / 2}px` });
   tl.to(phone, { scale: 1, opacity: 1, duration: dIn, ease: 'power3.inOut' }, tIn);
   R.sfx(tIn - 0.02, 'whoosh_rev', { gain: 0.6 });
 
-  // feed scroll
-  const tS1 = R.ws(8, 1) - 0.06, tS2 = R.ws(8, 4) - 0.06;
-  tl.to(feed, { y: -780, duration: 0.42, ease: 'power3.inOut' }, tS1);
-  tl.to(feed, { y: -1560, duration: 0.42, ease: 'power3.inOut' }, tS2);
-  R.sfx(tS1, 'swipe', { gain: 0.5 });
-  R.sfx(tS2, 'swipe', { gain: 0.5 });
+  // doom-scroll: quick flicks through the travel posts
+  const flicks = [R.ws(8, 1) - 0.08, R.ws(8, 3) - 0.08, R.ws(8, 4) - 0.14, R.ws(8, 5) - 0.04, R.ws(8, 6) - 0.29, R.ws(8, 7) - 0.31];  // each flick lands before its beat
+  flicks.forEach((t, i) => {
+    tl.to(feed, { y: -(i + 1) * POST_H, duration: 0.27, ease: 'power3.inOut' }, t);
+    R.sfx(t, 'swipe', { gain: 0.38 });
+  });
 
-  // camera shutter on "وتصاور"
-  const tSh = R.ws(8, 6);
+  // camera shutter on "وتصاور" (lands on the Los Angeles post)
+  const tSh = R.ws(8, 6) + 0.02;
   const sflash = R.div('fill', screen, { background: '#fff', opacity: 0, zIndex: 9 });
-  [0, 0.2].forEach((d) => {
-    tl.fromTo(sflash, { opacity: 0.95 }, { opacity: 0, duration: 0.18, ease: 'power2.out' }, tSh + d);
-    R.sfx(tSh + d, 'shutter', { gain: 0.75 });
+  [0, 0.17].forEach((d) => {
+    tl.fromTo(sflash, { opacity: 0.95 }, { opacity: 0, duration: 0.15, ease: 'power2.out' }, tSh + d);
+    R.sfx(tSh + d, 'shutter', { gain: 0.7 });
   });
   tl.fromTo(phone, { scale: 1.03 }, { scale: 1, duration: 0.3, ease: 'power2.out' }, tSh);
 
-  // double-tap heart + floating hearts on "زوينين"
-  const tH = R.ws(8, 7) - 0.04;
-  const p3 = postEls[2];
-  const bigHeart = R.div('abs', p3.img, { left: '178px', top: '130px', width: '300px', height: '300px', color: '#fff', zIndex: 5,
+  // double-tap heart + floating hearts on "زوينين" (Marrakech post)
+  const tH = R.ws(8, 7) - 0.02;
+  const pH = postEls[6];
+  const bigHeart = R.div('abs', pH.img, { left: '178px', top: '260px', width: '300px', height: '300px', color: '#fff', zIndex: 5,
     filter: 'drop-shadow(0 10px 30px rgba(0,0,0,.35))' }, R.icon('heart', 300, 0, 'style="fill:#fff"'));
   gsap.set(bigHeart, { scale: 0, opacity: 0 });
   tl.to(bigHeart, { scale: 1.15, opacity: 1, duration: 0.22, ease: 'back.out(3)' }, tH);
   tl.to(bigHeart, { scale: 0.9, opacity: 0, duration: 0.3, ease: 'power2.in' }, tH + 0.42);
-  const heartIc = p3.act.querySelector('svg');
+  const heartIc = pH.act.querySelector('svg');
   tl.to(heartIc, { color: '#ff2d55', fill: '#ff2d55', scale: 1.3, duration: 0.15, ease: 'power2.out' }, tH + 0.05);
   tl.to(heartIc, { scale: 1, duration: 0.2 }, tH + 0.2);
-  const likes = p3.act.querySelector('.likes span');
-  R.counter(likes, tH, tH + 0.9, 15100, 48900, (v) => (v / 1000).toFixed(1).replace('.', ',') + ' k');
-  R.burst(s, { t: tH + 0.05, x: 300, y: 1050, n: 16, seed: 9, speed: 700, gravity: -350, life: 1.4, size: 64, angle: -Math.PI / 2, spread: 1.5,
+  const likes = pH.act.querySelector('.likes span');
+  R.counter(likes, tH, tH + 0.9, 21400, 58600, (v) => (v / 1000).toFixed(1).replace('.', ',') + ' k');
+  R.burst(s, { t: tH + 0.05, x: 300, y: SCR.y + POST_H - 70, n: 16, seed: 9, speed: 700, gravity: -350, life: 1.4, size: 64, angle: -Math.PI / 2, spread: 1.5,
     html: `<div style="color:#ff2d55;width:64px;height:64px">${R.icon('heart', 64, 0, 'style="fill:#ff2d55"')}</div>`, z: 30 });
   R.sfx(tH, 'like_pop', { gain: 0.7 });
 
@@ -95,7 +99,7 @@
   const tNo = R.ws(9, 0);
   tl.set(phone, { filter: 'grayscale(1) brightness(.75)' }, tNo);
   tl.set(bgw, { filter: 'grayscale(.85) brightness(.8)' }, tNo);
-  const nope = R.div('nope', s, { zIndex: 40 });
+  const nope = R.div('nope', s, { zIndex: 40, top: '820px' });
   nope.innerHTML = `<svg viewBox="0 0 200 200" width="520" height="520" style="overflow:visible;filter:drop-shadow(0 18px 40px rgba(0,0,0,.45))">
      <circle cx="100" cy="100" r="88" fill="rgba(214,31,44,.18)" stroke="#ff2b3a" stroke-width="16"/>
      <path class="x1" d="M58 58 L142 142" stroke="#ff2b3a" stroke-width="22" stroke-linecap="round"/>

@@ -8,12 +8,13 @@
   tl.fromTo(rays, { rotation: 0, opacity: 0 }, { rotation: 25, opacity: 0.8, duration: T1 - T0, ease: 'none' }, T0);
   R.particles(s, { n: 34, t0: T0, t1: T1, seed: 101, color: '255,180,90', alpha: 0.5, speed: 30, maxR: 6 });
   R.particles(s, { n: 30, t0: T0, t1: T1, seed: 102, color: '140,190,255', alpha: 0.45, speed: 22, maxR: 5 });
-  const glow = R.div('abs', s, { left: '40px', top: '220px', width: '1000px', height: '700px', borderRadius: '50%',
+  const glow = R.div('abs', s, { left: '40px', top: '330px', width: '1000px', height: '700px', borderRadius: '50%',
     background: 'radial-gradient(ellipse, rgba(60,140,255,.45) 0%, rgba(31,111,255,0) 65%)' });
 
   // ---------------- logo ----------------
   const L = window.LOGO;
-  const logoBox = R.div('abs', s, { left: '60px', top: '470px', width: '960px', height: '276px', zIndex: 5 });
+  const logoBox = R.div('abs', s, { left: '60px', top: '560px', width: '960px', height: '276px', zIndex: 5 });
+  R.headerHide(33.34, 0.05);  // the big logo takes over under the flash
   const svg = R.svgEl('svg', { viewBox: `0 0 ${L.w} ${L.h}`, width: 960, height: 276, class: 'logo-svg' }, logoBox);
   svg.style.filter = 'drop-shadow(0 12px 30px rgba(0,0,0,.35))';
   const defs = R.svgEl('defs', {}, svg);
@@ -69,7 +70,7 @@
   tl.fromTo(logoBox, { scale: 1.08 }, { scale: 1, duration: 1.2, ease: 'expo.out' }, tD);
 
   // Marrakech chip
-  const chip = R.div('chip loc-chip', s, { left: '540px', top: '800px', zIndex: 6 },
+  const chip = R.div('chip loc-chip', s, { left: '540px', top: '885px', zIndex: 6 },
     `${R.icon('map-pin', 40, 2.4)}<span>MARRAKECH</span><span style="font:700 32px Alexandria;opacity:.95">· مراكش</span>`);
   gsap.set(chip, { opacity: 0, y: -60, scale: 0.6, xPercent: -50 });
   tl.to(chip, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: 'bounce.out' }, R.ws(12, 4) - 0.1);
@@ -77,26 +78,30 @@
 
   // ---------------- logo goes up, fuselage with crew windows ----------------
   const tUp = R.ws(12, 5) - 0.12;
-  tl.to(logoBox, { y: -296, scale: 0.74, duration: 0.55, ease: 'power3.inOut' }, tUp);
-  tl.to(chip, { y: -412, scale: 0.85, duration: 0.55, ease: 'power3.inOut' }, tUp);
-  tl.to(glow, { y: -320, opacity: 0.6, duration: 0.55 }, tUp);
+  // the big logo flies exactly into the header slot, then the persistent header takes over
+  const H = R.HEADER, k = H.w / 960;
+  tl.to(logoBox, { y: (H.y + H.h / 2) - (560 + 138), scale: k, duration: 0.55, ease: 'power3.inOut' }, tUp);
+  tl.set(logoBox, { opacity: 0 }, tUp + 0.56);
+  R.headerShow(tUp + 0.55, 0.01);
+  tl.to(chip, { y: 288 - 885, scale: 0.85, duration: 0.55, ease: 'power3.inOut' }, tUp);
+  tl.to(glow, { y: -400, opacity: 0.6, duration: 0.55 }, tUp);
 
-  const fus = R.div('fuselage', s, { top: '560px', width: '2300px', borderRadius: '0 60px 60px 0', zIndex: 4 });
-  R.div('stripe', fus, { top: '520px', background: 'linear-gradient(90deg,#003a9b,#1f6fff)' });
-  R.div('stripe', fus, { top: '552px', height: '12px', background: '#f48100' });
+  const fus = R.div('fuselage', s, { top: '462px', height: '740px', width: '2400px', borderRadius: '0 60px 60px 0', zIndex: 4 });
+  R.div('stripe', fus, { top: '626px', background: 'linear-gradient(90deg,#003a9b,#1f6fff)' });
+  R.div('stripe', fus, { top: '658px', height: '12px', background: '#f48100' });
   R.div('abs', fus, { left: '60px', top: '30px', font: "italic 900 54px 'Montserrat'", color: '#003a9b', letterSpacing: '2px' }, 'FLY HYANI <span style="color:#f48100">✈</span>');
   const crew = ['fa1', 'fa2', 'fa3', 'st1', 'st2', 'st3'];
   const wins = crew.map((c, i) => {
-    const w = R.div('win', fus, { left: 70 + i * 330 + 'px', top: '115px' });
-    R.img(`${R.A}${c}.png`, '', w, c === 'fa1' || c === 'st1' ? { width: '420px', bottom: '-30px' } : {});
+    const w = R.div('win', fus, { left: 65 + i * 340 + 'px', top: '128px', width: '310px', height: '460px', borderRadius: '155px' });
+    R.img(`${R.A}${c}.png`, '', w, c === 'fa1' || c === 'st1' ? { width: '440px', bottom: '-34px' } : { width: '400px' });
     R.div('glare', w);
     return w;
   });
-  const lab = R.div('crew-label', s, { top: '470px', color: '#ffad3d', zIndex: 6 }, 'HÔTESSES DE L\'AIR');
-  const lab2 = R.div('crew-label', s, { top: '470px', color: '#7cc0ff', zIndex: 6 }, 'STEWARDS');
+  const lab = R.div('crew-label', s, { top: '374px', color: '#ffad3d', zIndex: 6 }, 'HÔTESSES DE L\'AIR');
+  const lab2 = R.div('crew-label', s, { top: '374px', color: '#7cc0ff', zIndex: 6 }, 'STEWARDS');
   gsap.set(fus, { x: 1300 });
-  tl.to(fus, { x: 0, duration: 0.6, ease: 'expo.out' }, tUp + 0.1);
-  R.sfx(tUp + 0.08, 'whoosh_big', { gain: 0.55 });
+  tl.to(fus, { x: 0, duration: 0.6, ease: 'expo.out' }, tUp + 0.3);  // after the logo has cleared the middle
+  R.sfx(tUp + 0.28, 'whoosh_big', { gain: 0.55 });
   const tF = R.ws(12, 7) - 0.08, tM = R.ws(12, 8) - 0.08;
   wins.forEach((w, i) => {
     const im = w.querySelector('img');
@@ -107,7 +112,7 @@
   for (let i = 0; i < 3; i++) R.sfx(tM + 0.12 + i * 0.08, 'pop', { gain: 0.45, pitch: 0.9 + i * 0.1 });
   gsap.set([lab, lab2], { opacity: 0, y: 20 });
   tl.to(lab, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, tF);
-  tl.to(fus, { x: -990, duration: 0.5, ease: 'power3.inOut' }, tM);
+  tl.to(fus, { x: -1020, duration: 0.5, ease: 'power3.inOut' }, tM);
   tl.to(lab, { opacity: 0, y: -20, duration: 0.2 }, tM);
   tl.to(lab2, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, tM + 0.15);
   R.sfx(tM, 'whoosh', { gain: 0.45 });

@@ -11,17 +11,17 @@
 
   const cam = R.div('fill', s);
   // side crew (behind everything but the background)
-  const left = R.img(`${R.A}st1.png`, 'portrait', cam, { width: '600px', left: '-170px', top: '520px', filter: 'brightness(.72) saturate(.9)' });
-  const right = R.img(`${R.A}st3.png`, 'portrait', cam, { width: '560px', left: '690px', top: '560px', filter: 'brightness(.72) saturate(.9)' });
+  const left = R.img(`${R.A}st1.png`, 'portrait', cam, { width: '600px', left: '-170px', top: '608px', filter: 'brightness(.72) saturate(.9)' });
+  const right = R.img(`${R.A}st3.png`, 'portrait', cam, { width: '560px', left: '690px', top: '648px', filter: 'brightness(.72) saturate(.9)' });
 
-  const cabin = R.div('big-word', cam, { top: '262px', color: '#fff', textShadow: '0 20px 60px rgba(0,0,0,.35)' }, 'CABIN');
-  const hero = R.img(`${R.A}fa2.png`, 'portrait', cam, { width: '820px', left: '130px', top: '300px' });
-  const crew = R.div('big-word', cam, { top: '880px', color: '#f48100', textShadow: '0 18px 50px rgba(0,0,0,.45)' }, 'CREW');
+  const cabin = R.div('big-word', cam, { top: '350px', color: '#fff', textShadow: '0 20px 60px rgba(0,0,0,.35)' }, 'CABIN');
+  const hero = R.img(`${R.A}fa2.png`, 'portrait', cam, { width: '820px', left: '130px', top: '388px' });
+  const crew = R.div('big-word', cam, { top: '968px', color: '#f48100', textShadow: '0 18px 50px rgba(0,0,0,.45)' }, 'CREW');
   // sub line
-  const sub = R.div('abs', cam, { left: '0', right: '0', top: '1150px', textAlign: 'center', font: "800 30px 'Montserrat'",
+  const sub = R.div('abs', cam, { left: '0', right: '0', top: '1238px', textAlign: 'center', font: "800 30px 'Montserrat'",
     letterSpacing: '12px', color: '#cfe2ff' }, '✦ HÔTESSES &amp; STEWARDS ✦');
   // bottom fade so the bust cut never shows above the captions
-  R.div('abs', s, { left: 0, right: 0, top: '1060px', height: '860px',
+  R.div('abs', s, { left: 0, right: 0, top: '1160px', height: '760px',
     background: 'linear-gradient(180deg, rgba(2,8,23,0) 0%, rgba(2,8,23,.85) 40%, #020817 70%)' });
   s.appendChild(sub); // keep sub line above the fade
 
@@ -45,7 +45,7 @@
   R.sfx(tW, 'impact', { gain: 0.42 });
   // shockwave rings
   [0, 0.08].forEach((d, i) => {
-    const ring = R.div('ring-wave', s, { left: '540px', top: '520px', width: '10px', height: '10px', margin: '-5px 0 0 -5px', opacity: 0 });
+    const ring = R.div('ring-wave', s, { left: '540px', top: '608px', width: '10px', height: '10px', margin: '-5px 0 0 -5px', opacity: 0 });
     tl.fromTo(ring, { width: 10, height: 10, margin: '-5px 0 0 -5px', opacity: 0.9 },
       { width: 1800, height: 1800, margin: '-900px 0 0 -900px', opacity: 0, duration: 0.8, ease: 'expo.out' }, tC + d);
   });
@@ -61,7 +61,7 @@
   tl.to(sub, { opacity: 1, letterSpacing: '12px', duration: 0.6, ease: 'expo.out' }, R.ws(7, 1) - 0.1);
   // slow push + shine on CREW
   tl.to(cam, { scale: 1.05, duration: 1.6, ease: 'none' }, tCrew + 0.3);
-  const shine = R.div('abs', cam, { left: '-400px', top: '880px', width: '260px', height: '270px', transform: 'skewX(-20deg)',
+  const shine = R.div('abs', cam, { left: '-400px', top: '968px', width: '260px', height: '270px', transform: 'skewX(-20deg)',
     background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.55), rgba(255,255,255,0))', mixBlendMode: 'overlay' });
   tl.to(shine, { x: 1700, duration: 0.7, ease: 'power2.inOut' }, R.ws(7, 2));
 })();

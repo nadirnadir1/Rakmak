@@ -73,6 +73,10 @@ m *= db(-17.5 - meter.integrated_loudness(drop.T))
 # carve room for the voice in the music (instead of EQ-ing the voice itself)
 m = pb.Pedalboard([pb.PeakFilter(cutoff_frequency_hz=2500, gain_db=-2.5, q=0.7)])(m.astype(np.float32), SR).astype(np.float64)
 m = band_duck(m, -5.0, -14.0, -6.0)
+# no voice after 43 s: lift the bed so the ending (map, end card, Instagram) keeps its energy
+tt_ = np.arange(N) / SR
+ramp = np.clip((tt_ - 43.15) / 0.5, 0, 1)
+m *= 1 + (db(2.5) - 1) * (ramp * ramp * (3 - 2 * ramp))
 # end fade so the loop back to frame 0 is clean
 fo = n_of(0.45)
 m[:, N - fo:] *= np.linspace(1, 0, fo) ** 1.5

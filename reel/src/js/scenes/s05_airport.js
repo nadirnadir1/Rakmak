@@ -13,7 +13,7 @@
   tl.fromTo(root, { scale: 1 }, { scale: 1.045, duration: T1 - T0, ease: 'none' }, T0);
 
   // ---------------- split-flap board ----------------
-  const board = R.div('board', root, { top: '196px' });
+  const board = R.div('board', root, { top: '300px' });
   R.div('board-title', board, null, `<span style="display:flex;align-items:center;gap:14px">${R.icon('plane-takeoff', 46, 2.4)} DEPARTURES · DÉPARTS</span><span>11:24</span>`);
   const rows = [
     ['08:45', 'PARIS', 'A12', 'BOARDING', 'orange'],
@@ -53,7 +53,7 @@
   const faces = ['fa2', 'st1', 'fa3', 'st2'];
   const tFace = R.ws(5, 2) - 0.06;
   faces.forEach((f, i) => {
-    const d = R.div('face', root, { left: 70 + i * 240 + 'px', top: (i % 2 ? 890 : 850) + 'px', zIndex: 5 + i });
+    const d = R.div('face', root, { left: 70 + i * 240 + 'px', top: (i % 2 ? 1040 : 1000) + 'px', zIndex: 5 + i });
     const im = R.img(`${R.A}${f}.png`, '', d);
     if (f.startsWith('st')) Object.assign(im.style, { width: '310px', left: '-48px', top: '6px' });
     gsap.set(d, { scale: 0, rotation: (i % 2 ? 12 : -12) });
@@ -63,9 +63,9 @@
 
   // ---------------- passport stamps ----------------
   const stamps = [
-    { x: 70, y: 330, rot: -14, c: '#1d4ed8', t1: 'PARIS', t2: 'CDG · FRANCE', time: R.ws(5, 4) },
-    { x: 560, y: 210, rot: 11, c: '#e8590c', t1: 'DUBAI', t2: 'DXB · UAE', time: R.ws(5, 4) + 0.26 },
-    { x: 330, y: 640, rot: -5, c: '#0f9b58', t1: 'ISTANBUL', t2: 'IST · TÜRKIYE', time: R.ws(5, 5) },
+    { x: 70, y: 450, rot: -14, c: '#1d4ed8', t1: 'PARIS', t2: 'CDG · FRANCE', time: R.ws(5, 4) },
+    { x: 560, y: 330, rot: 11, c: '#e8590c', t1: 'DUBAI', t2: 'DXB · UAE', time: R.ws(5, 4) + 0.26 },
+    { x: 330, y: 770, rot: -5, c: '#0f9b58', t1: 'ISTANBUL', t2: 'IST · TÜRKIYE', time: R.ws(5, 5) },
   ];
   stamps.forEach((o, i) => {
     const w = i === 2 ? 470 : 420;

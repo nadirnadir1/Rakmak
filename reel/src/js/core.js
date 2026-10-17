@@ -3,7 +3,7 @@
 (function () {
   const R = (window.R = {});
   R.W = 1080; R.H = 1920; R.FPS = 30;
-  R.DURATION = 48.5;
+  R.DURATION = 53.4;
 
   gsap.registerPlugin(CustomEase, CustomWiggle, MotionPathPlugin, DrawSVGPlugin, ScrambleTextPlugin);
   gsap.ticker.lagSmoothing(0);

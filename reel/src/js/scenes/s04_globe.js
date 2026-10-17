@@ -21,13 +21,13 @@
     background: 'radial-gradient(ellipse, rgba(244,129,0,.22) 0%, rgba(244,129,0,0) 65%)' });
 
   const cv = R.el('canvas', 'abs', s, { left: 0, top: 0 });
-  cv.width = 1080; cv.height = 1500;
-  const st = { cx: 540, cy: 735, r: 440, lon: -60, lat: 5, alpha: 0, dot: 3.3, arcs: [], pins: [{ code: 'RAK', a: 0 }] };
+  cv.width = 1080; cv.height = 1760;
+  const st = { cx: 540, cy: 830, r: 470, lon: -60, lat: 5, alpha: 0, dot: 3.3, arcs: [], pins: [{ code: 'RAK', a: 0 }] };
   const globe = R.Globe(cv, st);
   R.onFrame((t) => { if (t >= T0 - 0.05 && t <= T1 + 0.05) globe.draw(t); });
 
   // entrance: zoom out of panel B's sky into space, globe spins in
-  tl.fromTo(st, { alpha: 0, r: 1500, lon: -70, lat: 0 }, { alpha: 1, r: 440, lon: -8, lat: 24, duration: 0.95, ease: 'expo.out' }, T0 + 0.1);
+  tl.fromTo(st, { alpha: 0, r: 1600, lon: -70, lat: 0 }, { alpha: 1, r: 470, lon: -8, lat: 24, duration: 0.95, ease: 'expo.out' }, T0 + 0.1);
   tl.to(st, { lon: -2, lat: 26, duration: 1.6, ease: 'sine.inOut' }, T0 + 1.05);
   R.sfx(T0 + 0.12, 'whoosh_deep', { gain: 0.7 });
 

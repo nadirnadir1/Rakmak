@@ -5,13 +5,13 @@
    Pin, label and route live inside the map layer (image pixel units) so they track the map. */
 (function () {
   const R = window.R, tl = R.tl;
-  const T0 = 42.95, T1 = 48.6;
+  const T0 = 42.95, T1 = 47.7;
   const s = R.scene('s12', T0, T1, { zIndex: 25, background: 'radial-gradient(ellipse 90% 60% at 50% 30%, #12357e 0%, #071a42 50%, #020817 100%)' });
   R.particles(s, { n: 30, t0: 45, t1: T1, seed: 121, alpha: 0.4, speed: 22, maxR: 5 });
 
   const IMG_W = 1079, IMG_H = 1754;
   const Z1 = 1.9; // final zoom of the map phase: overlay sizes are authored for this zoom
-  const cam = { z: 1.12, px: 560, py: 960, sx: 540, sy: 760 };
+  const cam = { z: 1.12, px: 560, py: 960, sx: 540, sy: 830 };
   const wrap = R.div('mapwrap', s, { left: 0, top: 0, width: '1080px', height: '1920px' });
   const layer = R.div('abs', wrap, { left: 0, top: 0, width: IMG_W + 'px', height: IMG_H + 'px', transformOrigin: '0 0' });
   R.img(`${R.A}map_clean.jpg`, 'mapimg', layer);
@@ -77,37 +77,23 @@
   tl.to(label, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.8)' }, 44.3);
   R.sfx(44.3, 'pop', { gain: 0.55 });
 
-  // ---------------- end card ----------------
+  // ---------------- end card (2 s: map card + contacts, header logo on top) ----------------
   const tE = 45.39;
-  tl.to(wrap, { clipPath: 'inset(392px 60px 860px 60px round 48px)', duration: 0.7, ease: 'power3.inOut' }, tE);
-  tl.to(cam, { sy: 690, z: 1.55, px: 765, duration: 0.7, ease: 'power3.inOut' }, tE);
-  tl.to(attrib, { y: -214, x: -40, duration: 0.7, ease: 'power3.inOut' }, tE);
+  tl.to(wrap, { clipPath: 'inset(300px 60px 880px 60px round 48px)', duration: 0.7, ease: 'power3.inOut' }, tE);
+  tl.to(cam, { sy: 660, z: 1.55, px: 765, duration: 0.7, ease: 'power3.inOut' }, tE);
+  tl.to(attrib, { y: -232, x: -40, duration: 0.7, ease: 'power3.inOut' }, tE);
   tl.to(grade1, { opacity: 0.35, duration: 0.7 }, tE);
   R.sfx(tE, 'whoosh_rev', { gain: 0.5 });
+  R.headerShine(tE + 0.2);
+  R.sfx(tE + 0.2, 'logo_sting', { gain: 0.6 });
 
-  // logo (static vector) at the top
-  const L = window.LOGO;
-  const lg = R.svgEl('svg', { viewBox: `0 0 ${L.w} ${L.h}`, width: 820, height: 236, class: 'abs' }, s);
-  Object.assign(lg.style, { left: '130px', top: '146px', zIndex: '7', overflow: 'visible' });
-  const parts = Object.values(L.parts).map((p) => R.svgEl('path', { d: p.d, fill: p.fill, 'fill-rule': 'evenodd' }, lg));
-  gsap.set(parts, { opacity: 0, y: -40 });
-  tl.to(parts, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(2)', stagger: 0.04 }, tE + 0.15);
-  R.sfx(tE + 0.2, 'logo_sting', { gain: 0.7 });
-
-  // contact panel
-  const card = R.div('contact', s, { top: '1084px', padding: '22px 40px', zIndex: 7 },
+  const card = R.div('contact', s, { top: '1066px', padding: '22px 40px', zIndex: 7 },
     `<div class="c-row" style="height:100px"><div class="c-ic">${R.icon('phone', 46, 2.4)}</div><div class="c-tx" style="font-size:56px">+212 777 77 13 14</div></div>
      <div class="c-row" style="height:100px"><div class="c-ic">${R.icon('phone', 46, 2.4)}</div><div class="c-tx" style="font-size:56px">+212 777 77 17 12</div></div>
      <div class="c-row" style="height:100px"><div class="c-ic" style="background:linear-gradient(160deg,#2f80ff,#0b4fd6);box-shadow:0 10px 24px rgba(31,111,255,.35)">${R.icon('globe', 46, 2.4)}</div><div class="c-tx web" style="font-size:50px">www.flyhyani.ma</div></div>`);
   gsap.set(card, { y: 900 });
   tl.to(card, { y: 0, duration: 0.6, ease: 'expo.out' }, tE + 0.25);
 
-  // final accent on the downbeat
-  const tF = 47.39;
-  const sweep = R.div('abs', s, { left: '-300px', top: '110px', width: '240px', height: '280px', transform: 'skewX(-20deg)', zIndex: 8,
-    background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.5), rgba(255,255,255,0))', mixBlendMode: 'overlay' });
-  tl.to(sweep, { x: 1700, duration: 0.8, ease: 'power2.inOut' }, tF);
-  tl.fromTo(card, { scale: 1.03 }, { scale: 1, duration: 0.5, ease: 'back.out(3)' }, tF);
-  R.sfx(tF, 'final_hit', { gain: 0.8 });
-  R.sfx(tF + 0.3, 'cabin_chime', { gain: 0.55 });  // signature 'bing-bong' to close
+  // hand-over to the Instagram ending
+  tl.to([wrap, card], { y: '+=260', opacity: 0, duration: 0.4, ease: 'power3.in' }, 47.12);
 })();

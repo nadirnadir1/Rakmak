@@ -10,7 +10,7 @@
   tl.fromTo(s, { scale: 1 }, { scale: 1.035, duration: T1 - T0, ease: 'none' }, T0);
 
   // ---------------- gate sign (split-flap) ----------------
-  const sign = R.div('board', s, { top: '206px', left: '90px', width: '900px', padding: '24px 30px 30px' });
+  const sign = R.div('board', s, { top: '300px', left: '90px', width: '900px', padding: '24px 30px 30px' });
   R.div('board-title', sign, { marginBottom: '16px' }, `<span style="display:flex;align-items:center;gap:12px">${R.icon('graduation-cap', 44, 2.3)} EFH · 2026</span>
      <span class="led" style="display:flex;align-items:center;gap:10px;color:#3df58b"><span style="width:22px;height:22px;border-radius:50%;background:#3df58b;box-shadow:0 0 18px #3df58b"></span>OPEN</span>`);
   const led = sign.querySelector('.led');
@@ -41,9 +41,9 @@
   R.sfx(R.ws(13, 2), 'ding', { gain: 0.6 });
 
   // ---------------- seat map ----------------
-  const sm = R.div('seatmap', s, { left: '170px', top: '560px', width: '740px', height: '690px', borderRadius: '120px 120px 40px 40px',
+  const sm = R.div('seatmap', s, { left: '170px', top: '712px', width: '740px', height: '670px', borderRadius: '120px 120px 40px 40px',
     background: 'linear-gradient(180deg,#eef3fb,#dbe4f2)', boxShadow: '0 40px 90px rgba(0,0,0,.5)' });
-  const lab = R.div('abs', s, { left: 0, right: 0, top: '486px', textAlign: 'center', font: "900 44px 'Montserrat'", letterSpacing: '6px', color: '#ffad3d' }, 'PLACES LIMITÉES');
+  const lab = R.div('abs', s, { left: 0, right: 0, top: '636px', textAlign: 'center', font: "900 44px 'Montserrat'", letterSpacing: '6px', color: '#ffad3d' }, 'PLACES LIMITÉES');
   const seats = [];
   for (let r = 0; r < 5; r++) for (let c = 0; c < 6; c++) {
     const x = 60 + c * 104 + (c >= 3 ? 40 : 0), y = 130 + r * 106;
@@ -70,7 +70,7 @@
 
   // ---------------- contact card ----------------
   const tC = R.ws(13, 5) - 0.12;
-  const card = R.div('contact', s, { top: '700px', zIndex: 8 },
+  const card = R.div('contact', s, { top: '790px', zIndex: 8 },
     `<div class="c-row"><div class="c-ic">${R.icon('phone', 48, 2.4)}</div><div class="c-tx">+212 777 77 13 14</div></div>
      <div class="c-row"><div class="c-ic">${R.icon('phone', 48, 2.4)}</div><div class="c-tx">+212 777 77 17 12</div></div>
      <div class="c-row"><div class="c-ic" style="background:linear-gradient(160deg,#2f80ff,#0b4fd6);box-shadow:0 10px 24px rgba(31,111,255,.35)">${R.icon('globe', 48, 2.4)}</div><div class="c-tx web">www.flyhyani.ma</div></div>`);

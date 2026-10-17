@@ -1,6 +1,6 @@
 # EFH · École Fly Hyani Privé — Instagram Reel
 
-Vertical 1080×1920 / 30 fps motion-graphics reel (48.5 s) built around the Darija voice-over
+Vertical 1080×1920 / 30 fps motion-graphics reel (53.4 s) built around the Darija voice-over
 (ElevenLabs, "Ghizlane"). Arabic karaoke captions, original music and sound design.
 
 ## Deliverables (`out/`)
@@ -10,6 +10,10 @@ Vertical 1080×1920 / 30 fps motion-graphics reel (48.5 s) built around the Dari
 | `EFH_reel_final.mp4` | Final reel: H.264 High 1080×1920 30 fps + AAC 320 kbps 48 kHz, −14 LUFS / −1 dBTP |
 | `EFH_reel_captions_ar.srt` | The same Arabic captions as a subtitle file (TikTok / YouTube Shorts / Facebook) |
 | `EFH_reel_cover.jpg` | Suggested Instagram cover frame |
+
+v2 (client feedback): logo pinned in a top header for the whole reel, layout re-balanced (content
+lower, captions lower), new photographic opening, the school's travel photos in the feed scene, and an
+Instagram "Follow + scroll" ending in an iPhone 18 Pro Max mockup.
 
 ## Script (as spoken, force-aligned word by word)
 
@@ -33,16 +37,18 @@ Vertical 1080×1920 / 30 fps motion-graphics reel (48.5 s) built around the Dari
 
 | Time | Scene |
 | --- | --- |
-| 0 – 7.5 | **VS split screen**: VOYAGE = VACANCES (calendar months flip, savings stack, "1 SEMAINE" stamp) vs VOYAGE = MÉTIER (crew member above the clouds, "Salaire reçu ✓" notification) |
+| 0 – 3.6 | **Hook (tourist)**: full-bleed beach photo, "12 MOIS D'ÉCONOMIES… → …POUR 7 JOURS ?", savings counter, 7-day strip, "1 SEMAINE" stamp, photo drains of colour |
+| 3.6 – 7.5 | **Hook (crew)**: whip pan to a hostess above the clouds, "ET SI VOYAGER ÉTAIT TON MÉTIER ?", London/Tokyo/Dubai postcards, "Salaire reçu ✓" + coin cannons |
 | 7 – 11.4 | **Dotted 3D globe**: Marrakech pin, flight arcs fan out to 13 cities, plane flies to Dubai |
 | 11 – 15 | **Airport**: split-flap departures board → new faces → passport stamps |
 | 14.6 – 19 | **Title drop on the beat**: CABIN behind the hostess, CREW in front, crew joins |
-| 18.6 – 23 | **Phone feed** (scene freezes into the first post), shutter flashes, likes… then **"لا!"** freeze + red X + tape stop |
+| 18.6 – 23 | **Phone feed**: the title freezes into post 1, then flicks through the school's travel photos (Paris, Santorin, New York, Rome, Los Angeles, Marrakech), shutter, likes… **"لا!"** freeze + red X |
 | 22.5 – 28.6 | **Behind the elegance**: portrait scanned into a blueprint, 4 pillars land on each word |
-| 28.4 – 33.6 | **Golden hour**: boarding pass prints "VOUS", 3-step flight path |
-| 33.4 – 39 | **Logo build** on the second drop (vector-traced logo), Marrakech, fuselage windows: hostesses → stewards |
+| 28.4 – 33.4 | **Golden hour**: boarding pass prints "VOUS", 3-step flight path |
+| 33.4 – 39 | **Logo build** on the second drop, then it flies into the header; fuselage windows: hostesses → stewards |
 | 38.6 – 43.5 | **CTA**: INSCRIPTIONS OUVERTES flaps, seat map fills up (places limitées), phones + website |
-| 43 – 48.5 | **Location**: satellite map dive, route along Bd Allal Al Fassi, pin drop, end card |
+| 43 – 47.4 | **Location**: satellite map dive, route along Bd Allal Al Fassi, pin drop; end card with contacts |
+| 47.1 – 53.4 | **Instagram**: the real profile in an iPhone 18 Pro Max, tap Follow → Following, scroll through the grid |
 
 ## How it is made
 

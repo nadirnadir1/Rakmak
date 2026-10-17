@@ -11,7 +11,7 @@
 
   // aircraft schematic (top view) + dimension lines
   const sch = R.svgEl('svg', { viewBox: '0 0 1000 1000', width: '1240', height: '1240', class: 'abs' }, s);
-  Object.assign(sch.style, { left: '-80px', top: '120px', opacity: '0.38', overflow: 'visible' });
+  Object.assign(sch.style, { left: '-80px', top: '230px', opacity: '0.38', overflow: 'visible' });
   const stroke = { fill: 'none', stroke: '#8fc3ff', 'stroke-width': '2.2', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' };
   const shapes = [
     R.svgEl('path', Object.assign({ d: 'M500,60 C522,60 535,90 535,140 L535,420 L900,585 L912,610 L535,525 L535,840 L668,915 L670,935 L535,900 L520,950 L500,955 L480,950 L465,900 L330,935 L332,915 L465,840 L465,525 L88,610 L100,585 L465,420 L465,140 C465,90 478,60 500,60 Z' }, stroke), sch),
@@ -33,18 +33,18 @@
   R.sfx(22.78, 'blueprint_draw', { gain: 0.4, dur: 1.2 });
 
   // section title
-  const title = R.div('abs', s, { left: 0, right: 0, top: '214px', textAlign: 'center', font: "800 34px 'Montserrat'",
+  const title = R.div('abs', s, { left: 0, right: 0, top: '292px', textAlign: 'center', font: "800 34px 'Montserrat'",
     letterSpacing: '10px', color: '#9cc8ff' }, '— DERRIÈRE L\'ÉLÉGANCE —');
   gsap.set(title, { opacity: 0, letterSpacing: '28px' });
   tl.to(title, { opacity: 1, letterSpacing: '10px', duration: 0.7, ease: 'expo.out' }, R.ws(10, 0) - 0.05);
 
   // "behind the elegance": an elegant portrait gets scanned into a blueprint
-  const scanBox = R.div('abs', s, { left: '190px', top: '300px', width: '700px', height: '875px', zIndex: 1 });
+  const scanBox = R.div('abs', s, { left: '190px', top: '360px', width: '700px', height: '875px', zIndex: 1 });
   R.img(`${R.A}fa3.png`, 'portrait', scanBox, { width: '700px', left: '0', top: '0' });
   const pB = R.img(`${R.A}fa3.png`, 'portrait', scanBox, { width: '700px', left: '0', top: '0',
     filter: 'grayscale(1) contrast(1.45) brightness(1.1) sepia(1) hue-rotate(175deg) saturate(3.4)' });
   const scanLines = R.div('fill', scanBox, { background: 'repeating-linear-gradient(0deg, rgba(6,24,56,.5) 0 2px, rgba(6,24,56,0) 2px 7px)' });
-  const scanBar = R.div('abs', s, { left: '150px', width: '780px', top: '300px', height: '6px', borderRadius: '3px', zIndex: 2,
+  const scanBar = R.div('abs', s, { left: '150px', width: '780px', top: '360px', height: '6px', borderRadius: '3px', zIndex: 2,
     background: '#d6ecff', boxShadow: '0 0 18px 6px rgba(124,192,255,.9), 0 0 70px 24px rgba(31,111,255,.45)' });
   const tScan = 22.78, dScan = 1.15;
   gsap.set(scanBox, { opacity: 0, scale: 1.08 });
@@ -53,7 +53,7 @@
   tl.to(scanBox, { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' }, 22.55);
   tl.set(scanBar, { opacity: 1 }, tScan);
   tl.to([pB, scanLines], { clipPath: 'inset(0px 0px 0px 0px)', duration: dScan, ease: 'power1.inOut' }, tScan);
-  tl.to(scanBar, { top: 1175, duration: dScan, ease: 'power1.inOut' }, tScan);
+  tl.to(scanBar, { top: 1235, duration: dScan, ease: 'power1.inOut' }, tScan);
   tl.to(scanBar, { opacity: 0, duration: 0.15 }, tScan + dScan);
   tl.to(scanBox, { opacity: 0.13, scale: 1.1, duration: 0.45, ease: 'power2.inOut' }, R.ws(10, 4) - 0.3);
   R.sfx(tScan, 'scan', { gain: 0.5, dur: dScan });
@@ -66,7 +66,7 @@
     { ic: 'life-buoy', fr: 'SÉCURITÉ', ar: 'التكوين على السلامة', t: R.ws(10, 7) },
   ];
   const cards = P.map((p, i) => {
-    const x = i % 2 ? 560 : 50, y = i < 2 ? 330 : 740;
+    const x = i % 2 ? 560 : 50, y = i < 2 ? 370 : 815;
     const c = R.div('pillar', s, { left: x + 'px', top: y + 'px' },
       `<div class="num">0${i + 1}</div><div class="ico">${R.icon(p.ic, 66, 2.3)}</div><div class="fr">${p.fr}</div><div class="arl">${p.ar}</div>`);
     if (p.fr.length > 12) c.querySelector('.fr').style.fontSize = '38px';

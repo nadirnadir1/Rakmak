@@ -45,7 +45,10 @@ svg.icon { display: block; fill: none; stroke: currentColor; stroke-linecap: rou
 #debug { position: absolute; left: 10px; top: 10px; font: 700 28px monospace; color: #0f0; z-index: 99; display: none; }
 
 /* ---------- captions ---------- */
-#captions { position: absolute; left: 0; right: 0; top: 1268px; height: 190px; z-index: 40; pointer-events: none; }
+#captions { position: absolute; left: 0; right: 0; top: 1420px; height: 190px; z-index: 40; pointer-events: none; }
+#header { position: absolute; inset: 0; z-index: 45; pointer-events: none; }
+.hdr-shade { position: absolute; left: 0; right: 0; top: 0; height: 360px;
+  background: linear-gradient(180deg, rgba(2,8,23,.62) 0%, rgba(2,8,23,.32) 45%, rgba(2,8,23,0) 100%); }
 .cap-page { position: absolute; left: 96px; right: 96px; top: 0; height: 190px; display: flex; align-items: center;
   justify-content: center; flex-wrap: wrap; gap: 0 18px; direction: rtl; visibility: hidden; }
 .cap-word { position: relative; display: inline-block; font-family: 'Alexandria', sans-serif; font-weight: 800;
@@ -155,7 +158,7 @@ svg.icon { display: block; fill: none; stroke: currentColor; stroke-linecap: rou
   background-image: linear-gradient(rgba(124,192,255,.09) 2px, transparent 2px), linear-gradient(90deg, rgba(124,192,255,.09) 2px, transparent 2px),
   linear-gradient(rgba(124,192,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(124,192,255,.05) 1px, transparent 1px);
   background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; background-position: -2px -2px; }
-.pillar { position: absolute; width: 470px; height: 380px; border-radius: 40px; padding: 34px 30px; overflow: hidden;
+.pillar { position: absolute; width: 470px; height: 420px; border-radius: 40px; padding: 34px 30px; overflow: hidden;
   background: linear-gradient(165deg, rgba(20,48,110,.95), rgba(8,24,62,.95)); border: 2px solid rgba(124,192,255,.28);
   box-shadow: 0 30px 70px rgba(0,0,0,.45); }
 .pillar .ico { width: 116px; height: 116px; border-radius: 34px; display: flex; align-items: center; justify-content: center;
@@ -225,3 +228,48 @@ svg.icon { display: block; fill: none; stroke: currentColor; stroke-linecap: rou
 .map-label .t2 { font: 700 26px 'Montserrat'; color: #5c667a; margin-top: 4px; }
 .map-label .t3 { font: 700 30px 'Alexandria'; color: var(--orange); direction: rtl; margin-top: 4px; }
 .attrib { position: absolute; font: 600 16px 'Montserrat'; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+
+/* ---------- v2: intro ---------- */
+.photo-bg { position: absolute; left: 50%; top: 50%; width: 1537px; height: 1920px; margin: -960px 0 0 -768px; object-fit: cover; }
+.headline { position: absolute; left: 50px; right: 50px; text-align: center; font: 900 74px/1.04 'Montserrat'; color: #fff;
+  letter-spacing: -1.5px; text-shadow: 0 6px 30px rgba(0,0,0,.45), 0 2px 0 rgba(0,0,0,.25); }
+.headline .o { color: #ffad3d; }
+.headline .w { display: inline-block; }
+.glass { position: absolute; border-radius: 40px; background: linear-gradient(160deg, rgba(10,24,60,.72), rgba(4,12,32,.62));
+  border: 2px solid rgba(255,255,255,.22); box-shadow: 0 30px 70px rgba(0,0,0,.4); backdrop-filter: none; }
+.g-k { font: 800 26px 'Montserrat'; letter-spacing: 5px; color: #ffad3d; }
+.g-v { font: 900 92px/1 'Montserrat'; color: #fff; letter-spacing: -2px; white-space: nowrap; }
+.g-bar { height: 18px; border-radius: 9px; background: rgba(255,255,255,.16); overflow: hidden; }
+.g-bar i { display: block; height: 100%; width: 100%; border-radius: 9px; background: linear-gradient(90deg, #ffb347, #f48100); transform-origin: 0 50%; }
+.mdot { width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,.14); color: rgba(255,255,255,.7);
+  font: 800 20px 'Montserrat'; display: flex; align-items: center; justify-content: center; }
+.postcard { position: absolute; width: 640px; height: 800px; border-radius: 34px; overflow: hidden; background: #fff; padding: 16px 16px 92px;
+  box-shadow: 0 40px 90px rgba(0,0,0,.5); }
+.postcard img { width: 100%; height: 100%; object-fit: cover; border-radius: 22px; display: block; }
+.postcard .pc-l { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font: 900 44px 'Montserrat'; color: #0b1430; letter-spacing: 3px; }
+
+/* ---------- v2: feed posts 4:5 ---------- */
+.post.p45 { height: 1040px; }
+.post.p45 .post-img { height: 820px; }
+.post-img img.ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- v2: iPhone 18 Pro Max + Instagram ---------- */
+.iphone { position: absolute; width: 700px; height: 1452px; border-radius: 118px; padding: 15px;
+  background: linear-gradient(145deg, #e3e5e8 0%, #9a9ea6 18%, #c9ccd1 40%, #7d828b 62%, #d6d8dc 82%, #8d9199 100%);
+  box-shadow: 0 60px 140px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.35) inset, 0 0 0 5px rgba(40,44,52,.6) inset; }
+.iphone .bezel { position: absolute; inset: 15px; border-radius: 104px; background: #050608; padding: 13px; }
+.iphone .screen { position: absolute; inset: 13px; border-radius: 92px; overflow: hidden; background: #fff; }
+.iphone .island { position: absolute; left: 50%; top: 24px; width: 196px; height: 58px; margin-left: -98px; border-radius: 29px; background: #000; z-index: 6; }
+.iphone .btn { position: absolute; width: 8px; border-radius: 4px; background: linear-gradient(90deg, #7d828b, #c9ccd1); }
+.iphone .glare { position: absolute; inset: 0; border-radius: 92px; z-index: 7; pointer-events: none;
+  background: linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 32%); }
+.ios-bar { position: absolute; left: 0; right: 0; top: 0; height: 104px; background: #fff; z-index: 5; display: flex; align-items: center;
+  justify-content: space-between; padding: 14px 52px 0 62px; font: 700 34px 'Outfit', 'Montserrat'; color: #000; }
+.ios-bar .r { display: flex; align-items: center; gap: 10px; }
+.home-ind { position: absolute; left: 50%; bottom: 14px; width: 230px; height: 9px; margin-left: -115px; border-radius: 5px; background: #111; z-index: 6; }
+.ig-follow { position: absolute; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 18px;
+  font: 600 40px 'Outfit', 'Montserrat'; color: #fff; background: #4a5df9; }
+.touch { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: rgba(255,255,255,.55);
+  border: 4px solid rgba(255,255,255,.9); box-shadow: 0 6px 24px rgba(0,0,0,.35); z-index: 9; }
+.cta-ig { position: absolute; left: 0; right: 0; text-align: center; font: 800 54px 'Alexandria'; color: #fff; direction: rtl;
+  text-shadow: 0 6px 24px rgba(0,0,0,.45); }

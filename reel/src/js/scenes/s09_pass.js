@@ -11,7 +11,7 @@
   R.cloudLayer(clouds, { t0: T0, t1: T1, n: 6, seed: 93, yMin: 1000, yMax: 1250, sMin: 0.45, sMax: 0.8, speed: 110, w: 1080, opacity: 0.95 });
   R.particles(s, { n: 40, t0: T0, t1: T1, seed: 92, color: '255,236,190', alpha: 0.55, speed: 35, maxR: 6 });
   // soft dark band so the white captions stay readable over the bright sunrise
-  R.div('abs', s, { left: 0, right: 0, top: '1100px', height: '820px', zIndex: 3,
+  R.div('abs', s, { left: 0, right: 0, top: '1240px', height: '680px', zIndex: 3,
     background: 'linear-gradient(180deg, rgba(70,22,0,0) 0%, rgba(70,22,0,.42) 26%, rgba(50,14,0,.55) 60%, rgba(40,10,0,.6) 100%)' });
   tl.fromTo(s, { scale: 1 }, { scale: 1.035, duration: T1 - T0, ease: 'none' }, T0);
   tl.fromTo(sun, { y: 120, scale: 0.9 }, { y: -60, scale: 1.05, duration: T1 - T0, ease: 'power1.out' }, T0);
@@ -25,9 +25,9 @@
   R.sfx(R.ws(11, 0) - 0.04, 'sparkle', { gain: 0.7 });
 
   // ---------------- boarding pass printed from a slot ----------------
-  const slot = R.div('abs', s, { left: '40px', top: '276px', width: '1000px', height: '28px', borderRadius: '14px',
+  const slot = R.div('abs', s, { left: '40px', top: '336px', width: '1000px', height: '28px', borderRadius: '14px',
     background: 'linear-gradient(180deg,#0b1430,#1b2a52)', boxShadow: '0 10px 30px rgba(0,0,0,.35)', zIndex: 3 });
-  const win = R.div('abs', s, { left: '0', top: '290px', width: '1080px', height: '700px', overflow: 'hidden', zIndex: 2 });
+  const win = R.div('abs', s, { left: '0', top: '350px', width: '1080px', height: '700px', overflow: 'hidden', zIndex: 2 });
   const pass = R.div('bpass', win, { top: '20px' });
   const main = R.div('bp-main', pass);
   R.div('bp-head', main, null, `${R.icon('plane', 54, 2.2, 'style="transform:rotate(45deg)"')}<div>EFH AIRLINES<small>CARTE D'EMBARQUEMENT · BOARDING PASS</small></div>`);
@@ -76,11 +76,11 @@
 
   // ---------------- step by step ----------------
   const tStep = R.ws(11, 9) - 0.3;
-  tl.to(win, { y: -175, scale: 0.7, transformOrigin: '50% 0%', duration: 0.45, ease: 'power3.inOut' }, tStep);
-  tl.to(slot, { y: -175, opacity: 0, duration: 0.3 }, tStep);
+  tl.to(win, { y: -50, scale: 0.7, transformOrigin: '50% 0%', duration: 0.45, ease: 'power3.inOut' }, tStep);
+  tl.to(slot, { y: -50, opacity: 0, duration: 0.3 }, tStep);
   const svg = R.svgEl('svg', { width: 1080, height: 1920, viewBox: '0 0 1080 1920', class: 'steps-path' }, s);
   svg.style.zIndex = 4;
-  const d = 'M150,1070 C330,1070 380,910 540,890 C700,870 760,730 930,690';
+  const d = 'M150,1170 C330,1170 380,1010 540,990 C700,970 760,830 930,790';
   const ghost = R.svgEl('path', { d, fill: 'none', stroke: 'rgba(255,255,255,.35)', 'stroke-width': 6, 'stroke-dasharray': '2 18', 'stroke-linecap': 'round' }, svg);
   const line = R.svgEl('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 8, 'stroke-linecap': 'round' }, svg);
   const len = line.getTotalLength();
