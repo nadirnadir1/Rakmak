@@ -18,9 +18,12 @@ ending in an iPhone 18 Pro Max mockup.
 v3 (client feedback): the "تجربة مختلفة" stamps land in the school's Moroccan passport (cover supplied
 by the school) with a visa and entry stamps.
 
-v4 (client feedback): a split-screen hook from the first frame: the tourist who saves for 12 months to
-travel 7 days (top) against the cabin crew who travels all year and is paid (bottom), with
-"QUI A FAIT LE BON CHOIX ?" in the middle; then the crew half takes over the whole frame.
+v4 (client feedback): a split-screen hook from the first frame, with "QUI A FAIT LE BON CHOIX ?" in the middle.
+
+v5 (client feedback): the split screen now uses two live-action clips supplied by the school: an office
+worker saving coins in a jar (top, cold grade) against a crew member on a London layover (bottom, warm
+grade). About 3.5 s of each is used, cut to the voice, with a punch-in on "أسبوع"; the halves then open
+like doors on the hostess in the sky.
 
 ## Script (as spoken, force-aligned word by word)
 
@@ -44,8 +47,8 @@ travel 7 days (top) against the cabin crew who travels all year and is paid (bot
 
 | Time | Scene |
 | --- | --- |
-| 0 – 3.6 | **Split-screen hook**: top, TOURISTE in London (grey → colour for the trip → grey), savings 0 → +18 000 → −18 000 DH, "12 MOIS D'ÉCONOMIES… → …POUR 7 JOURS", one week lights up; middle, "QUI A FAIT LE BON CHOIX ?"; bottom, CABIN CREW hostess in the sky, destinations flipping, "+ SALAIRE" |
-| 3.6 – 7.5 | **Cabin crew**: the crew half takes the whole frame, "CABIN CREW · ET SI VOYAGER ÉTAIT TON MÉTIER ?", New York/Tokyo/Dubai postcards, "Salaire reçu ✓" + coin cannons |
+| 0 – 3.6 | **Split-screen hook** (live action): top, BUREAU · 9H-18H, she drops coins in her savings jar then sinks her chin into her hand, savings 0 → +18 000 → −18 000 DH, "12 MOIS D'ÉCONOMIES… → …POUR 7 JOURS", one week lights up; middle, "QUI A FAIT LE BON CHOIX ?"; bottom, CABIN CREW · ESCALE · LONDRES on Westminster Bridge, red bus, "+ SALAIRE"; punch-in on "أسبوع" |
+| 3.6 – 7.5 | **Cabin crew**: the halves open like doors on the hostess in the sky, "CABIN CREW · ET SI VOYAGER ÉTAIT TON MÉTIER ?", New York/Tokyo/Dubai postcards, "Salaire reçu ✓" + coin cannons |
 | 7 – 11.4 | **Dotted 3D globe**: Marrakech pin, flight arcs fan out to 13 cities, plane flies to Dubai |
 | 11 – 15 | **Airport**: split-flap departures board → new faces → the Moroccan passport flies in, opens, a Schengen visa and CDG / DXB / IST / HND stamps land |
 | 14.6 – 19 | **Title drop on the beat**: CABIN behind the hostess, CREW in front, crew joins |
@@ -77,6 +80,7 @@ travel 7 days (top) against the cabin crew who travels all year and is paid (bot
 ```bash
 npm install                                  # gsap, playwright, world-atlas, lucide-static ...
 node tools/build_data.js                     # icons, word timings, logo paths -> src/data
+tools/extract_clips.sh                       # opening clips -> graded frame sequences + ambience
 node tools/render.js stills --times 16.2     # preview frames
 node tools/render.js cues --out audio/cues.json
 (cd audio && python3 music.py build && python3 mix.py ../assets/audio/voice_original.mp3 cues.json build build/mix_final.wav 53.4)
@@ -90,5 +94,5 @@ Python deps: numpy scipy soundfile pedalboard pyloudnorm pillow opencv-contrib-p
 
 Fonts: Alexandria, Montserrat, Barlow Condensed, JetBrains Mono (SIL OFL, Google Fonts) ·
 Animation: GSAP · Icons: Lucide (ISC) · Land data: Natural Earth via world-atlas ·
-Passport cover: supplied by the school; visa and stamps are illustrative artwork ·
+Passport cover and opening clips (`assets/video/`): supplied by the school; visa and stamps are illustrative artwork ·
 Map imagery © Google (school location screenshot) · Music and sound effects: original, synthesised for this reel.

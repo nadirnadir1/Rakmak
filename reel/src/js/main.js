@@ -27,7 +27,7 @@
   window.REEL = {
     duration: R.DURATION, fps: R.FPS, cues: R.cues,
     ready: ready(),
-    seek: (t) => R.seek(t),
+    seek: (t) => { R.seek(t); return Promise.all(R.pending.splice(0)); },
     debug: (on) => { document.getElementById('debug').style.display = on ? 'block' : 'none'; },
     captions: (on) => { document.getElementById('captions').style.display = on ? '' : 'none'; },
   };

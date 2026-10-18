@@ -1,42 +1,48 @@
 [
  {
   "t": 0,
-  "name": "impact_small",
-  "gain": 0.32
+  "name": "file:amb_office",
+  "gain": 1.4,
+  "dur": 3.62
  },
  {
-  "t": 0.52,
-  "name": "coins_stream",
-  "dur": 1.25,
+  "t": 0,
+  "name": "file:amb_london",
+  "gain": 2,
+  "dur": 3.62
+ },
+ {
+  "t": 0,
+  "name": "impact_small",
   "gain": 0.3
  },
  {
   "t": 1.87,
   "name": "whoosh_small",
-  "gain": 0.38
+  "gain": 0.36
  },
  {
   "t": 2.74,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1
  },
  {
   "t": 2.84,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1.07
  },
  {
   "t": 2.94,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1.1400000000000001
  },
  {
   "t": 3.04,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1.21
  },
  {
@@ -47,30 +53,30 @@
  {
   "t": 3.14,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1.28
  },
  {
   "t": 3.24,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1.35
  },
  {
   "t": 3.34,
   "name": "pop",
-  "gain": 0.26,
+  "gain": 0.24,
   "pitch": 1.42
  },
  {
-  "t": 3.54,
+  "t": 3.52,
   "name": "whoosh",
   "gain": 0.55
  },
  {
-  "t": 3.88,
-  "name": "impact_small",
-  "gain": 0.35
+  "t": 3.64,
+  "name": "impact",
+  "gain": 0.45
  },
  {
   "t": 4.92,

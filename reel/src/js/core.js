@@ -85,6 +85,8 @@
 
   // ---- async resources the renderer must wait for before the first frame
   R.waitFor = [];
+  // per-seek async work (e.g. decoding the next frame of a video clip); REEL.seek resolves after it
+  R.pending = [];
 
   // ---- per-frame updaters (canvas, flip boards, counters...)
   R.updaters = [];

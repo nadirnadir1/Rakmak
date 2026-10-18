@@ -11,3 +11,4 @@
 | `make_globe_dots.js/.py` | Land dots for the 3D dotted globe |
 | `build_data.js` | Icons, word timings and logo paths -> `src/data/*.js` |
 | `render.js` | Frame-accurate renderer (Playwright + ffmpeg, sub-frame motion blur) |
+| `extract_clips.sh` | Opening clips -> graded, cropped 24 fps JPEG sequences (`assets/clips/`) + ambience WAVs |

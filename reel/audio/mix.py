@@ -82,6 +82,29 @@ fo = n_of(0.45)
 m[:, N - fo:] *= np.linspace(1, 0, fo) ** 1.5
 
 # ---------------- SFX from the cue sheet ----------------
+import os
+AUDIO_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'audio')
+
+
+def load_file(name, dur=None):
+    """'file:<name>' cues: a recorded sound (e.g. a clip's own ambience), normalised like the SFX library"""
+    x, sr = sf.read(os.path.join(AUDIO_DIR, name + '.wav'), always_2d=True)
+    x = x.T.astype(np.float64)
+    if sr != SR:
+        from math import gcd
+        g = gcd(SR, sr)
+        x = signal.resample_poly(x, SR // g, sr // g, axis=1)
+    if x.shape[0] == 1:
+        x = np.vstack([x, x])
+    if dur:
+        n = min(x.shape[1], n_of(dur))
+        x = x[:, :n].copy()
+        f = min(n, n_of(0.08))
+        x[:, n - f:] *= np.linspace(1, 0, f)
+    pk = np.abs(x).max()
+    return x * (0.95 / pk) if pk > 0 else x
+
+
 cues = json.load(open(cues_path))
 fx = np.zeros((2, N))
 cache = {}
@@ -90,7 +113,7 @@ for c in cues:
     kw = {kk: c[kk] for kk in ('dur', 'pitch') if kk in c}
     key = (name, tuple(sorted(kw.items())))
     if key not in cache:
-        cache[key] = SFXLIB.SFX[name](**kw)
+        cache[key] = load_file(name[5:], c.get('dur')) if name.startswith('file:') else SFXLIB.SFX[name](**kw)
     x = cache[key]
     t = c['t']
     if name.endswith('_rev'):            # reversed sounds peak at their end: land the peak on the cue
