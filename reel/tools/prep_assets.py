@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image, ImageFilter, ImageEnhance
 
 UP, FONTS, NPM, WEB = sys.argv[1:5]
+MOROCCO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "media", "morocco_map.png")
 A = os.path.join(WEB, "assets")
 os.makedirs(A, exist_ok=True)
 
@@ -133,28 +134,32 @@ for g in topo["objects"]["countries"]["geometries"]:
         polys = [[ring(r) for r in p] for p in g["arcs"]]
     countries[g.get("id")] = polys
 
-# view window (lon/lat) -> portrait canvas
-LON0, LON1, LAT0, LAT1 = -14.5, 13.5, 28.6, 57.5
-W, H = 1080, 1920
+# view window (lon/lat) -> "map space" (1080 px wide, Mercator, y grows southwards)
+# covers all of Morocco (down to Lagouira) and western Europe up to Scotland
+LON0, LON1, LAT0, LAT1 = -19.0, 14.0, 19.5, 59.5
+W = 1080
+DEG = np.degrees(1)
 
 
 def merc(lat):
     return np.log(np.tan(np.pi / 4 + np.radians(lat) / 2))
 
 
+def imerc(m):
+    return np.degrees(2 * np.arctan(np.exp(m)) - np.pi / 2)
+
+
 Y0, Y1 = merc(LAT0), merc(LAT1)
-# fit width, center vertically
 sc = W / (LON1 - LON0)
-mh = (Y1 - Y0) * np.degrees(1) * sc
+MH = (Y1 - Y0) * DEG * sc
 
 
 def proj(lon, lat):
-    x = (lon - LON0) * sc
-    y = H / 2 + mh / 2 - (merc(lat) - Y0) * np.degrees(1) * sc
-    return x, y
+    return (lon - LON0) * sc, (Y1 - merc(lat)) * DEG * sc
 
 
 from matplotlib.path import Path as MPath  # noqa: E402
+from scipy import ndimage  # noqa: E402
 
 paths = []
 for cid, polys in countries.items():
@@ -169,7 +174,7 @@ for cid, polys in countries.items():
 
 step = 15
 dots = []
-for yy in np.arange(step / 2, H, step):
+for yy in np.arange(step / 2, MH, step):
     for xx in np.arange(step / 2 + (step / 2 if int(yy / step) % 2 else 0), W, step):
         for cid, pth in paths:
             if pth.contains_point((xx, yy)):
@@ -178,6 +183,58 @@ for yy in np.arange(step / 2, H, step):
 cities = {k: [round(float(v), 1) for v in proj(*ll)] for k, ll in {
     "RAK": (-8.0, 31.63), "CDG": (2.35, 48.86), "MAD": (-3.70, 40.42), "LHR": (-0.13, 51.51),
 }.items()}
-json.dump({"dots": dots, "cities": cities, "step": step}, open(f"{A}/mapdots.json", "w"))
-print("dots", len(dots), "cities", cities)
+
+# ---------- the school's Morocco map (full territory) fitted onto the dotted map ----------
+ma_polys = [poly[0] for cid in ("504", "732") for poly in countries[cid]]
+ma_pts = np.concatenate([np.array(r) for r in ma_polys])
+lon_min, lat_min = ma_pts.min(axis=0)
+lon_max, lat_max = ma_pts.max(axis=0)
+src = np.asarray(Image.open(MOROCCO).convert("RGBA")).astype(np.float32) / 255.0
+ih, iw = src.shape[:2]
+alpha = src[..., 3]
+
+PROJS = {"equirect": lambda lon, lat: (lon, -lat), "mercator": lambda lon, lat: (lon, -merc(lat) * DEG)}
+best = None
+gx, gy = np.meshgrid(np.arange(0, iw, 4) + 0.5, np.arange(0, ih, 4) + 0.5)
+img_mask = alpha[::4, ::4] > 0.5
+for name, P in PROJS.items():
+    px0, py1 = P(lon_min, lat_min); px1, py0 = P(lon_max, lat_max)
+    mask = np.zeros(gx.shape, bool)
+    for r in ma_polys:
+        q = np.array([P(lo, la) for lo, la in r])
+        u = (q[:, 0] - px0) / (px1 - px0) * iw
+        v = (q[:, 1] - py0) / (py1 - py0) * ih
+        mask |= MPath(np.stack([u, v], 1)).contains_points(np.stack([gx.ravel(), gy.ravel()], 1)).reshape(gx.shape)
+    iou = (mask & img_mask[:mask.shape[0], :mask.shape[1]]).sum() / (mask | img_mask[:mask.shape[0], :mask.shape[1]]).sum()
+    print(f"morocco map fit {name}: IoU {iou:.3f}")
+    if best is None or iou > best[0]:
+        best = (iou, name, P, (px0, py0, px1, py1))
+_, pname, P, (px0, py0, px1, py1) = best
+
+# warp into map space at K x resolution (premultiplied bilinear sampling)
+K = 4
+mx0, my0 = proj(lon_min, lat_max)
+mx1, my1 = proj(lon_max, lat_min)
+ow, oh = int(np.ceil((mx1 - mx0) * K)), int(np.ceil((my1 - my0) * K))
+ux, vy = np.meshgrid(np.arange(ow) + 0.5, np.arange(oh) + 0.5)
+lon = LON0 + (mx0 + ux / K) / sc
+lat = imerc(Y1 - (my0 + vy / K) / (DEG * sc))
+qx, qy = P(lon, lat)
+ix = (qx - px0) / (px1 - px0) * iw - 0.5
+iy = (qy - py0) / (py1 - py0) * ih - 0.5
+pre = src.copy(); pre[..., :3] *= pre[..., 3:4]
+out = np.stack([ndimage.map_coordinates(pre[..., c], [iy, ix], order=1, mode="constant", cval=0.0) for c in range(4)], -1)
+out[..., :3] /= np.maximum(out[..., 3:4], 1e-4)
+Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8), "RGBA").save(f"{A}/morocco_map.png", optimize=True)
+ma_rect = [round(float(v), 2) for v in (mx0, my0, mx1 - mx0, my1 - my0)]
+print("morocco map ->", pname, "rect", ma_rect, "px", ow, oh)
+
+# ---------- QR code for the website ----------
+import segno  # noqa: E402
+qr = segno.make("https://www.flyhyani.ma", error="m")
+qr_rows = ["".join("1" if c else "0" for c in row) for row in qr.matrix]
+
+json.dump({"dots": dots, "cities": cities, "step": step, "h": round(float(MH), 1), "ma": ma_rect, "qr": qr_rows},
+          open(f"{A}/mapdots.json", "w"))
+print("dots", len(dots), "cities", cities, "map h", round(float(MH)))
 print("assets done")

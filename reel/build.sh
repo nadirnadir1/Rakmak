@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rebuild the EFH reel end-to-end.
-#   needs: ffmpeg, node + playwright (chromium), python3 venv with numpy scipy pillow matplotlib
+#   needs: ffmpeg, node + playwright (chromium), python3 venv with numpy scipy pillow matplotlib segno
 #   fonts: fontsource packages unpacked into $FONTS_DIR, world-atlas into $NPM_DIR (see README)
 set -euo pipefail
 cd "$(dirname "$0")"

@@ -46,7 +46,7 @@ async function loadAll() {
   const list = {
     logoW: 'assets/logo_white.png', logoB: 'assets/logo_blue.png', passport: 'assets/passport.png',
     flagUS: 'assets/flag_us.png', flagUK: 'assets/flag_uk.png', flagFR: 'assets/flag_fr.png', flagMA: 'assets/flag_ma.png',
-    map: 'assets/map_grade.jpg',
+    map: 'assets/map_grade.jpg', morocco: 'assets/morocco_map.png',
   };
   await Promise.all(Object.entries(list).map(async ([k, v]) => { IMG[k] = await loadImage(v); }));
   MAP = await (await fetch('assets/mapdots.json')).json();
@@ -508,7 +508,7 @@ function capAt(vt) {
   for (let i = 0; i < CAPS.length; i++) {
     const c = CAPS[i], nx = CAPS[i + 1];
     const s = c.w[0][1] - 0.06;
-    const e = Math.min(nx ? nx.w[0][1] - 0.07 : 1e9, c.w[c.w.length - 1][2] + 0.45);
+    const e = c.end ?? Math.min(nx ? nx.w[0][1] - 0.07 : 1e9, c.w[c.w.length - 1][2] + 0.45);
     if (vt >= s && vt < e) return { c, s, e };
   }
   return null;
@@ -562,16 +562,31 @@ function drawCaptions(ctx, vt) {
 }
 
 // --------------------------------------------------------------- overlays ---
-let WATERMARK = [];
-function overlays(ctx, vt, frameNo) {
-  // watermark
-  let wm = 0;
-  for (const [a, b] of WATERMARK) wm = Math.max(wm, prog(vt, a, a + 0.3) * (1 - prog(vt, b - 0.3, b)));
-  if (wm > 0) {
-    const lw = 250, lh = lw * IMG.logoW.height / IMG.logoW.width;
-    ctx.save(); ctx.globalAlpha = 0.92 * wm; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 16;
-    ctx.drawImage(IMG.logoW, 58, 120, lw, lh); ctx.restore();
+let HEADER_HIDE = [], HEADER_BLUE = [];
+function rangeMix(ranges, vt, f = 0.25) {
+  let m = 0;
+  for (const [a, b] of ranges) m = Math.max(m, prog(vt, a - f, a) * (1 - prog(vt, b, b + f)));
+  return m;
+}
+// brand header: logo always on top, centered
+function header(ctx, vt) {
+  const vis = 1 - rangeMix(HEADER_HIDE, vt);
+  if (vis <= 0) return;
+  const lw = 330, lh = lw * IMG.logoW.height / IMG.logoW.width, x = 540 - lw / 2, y = 186 - lh / 2;
+  const blue = rangeMix(HEADER_BLUE, vt);
+  ctx.save(); ctx.globalAlpha = vis;
+  if (blue < 1) {
+    ctx.save(); ctx.globalAlpha *= 1 - blue; ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 22; ctx.shadowOffsetY = 3;
+    ctx.drawImage(IMG.logoW, x, y, lw, lh); ctx.restore();
   }
+  if (blue > 0) {
+    ctx.save(); ctx.globalAlpha *= blue; ctx.shadowColor = 'rgba(255,255,255,0.8)'; ctx.shadowBlur = 18;
+    ctx.drawImage(IMG.logoB, x, y, lw, lh); ctx.restore();
+  }
+  ctx.restore();
+}
+function overlays(ctx, vt, frameNo) {
+  header(ctx, vt);
   drawCaptions(ctx, vt);
   flashes(ctx, vt);
   ctx.drawImage(VIG, 0, 0);

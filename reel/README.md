@@ -16,7 +16,9 @@ built around the Darija voice-over (`media/voiceover.mp3`).
 - `audio/make_audio.py` — original score (117 BPM, D minor) and all sound effects, synthesized in numpy/scipy
   (no third-party music → no copyright claims). `audio/mix.py` mixes voice / music / SFX with ducking and an
   EQ pocket so the voice stays clear.
-- `tools/prep_assets.py` — logo transparency, map grading, fonts (fontsource), dotted map (world-atlas).
+- `tools/prep_assets.py` — logo transparency, map grading, fonts (fontsource), dotted map (world-atlas),
+  the school's Morocco map fitted onto it (Mercator, IoU 0.95), QR code (segno).
+- The EFH logo stays in a fixed header at the top centre for the whole reel (blue version on light shots).
 
 ## Storyboard
 | time | voice | visual |
@@ -25,12 +27,12 @@ built around the Darija voice-over (`media/voiceover.mp3`).
 | 3.6–9 | وواحد ممكن يدخلها بلا فيزا… | VS split screen: VISA ? vs CREW ✓, tourist visa struck out, CABIN CREW badge |
 | 9–11.9 | واللي غادي يفاجئك: بجوجهم مغاربة | Moroccan flag star drawn, passport drop, both faces with 🇲🇦 badges |
 | 11.9–14.9 | الفرق؟ الثاني خدام مضيف طيران | drop + glitch type, swinging crew ID badge |
-| 14.9–19.8 | فوجهات بحال فرانسا، إسبانيا وبريطانيا | dotted map RAK → MAD/CDG/LHR, cuts synced to each country + waving flags |
+| 14.9–19.8 | فوجهات بحال فرانسا، إسبانيا وبريطانيا | full map of Morocco (school's flag map, Sahara included) → camera pans north, routes RAK → MAD/CDG/LHR, cuts synced to each country + waving flags |
 | 19.8–26.2 | إعفاءات خاصة أثناء الخدمة، بشروط ووثائق | stamp synced to the real stamp, documents checklist |
 | 26.2–36.5 | المميزات، السفر، اكتشاف مدن | perk cards, split-flap departures board, polaroids |
 | 36.5–44.3 | مرتبطة بالخدمة ماشي بالسياحة / أمريكا C1/D | service ✓ vs tourism ✗, USA crew-visa card |
 | 44.3–48.7 | ودابا السؤال: واش حتى نتا…؟ | question mark, aircraft door opens onto the crew |
 | 48.7–54.8 | مدرسة فلاي حياني… | logo reveal, Marrakech, Formation Cabin Crew |
-| 54.8–62.5 | التسجيل مفتوح | big type + confetti, animated map pin (Bd Allal Al Fassi), phones, website, Instagram |
+| 54.8–62.5 | التسجيل مفتوح | kinetic type + ticker bands, then a boarding-pass end card: RAK → CREW, animated map (Bd Allal Al Fassi), phones, website, Instagram, QR code, CTA |
 
 Rebuild: `./build.sh` (see the header of the script for requirements).

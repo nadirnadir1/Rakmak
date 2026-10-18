@@ -48,11 +48,12 @@ CAPS = [
   { w: [['مدرسة', 48.82, 49.32], ['فلاي', 49.32, 49.58], ['حياني', 49.58, 50.14]] },
   { w: [['الخاصة', 50.14, 50.64], ['بمراكش', 50.64, 51.22]] },
   { w: [['كتقدم', 51.22, 51.98], ['ليك', 51.98, 52.18], ['تكوين', 52.18, 52.56]] },
-  { w: [['مضيفات', 52.56, 53.26], ['ومضيفي', 53.26, 53.86], ['الطيران', 53.86, 54.61]] },
+  { w: [['مضيفات', 52.56, 53.26], ['ومضيفي', 53.26, 53.86], ['الطيران', 53.86, 54.61]], end: 54.66 },
   { w: [['التسجيل', 54.92, 55.34], ['مفتوح', 55.34, 56.05]], hide: true },
 ];
 
-WATERMARK = [[-1, 11.35], [12.62, 44.1], [45.45, 48.4]];
+HEADER_HIDE = [[-10, -1], [48.45, 51.15]];   // big logo on screen (logo reveal, cover)
+HEADER_BLUE = [[45.5, 48.25]];                // light background (aircraft door)
 
 SHAKES.push(
   { t: 3.42, d: 0.3, a: 0.35 }, { t: 10.30, d: 0.55, a: 1.0 }, { t: 11.68, d: 0.6, a: 1.0 },
@@ -69,9 +70,10 @@ FLASHES.push(
 // --------------------------------------------------------------- helpers ----
 function full(ctx, name, ct, o = {}) { clip(ctx, name, ct, 0, 0, W, H, o); }
 function darken(ctx, a, col = '6,20,46') { ctx.fillStyle = `rgba(${col},${a})`; ctx.fillRect(0, 0, W, H); }
+// full-frame vertical gradient: colours hold beyond y0/y1, so there is never a hard edge
 function gradV(ctx, y0, y1, c0, c1) {
   const g = ctx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, c0); g.addColorStop(1, c1);
-  ctx.fillStyle = g; ctx.fillRect(0, Math.min(y0, y1), W, Math.abs(y1 - y0));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 }
 function bgNavy(ctx, vt, glow = C.navy3) {
   const g = ctx.createRadialGradient(W / 2, H * 0.42, 50, W / 2, H * 0.42, H * 0.75);
@@ -315,8 +317,7 @@ scene(3.40, 8.75, (ctx, vt) => {
   // top: still waiting (desaturated)
   if (mid > 0) {
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, mid); ctx.clip();
-    full(ctx, 'v7', 3.15 + (vt + 0.2) * 0.85, { fx: 0.37, fy: 0.3, zoom: 1.06 + (vt + 0.2) * 0.012, filter: `saturate(${lerp(1, 0.25, op)}) brightness(${lerp(1, 0.78, op)})` });
-    ctx.fillStyle = `rgba(110,10,25,${0.22 * op})`; ctx.fillRect(0, 0, W, mid);
+    full(ctx, 'v7', 3.15 + (vt + 0.2) * 0.85, { fx: 0.37, fy: 0.3, zoom: 1.06 + (vt + 0.2) * 0.012 });
     // label
     const lp = spring(vt - 3.6, 1.6, 6);
     if (vt > 3.6) {
@@ -462,52 +463,68 @@ scene(12.62, 14.65, (ctx, vt) => {
   }
 });
 
-// ---- S5: dotted route map ---------------------------------------------------
-const MA_IDS = new Set(['504', '732']);
-const DEST = { MAD: ['724', 16.2, 'MADRID'], CDG: ['250', 16.38, 'PARIS'], LHR: ['826', 16.56, 'LONDON'] };
+// ---- S5: Morocco (full territory, flag map) -> routes to Europe -------------
+const DEST = { MAD: ['724', 16.25, 'MADRID'], CDG: ['250', 16.42, 'PARIS'], LHR: ['826', 16.6, 'LONDON'] };
+const MA_TMP = mk(760, 820);
+function cam(ctx, cx, cy, s, sx, sy) { ctx.translate(sx, sy); ctx.scale(s, s); ctx.translate(-cx, -cy); }
 scene(14.65, 17.45, (ctx, vt) => {
   bgNavy(ctx, vt, '#0E2A60');
-  const cs = MAP.cities, rak = cs.RAK;
-  const zoomP = Ez.ioC(prog(vt, 14.7, 16.25));
-  const s = lerp(2.3, 1.0, zoomP), ty = -90;
-  ctx.save();
-  ctx.translate(lerp(540, 540, zoomP), lerp(1000, 960 + ty, zoomP));
-  ctx.scale(s, s);
-  ctx.translate(-lerp(rak[0], 540, zoomP), -lerp(rak[1], 960, zoomP));
-  // dots
-  const R = (vt - 14.6) * 1500;
-  const groups = { base: [], ma: [], hi: [] };
+  const cs = MAP.cities, rak = cs.RAK, [mx, my, mw, mh] = MAP.ma;
+  // camera A: the whole of Morocco; camera B: Morocco's north + western Europe
+  const A = { cx: mx + mw / 2, cy: my + mh / 2, s: Math.min(900 / mw, 1000 / mh) * (1 + 0.035 * prog(vt, 14.65, 15.9)), sy: 790 };
+  const B = { cx: 505, cy: 905, s: 0.99, sy: 800 };
+  const k = Ez.ioC(prog(vt, 15.88, 16.5));
+  const cx = lerp(A.cx, B.cx, k), cy = lerp(A.cy, B.cy, k), s = lerp(A.s, B.s, k) * (1 + 0.02 * prog(vt, 16.5, 17.45)), sy = lerp(A.sy, B.sy, k);
+  ctx.save(); cam(ctx, cx, cy, s, 540, sy);
+  // neighbour dots ripple out from Marrakech
+  const R = (vt - 14.55) * 1300;
   const arrived = {};
-  for (const [k, v] of Object.entries(DEST)) arrived[v[0]] = prog(vt, v[1] + 0.45, v[1] + 0.7);
-  ctx.globalAlpha = 1;
+  for (const v of Object.values(DEST)) arrived[v[0]] = prog(vt, v[1] + 0.45, v[1] + 0.7);
   for (const [x, y, id] of MAP.dots) {
-    const d = Math.hypot(x - rak[0], y - rak[1]);
-    const a = clamp((R - d) / 220);
+    if (id === '504' || id === '732') continue;
+    const a = clamp((R - Math.hypot(x - rak[0], y - rak[1])) / 220);
     if (a <= 0) continue;
-    let col;
-    if (MA_IDS.has(id)) col = `rgba(255,${Math.round(90 + 40 * Math.sin(vt * 4))},70,${a})`;
-    else if (arrived[id] > 0) col = `rgba(${Math.round(lerp(90, 255, arrived[id]))},${Math.round(lerp(130, 200, arrived[id]))},${Math.round(lerp(220, 120, arrived[id]))},${a * lerp(0.45, 1, arrived[id])})`;
-    else col = `rgba(90,130,220,${a * 0.42})`;
-    ctx.fillStyle = col;
-    const r = MA_IDS.has(id) ? 5.2 : 4.6;
-    ctx.beginPath(); ctx.arc(x, y + ty * 0, r, 0, TAU); ctx.fill();
+    const ar = arrived[id] || 0;
+    ctx.fillStyle = ar > 0
+      ? `rgba(${Math.round(lerp(90, 255, ar))},${Math.round(lerp(130, 200, ar))},${Math.round(lerp(220, 120, ar))},${a * lerp(0.42, 1, ar)})`
+      : `rgba(90,130,220,${a * 0.42})`;
+    ctx.beginPath(); ctx.arc(x, y, 4.6, 0, TAU); ctx.fill();
   }
-  // arcs
-  for (const [k, [id, t0, label]] of Object.entries(DEST)) {
-    const c = cs[k]; const p = Ez.ioC(prog(vt, t0, t0 + 0.5));
+  // Morocco — the school's map, full territory
+  const mp = Ez.outBack(prog(vt, 14.62, 15.05)), ma = clamp(prog(vt, 14.6, 14.85));
+  const glow = 0.55 + 0.25 * Math.sin(vt * 5);
+  ctx.save(); ctx.translate(mx + mw / 2, my + mh / 2); ctx.scale(lerp(0.9, 1, mp), lerp(0.9, 1, mp)); ctx.translate(-(mx + mw / 2), -(my + mh / 2));
+  ctx.globalAlpha = ma;
+  ctx.shadowColor = `rgba(255,70,60,${glow * 0.55})`; ctx.shadowBlur = 26;
+  ctx.drawImage(IMG.morocco, mx, my, mw, mh);
+  ctx.restore();
+  // light sweep clipped to the country shape
+  const sw = prog(vt, 15.05, 15.75);
+  if (sw > 0 && sw < 1) {
+    const g = MA_TMP.getContext('2d'); g.clearRect(0, 0, 760, 820);
+    g.globalCompositeOperation = 'source-over'; g.drawImage(IMG.morocco, 0, 0, 760, 820);
+    g.globalCompositeOperation = 'source-atop';
+    const bx = lerp(-300, 1060, sw), lg = g.createLinearGradient(bx - 150, 0, bx + 150, 260);
+    lg.addColorStop(0, 'rgba(255,255,255,0)'); lg.addColorStop(0.5, 'rgba(255,255,255,0.55)'); lg.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = lg; g.fillRect(0, 0, 760, 820);
+    g.globalCompositeOperation = 'destination-in'; g.drawImage(IMG.morocco, 0, 0, 760, 820);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.8; ctx.drawImage(MA_TMP, mx, my, mw, mh); ctx.restore();
+  }
+  // arcs to Europe
+  for (const [key, [id, t0, label]] of Object.entries(DEST)) {
+    const c = cs[key]; const p = Ez.ioC(prog(vt, t0, t0 + 0.5));
     if (p <= 0) continue;
-    const mx = (rak[0] + c[0]) / 2 - 160, my = (rak[1] + c[1]) / 2 - 60;
-    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 5 / s; ctx.setLineDash([16 / s, 12 / s]);
-    ctx.lineDashOffset = -vt * 60;
+    const qx = (rak[0] + c[0]) / 2 - 170, qy = (rak[1] + c[1]) / 2 - 40;
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 5 / s; ctx.setLineDash([16 / s, 12 / s]); ctx.lineDashOffset = -vt * 60;
     ctx.beginPath(); ctx.moveTo(rak[0], rak[1]);
     const N = 40; let px = rak[0], py = rak[1], ang = 0;
     for (let i = 1; i <= N * p; i++) {
-      const u = i / N, x = (1 - u) * (1 - u) * rak[0] + 2 * (1 - u) * u * mx + u * u * c[0], y = (1 - u) * (1 - u) * rak[1] + 2 * (1 - u) * u * my + u * u * c[1];
+      const u = i / N, x = (1 - u) * (1 - u) * rak[0] + 2 * (1 - u) * u * qx + u * u * c[0], y = (1 - u) * (1 - u) * rak[1] + 2 * (1 - u) * u * qy + u * u * c[1];
       ang = Math.atan2(y - py, x - px); px = x; py = y; ctx.lineTo(x, y);
     }
     ctx.stroke(); ctx.restore();
     if (p < 1) iPlane(ctx, px, py, 30 / s, ang + Math.PI / 2, '#fff');
-    const pp = Ez.outBack2(prog(vt, t0 + 0.5, t0 + 0.75));
+    const pp = Ez.outBack2(prog(vt, t0 + 0.45, t0 + 0.7));
     if (pp > 0) {
       ctx.save(); ctx.translate(c[0], c[1]); ctx.scale(pp / s, pp / s);
       ctx.beginPath(); ctx.arc(0, 0, 16, 0, TAU); ctx.fillStyle = C.gold; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
@@ -517,14 +534,14 @@ scene(14.65, 17.45, (ctx, vt) => {
   }
   // Marrakech pin
   ctx.save(); ctx.translate(rak[0], rak[1]); ctx.scale(1 / s, 1 / s);
-  for (let i = 0; i < 3; i++) {
+  if (vt > 14.95) for (let i = 0; i < 3; i++) {
     const ph = ((vt * 0.9 + i / 3) % 1);
-    ctx.beginPath(); ctx.arc(0, 0, 20 + ph * 110, 0, TAU); ctx.strokeStyle = `rgba(247,129,5,${(1 - ph) * 0.8})`; ctx.lineWidth = 5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 20 + ph * 110, 0, TAU); ctx.strokeStyle = `rgba(255,200,60,${(1 - ph) * 0.85})`; ctx.lineWidth = 5; ctx.stroke();
   }
-  const pinP = spring(vt - 14.8, 1.6, 6);
+  const pinP = spring(vt - 14.95, 1.6, 6);
   ctx.scale(pinP, pinP);
   iPin(ctx, 0, 0, 86, C.orange);
-  txt(ctx, 'MARRAKECH', 0, 52, { s: 40, w: 900, ls: 4, color: '#fff', shadow: 'rgba(0,0,0,0.7)', sb: 12, sy: 3 });
+  txt(ctx, 'MARRAKECH', 0, 52, { s: 40, w: 900, ls: 4, color: '#fff', shadow: 'rgba(0,0,0,0.75)', sb: 12, sy: 3 });
   ctx.restore();
   ctx.restore();
 });
@@ -845,28 +862,28 @@ function doorScene(ctx, vt) {
   full(ctx, 'v1', 0.3 + Math.max(0, vt - 46.6), { fx: 0.52, zoom: 1.1 });
   // cabin wall with door opening
   ctx.save();
-  ctx.beginPath(); ctx.rect(0, 0, W, H); rrPath(ctx, 170, 300, 740, 1220, 120); ctx.clip('evenodd');
+  ctx.beginPath(); ctx.rect(0, 0, W, H); rrPath(ctx, 170, 370, 740, 1220, 120); ctx.clip('evenodd');
   const wg = ctx.createLinearGradient(0, 0, W, 0); wg.addColorStop(0, '#C9D1DC'); wg.addColorStop(0.5, '#EEF2F6'); wg.addColorStop(1, '#C3CBD7');
   ctx.fillStyle = wg; ctx.fillRect(0, 0, W, H);
   ctx.strokeStyle = 'rgba(120,132,150,0.35)'; ctx.lineWidth = 3;
   for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(0, 200 + i * 320); ctx.lineTo(W, 200 + i * 320); ctx.stroke(); }
   ctx.restore();
   // frame of the opening
-  ctx.save(); rr(ctx, 170, 300, 740, 1220, 120); ctx.lineWidth = 22; ctx.strokeStyle = '#9DA8B8'; ctx.stroke(); ctx.restore();
+  ctx.save(); rr(ctx, 170, 370, 740, 1220, 120); ctx.lineWidth = 22; ctx.strokeStyle = '#9DA8B8'; ctx.stroke(); ctx.restore();
   // exit sign
-  ctx.save(); rr(ctx, 400, 190, 280, 80, 14); ctx.fillStyle = '#1B1F27'; ctx.fill();
-  txt(ctx, 'EXIT', 470, 232, { s: 46, w: 900, color: '#FF3B3B', ls: 4 });
-  txt(ctx, 'مخرج', 610, 234, { s: 40, w: 900, color: '#FF3B3B' }); ctx.restore();
+  ctx.save(); rr(ctx, 400, 262, 280, 80, 14); ctx.fillStyle = '#1B1F27'; ctx.fill();
+  txt(ctx, 'EXIT', 470, 304, { s: 46, w: 900, color: '#FF3B3B', ls: 4 });
+  txt(ctx, 'مخرج', 610, 306, { s: 40, w: 900, color: '#FF3B3B' }); ctx.restore();
   // light spill
   if (op > 0) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    const lg = ctx.createRadialGradient(540, 910, 50, 540, 910, 900);
+    const lg = ctx.createRadialGradient(540, 980, 50, 540, 980, 900);
     lg.addColorStop(0, `rgba(255,240,215,${0.35 * op * (1 - prog(vt, 47.6, 48.3))})`); lg.addColorStop(1, 'rgba(255,240,215,0)');
     ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
   // the door panel (slides out & away)
   if (op < 1) {
-    ctx.save(); ctx.translate(540 + op * 820, 910 - op * 40); ctx.scale(1 + op * 0.25, 1 + op * 0.25); ctx.rotate(op * 0.05);
+    ctx.save(); ctx.translate(540 + op * 820, 980 - op * 40); ctx.scale(1 + op * 0.25, 1 + op * 0.25); ctx.rotate(op * 0.05);
     ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 60; ctx.shadowOffsetX = -20;
     rr(ctx, -360, -600, 720, 1200, 110);
     const dg = ctx.createLinearGradient(-360, 0, 360, 0); dg.addColorStop(0, '#DCE2EA'); dg.addColorStop(0.5, '#F5F7FA'); dg.addColorStop(1, '#D3DAE4');
@@ -893,7 +910,7 @@ function doorScene(ctx, vt) {
 }
 scene(45.45, 48.45, (ctx, vt) => {
   const push = Ez.inC(prog(vt, 47.4, 48.45));
-  ctx.save(); ctx.translate(540, 910); ctx.scale(1 + push * 1.3, 1 + push * 1.3); ctx.translate(-540, -910);
+  ctx.save(); ctx.translate(540, 980); ctx.scale(1 + push * 1.3, 1 + push * 1.3); ctx.translate(-540, -980);
   doorScene(ctx, vt);
   ctx.restore();
   const wf = Ez.inExpo(prog(vt, 48.27, 48.45));
@@ -967,123 +984,222 @@ scene(51.15, 54.55, (ctx, vt) => {
   }
 });
 
-// ---- S14a: registration open --------------------------------------------------
+// ---- outro helpers ---------------------------------------------------------------
+function outroBg(ctx, vt, ct) {
+  clipBlur(ctx, 'v1', ct, 0, 0, W, H, { fx: 0.5 }, 1);
+  ctx.save(); ctx.globalCompositeOperation = 'color'; ctx.fillStyle = '#0B2A6B'; ctx.fillRect(0, 0, W, H); ctx.restore();
+  darken(ctx, 0.62, '4,12,32');
+  // drifting brand glows
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const blobs = [[0.18, 0.22, '247,129,5', 0.30, 620], [0.85, 0.78, '31,91,255', 0.34, 760], [0.75, 0.15, '31,91,255', 0.18, 520]];
+  blobs.forEach(([bx, by, col, a, r], i) => {
+    const x = bx * W + Math.sin(vt * 0.6 + i * 2) * 90, y = by * H + Math.cos(vt * 0.5 + i) * 110;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  });
+  ctx.restore();
+}
+function ticker(ctx, vt, y, rot, bg, fg, text, speed, inT) {
+  const p = Ez.outExpo(prog(vt, inT, inT + 0.45));
+  if (p <= 0) return;
+  ctx.save(); ctx.translate(540, y); ctx.rotate(rot); ctx.translate((1 - p) * (speed < 0 ? 1400 : -1400), 0);
+  ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+  ctx.fillStyle = bg; ctx.fillRect(-1300, -62, 2600, 124); ctx.shadowColor = 'transparent';
+  ctx.font = '900 56px "Montserrat", "Cairo"'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.direction = 'ltr';
+  ctx.letterSpacing = '4px';
+  const seg = ctx.measureText(text).width;
+  let x = -1300 + (((vt * speed) % seg) + seg) % seg - seg;
+  ctx.fillStyle = fg;
+  while (x < 1300) { ctx.fillText(text, x, 4); x += seg; }
+  ctx.restore();
+}
+function reveal(ctx, str, x, y, t, t0, o) {
+  // word slides up from behind a mask line
+  const p = Ez.outExpo(prog(t, t0, t0 + 0.42));
+  if (p <= 0) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, y - o.s * 0.95, W, o.s * 1.7); ctx.clip();
+  ctx.translate(0, (1 - p) * o.s * 1.3);
+  txt(ctx, str, x, y, o);
+  ctx.restore();
+}
+
+// ---- S14a: registration open — kinetic type + ticker bands --------------------
 scene(54.55, 56.15, (ctx, vt) => {
-  clipBlur(ctx, 'v1', 7.0 + (vt - 54.55) * 0.5, 0, 0, W, H, { fx: 0.5 }, 2);
-  darken(ctx, 0.62);
-  rays(ctx, 540, 900, vt, '247,129,5', 0.09, 20, 0.25);
-  const a = Ez.outBack2(prog(vt, 54.86, 55.05)), b = Ez.outBack2(prog(vt, 55.28, 55.48));
-  if (a > 0) {
-    ctx.save(); ctx.translate(540, 760); ctx.scale(lerp(2.2, 1, a), lerp(2.2, 1, a)); ctx.globalAlpha = clamp(a * 2);
-    txt(ctx, 'التسجيل', 0, 0, { f: 'Lalezar', w: 400, s: 210, color: '#fff', shadow: 'rgba(0,0,0,0.5)', sb: 30 });
-    ctx.restore();
-  }
-  if (b > 0) {
-    ctx.save(); ctx.translate(540, 1000); ctx.scale(lerp(2.6, 1, b), lerp(2.6, 1, b)); ctx.rotate(-0.04 * b); ctx.globalAlpha = clamp(b * 2);
-    rr(ctx, -330, -135, 660, 270, 60); const g = ctx.createLinearGradient(0, -135, 0, 135); g.addColorStop(0, C.orange2); g.addColorStop(1, '#E35F00');
-    ctx.shadowColor = 'rgba(247,129,5,0.8)'; ctx.shadowBlur = 60; ctx.fillStyle = g; ctx.fill(); ctx.shadowColor = 'transparent';
-    txt(ctx, 'مفتوح', 0, 10, { f: 'Lalezar', w: 400, s: 220, color: '#fff' });
-    ctx.restore();
-  }
-  const ip = prog(vt, 55.55, 56.0), str = 'INSCRIPTIONS OUVERTES';
-  if (ip > 0) txt(ctx, str.slice(0, Math.ceil(str.length * ip)), 540, 1225, { s: 50, w: 900, ls: 6, color: '#fff' });
-  confetti(ctx, vt, 55.34, 140, 540, 1050, 7);
+  outroBg(ctx, vt, 7.0 + (vt - 54.55) * 0.5);
+  ticker(ctx, vt, 520, -0.09, C.orange, '#fff', 'INSCRIPTIONS OUVERTES   •   التسجيل مفتوح   •   ', -240, 54.5);
+  ticker(ctx, vt, 1290, 0.06, '#F4F6FB', C.navy2, 'CABIN CREW   •   HÔTESSES DE L’AIR   •   STEWARDS   •   MARRAKECH   •   ', 200, 54.62);
+  const zoom = 1 + (vt - 54.55) * 0.03;
+  ctx.save(); ctx.translate(540, 905); ctx.scale(zoom, zoom); ctx.translate(-540, -905);
+  reveal(ctx, 'التسجيل', 540, 800, vt, 54.86, { f: 'Cairo', w: 900, s: 190, color: '#fff', shadow: 'rgba(0,0,0,0.4)', sb: 30 });
+  reveal(ctx, 'مفتوح', 540, 1010, vt, 55.28, { f: 'Cairo', w: 900, s: 210, color: C.orange2, shadow: 'rgba(247,129,5,0.45)', sb: 40, sy: 0 });
+  const lp = Ez.outExpo(prog(vt, 55.5, 55.95));
+  ctx.fillStyle = C.orange; rr(ctx, 540 - 170 * lp, 1150, 340 * lp, 8, 4); ctx.fill();
+  ctx.restore();
+  // light streak on the second word
+  lightSweep(ctx, 0, 880, W, 260, prog(vt, 55.4, 55.95), 0.4);
 });
 
-// ---- S14b: contact card + animated map ----------------------------------------
+// ---- S14b: boarding-pass end card ---------------------------------------------
 const CONTACTS = [
-  [56.85, iPhone, '+212 777 771 314'],
-  [57.0, iPhone, '+212 777 771 712'],
-  [57.15, iGlobe, 'www.flyhyani.ma'],
-  [57.3, iInsta, '@flyhyani.aviation.school'],
+  [57.40, iPhone, '+212 777 771 314', 44],
+  [57.52, iPhone, '+212 777 771 712', 44],
+  [57.64, iGlobe, 'www.flyhyani.ma', 42],
+  [57.76, iInsta, '@flyhyani.aviation.school', 37],
 ];
+function passPath(ctx, x, y, w, h, r, ny, nr) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, ny - nr); ctx.arc(x + w, ny, nr, -Math.PI / 2, Math.PI / 2, true);
+  ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, ny + nr); ctx.arc(x, ny, nr, Math.PI / 2, -Math.PI / 2, true);
+  ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r); ctx.closePath();
+}
+function field(ctx, vt, t0, x, label, value, col, align = 'left') {
+  const p = Ez.outExpo(prog(vt, t0, t0 + 0.4)); if (p <= 0) return;
+  ctx.save(); ctx.globalAlpha *= p; ctx.translate(0, (1 - p) * 18);
+  txt(ctx, label, x, 652, { align, s: 22, w: 700, ls: 4, color: '#8A94A8' });
+  txt(ctx, value, x, 698, { align, s: 40, w: 900, color: col });
+  ctx.restore();
+}
 scene(56.15, 63, (ctx, vt) => {
-  bgNavy(ctx, vt, '#0F2C66');
-  ctx.save(); ctx.globalAlpha = 0.18;
-  for (let i = 0; i < MAP.dots.length; i += 3) { const [x, y] = MAP.dots[i]; ctx.fillStyle = '#4C7BE0'; ctx.fillRect(x, y, 4, 4); }
+  outroBg(ctx, vt, 7.6 + (vt - 56.15) * 0.35);
+  const X = 80, Y = 300, Wd = 920, Hd = 1090, NY = 1030;
+  const cp = spring(vt - 56.18, 1.25, 6.5);
+  const fl = Math.sin((vt - 56) * 1.3) * 4;
+  ctx.save();
+  ctx.translate(540, Y + Hd / 2 + (1 - cp) * 520 + fl); ctx.rotate((1 - cp) * 0.07); ctx.scale(lerp(0.94, 1, cp), lerp(0.94, 1, cp));
+  ctx.translate(-540, -(Y + Hd / 2));
+  ctx.globalAlpha = clamp(cp * 2);
+  // card body
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 70; ctx.shadowOffsetY = 30;
+  passPath(ctx, X, Y, Wd, Hd, 44, NY, 30);
+  const bg = ctx.createLinearGradient(0, Y, 0, Y + Hd); bg.addColorStop(0, '#FFFFFF'); bg.addColorStop(1, '#EEF2F9');
+  ctx.fillStyle = bg; ctx.fill(); ctx.restore();
+  ctx.save(); passPath(ctx, X, Y, Wd, Hd, 44, NY, 30); ctx.clip();
+  // header strip
+  const hg = ctx.createLinearGradient(X, 0, X + Wd, 0); hg.addColorStop(0, C.blue); hg.addColorStop(1, C.blue2);
+  ctx.fillStyle = hg; ctx.fillRect(X, Y, Wd, 110);
+  ctx.fillStyle = C.orange; ctx.fillRect(X, Y + 110, Wd, 6);
+  iPlane(ctx, X + 62, Y + 55, 26, Math.PI / 2, '#fff');
+  txt(ctx, 'BOARDING PASS', X + 100, Y + 57, { align: 'left', s: 32, w: 900, ls: 5 });
+  txt(ctx, 'بطاقة الصعود', X + Wd - 40, Y + 59, { align: 'right', s: 36, w: 900, color: C.orange2 });
+  // route RAK -> CREW
+  ctx.save(); ctx.beginPath(); ctx.rect(X, 430, Wd, 200); ctx.clip();
+  const r1 = Ez.outExpo(prog(vt, 56.5, 56.9)), r2 = Ez.outExpo(prog(vt, 56.6, 57.0));
+  txt(ctx, 'FROM', X + 50, 452, { align: 'left', s: 22, w: 700, ls: 4, color: '#8A94A8' });
+  txt(ctx, 'TO', X + Wd - 50, 452, { align: 'right', s: 22, w: 700, ls: 4, color: '#8A94A8' });
+  ctx.save(); ctx.translate(0, (1 - r1) * 160); txt(ctx, 'RAK', X + 44, 532, { align: 'left', s: 116, w: 900, color: C.navy2 }); ctx.restore();
+  ctx.save(); ctx.translate(0, (1 - r2) * 160);
+  const cg = ctx.createLinearGradient(0, 480, 0, 580); cg.addColorStop(0, C.orange2); cg.addColorStop(1, '#E35F00');
+  txt(ctx, 'CREW', X + Wd - 44, 532, { align: 'right', s: 116, w: 900, color: cg }); ctx.restore();
+  txt(ctx, 'Marrakech', X + 50, 604, { align: 'left', s: 26, w: 600, color: '#5A6683', alpha: r1 });
+  txt(ctx, 'Cabin Crew', X + Wd - 50, 604, { align: 'right', s: 26, w: 600, color: '#5A6683', alpha: r2 });
   ctx.restore();
-  bokeh(ctx, vt, 24, 61, '255,190,120', 0.25, 6);
-  // logo
-  const lp = Ez.outExpo(prog(vt, 56.2, 56.6));
-  const lw = 560, lh = lw * IMG.logoW.height / IMG.logoW.width;
-  ctx.save(); ctx.globalAlpha = lp; ctx.drawImage(IMG.logoW, 540 - lw / 2, 255 - lh / 2 + (1 - lp) * -40, lw, lh); ctx.restore();
-  lightSweep(ctx, 540 - lw / 2, 255 - lh / 2, lw, lh, prog(vt, 60.8, 61.5), 0.6);
-  // map card
-  const mp = spring(vt - 56.25, 1.3, 6.5);
-  const mx = 70, my = 380, mw = 940, mh = 620;
-  ctx.save(); ctx.translate(540, my + mh / 2); ctx.scale(lerp(0.8, 1, mp), lerp(0.8, 1, mp)); ctx.globalAlpha = clamp(mp * 1.6); ctx.translate(-540, -(my + mh / 2));
-  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20; rr(ctx, mx, my, mw, mh, 36); ctx.fillStyle = '#0B1530'; ctx.fill(); ctx.restore();
-  ctx.save(); rr(ctx, mx, my, mw, mh, 36); ctx.clip();
-  const ms = lerp(1.75, 1.22, Ez.outC(prog(vt, 56.25, 57.4))) + (vt - 57.4 > 0 ? (vt - 57.4) * 0.02 : 0);
-  const pinX = mx + 660, pinY = my + 340, SX = 820, SY = 518;
-  ctx.drawImage(IMG.map, pinX - SX * ms, pinY - SY * ms, IMG.map.width * ms, IMG.map.height * ms);
-  ctx.fillStyle = 'rgba(6,20,46,0.18)'; ctx.fillRect(mx, my, mw, mh);
-  // route line
-  const rp = Ez.ioC(prog(vt, 56.9, 57.8));
-  if (rp > 0) {
-    const pts = [[mx + 90, my + mh - 30], [mx + 300, my + mh - 150], [mx + 430, my + 470], [pinX - 40, pinY + 40]];
-    ctx.save(); ctx.strokeStyle = C.blue2; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(31,91,255,0.8)'; ctx.shadowBlur = 20;
-    ctx.beginPath(); ctx.moveTo(...pts[0]);
-    const N = 60; let last = pts[0];
-    for (let i = 1; i <= N * rp; i++) {
-      const u = i / N, x = Math.pow(1 - u, 3) * pts[0][0] + 3 * Math.pow(1 - u, 2) * u * pts[1][0] + 3 * (1 - u) * u * u * pts[2][0] + u * u * u * pts[3][0];
-      const y = Math.pow(1 - u, 3) * pts[0][1] + 3 * Math.pow(1 - u, 2) * u * pts[1][1] + 3 * (1 - u) * u * u * pts[2][1] + u * u * u * pts[3][1];
-      ctx.lineTo(x, y); last = [x, y];
-    }
-    ctx.stroke(); ctx.restore();
-    ctx.beginPath(); ctx.arc(last[0], last[1], 14, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = C.blue2; ctx.stroke();
+  // dotted arc + plane
+  const ax0 = X + 44 + tw(ctx, 'RAK', { s: 116, w: 900 }) + 26, ax1 = X + Wd - 44 - tw(ctx, 'CREW', { s: 116, w: 900 }) - 26;
+  const ap = Ez.ioC(prog(vt, 56.75, 57.35));
+  if (ap > 0) {
+    const P = u => [lerp(ax0, ax1, u), 540 - Math.sin(u * Math.PI) * 46];
+    ctx.save(); ctx.strokeStyle = '#B8C2D8'; ctx.lineWidth = 5; ctx.setLineDash([3, 11]); ctx.lineCap = 'round';
+    ctx.beginPath(); for (let i = 0; i <= 40 * ap; i++) { const [x, y] = P(i / 40); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); ctx.restore();
+    const u = lerp(0, 0.5, ap) + (ap >= 1 ? Math.sin(vt * 2) * 0.02 : 0);
+    const [px, py] = P(u), [qx, qy] = P(u + 0.01);
+    iPlane(ctx, px, py - 2, 30, Math.atan2(qy - py, qx - px) + Math.PI / 2, C.orange);
   }
-  // label card over the school (covers the map's own label)
-  const cp = spring(vt - 57.0, 1.5, 6.5);
-  if (vt > 57.0) {
-    ctx.save(); ctx.translate(pinX - 280, pinY + 20); ctx.scale(cp, cp);
-    ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
-    rr(ctx, -250, -78, 500, 156, 26); ctx.fillStyle = '#fff'; ctx.fill(); ctx.shadowColor = 'transparent';
-    const lw2 = 150, lh2 = lw2 * IMG.logoB.height / IMG.logoB.width;
-    ctx.drawImage(IMG.logoB, -230, -46 - lh2 / 2 + 6, lw2, lh2);
-    txt(ctx, 'École Fly Hyani', -60, -40, { align: 'left', s: 30, w: 900, color: C.blue });
-    txt(ctx, 'Bd Allal Al Fassi', -230, 18, { align: 'left', s: 30, w: 700, color: '#2B3550' });
-    txt(ctx, 'Marrakech', -230, 54, { align: 'left', s: 30, w: 700, color: C.orange });
+  // fields
+  ctx.fillStyle = '#E3E8F2'; ctx.fillRect(X + 44, 628, Wd - 88, 2);
+  field(ctx, vt, 56.85, X + 50, 'PASSENGER', 'YOU', C.navy2);
+  field(ctx, vt, 56.92, 540, 'GATE', 'EFH', C.navy2, 'center');
+  field(ctx, vt, 56.99, X + Wd - 50, 'BOARDING', 'NOW', C.orange, 'right');
+  if (vt > 57.3) { ctx.beginPath(); ctx.arc(X + Wd - 50 - tw(ctx, 'NOW', { s: 40, w: 900 }) - 22, 698, 8, 0, TAU); ctx.fillStyle = `rgba(32,196,107,${0.5 + 0.5 * Math.sin(vt * 8)})`; ctx.fill(); }
+  // map strip
+  const mxp = X + 44, myp = 740, mwp = Wd - 88, mhp = 262;
+  const mr = Ez.ioC(prog(vt, 56.95, 57.45));
+  if (mr > 0) {
+    ctx.save(); rr(ctx, mxp, myp, mwp * mr, mhp, 26); ctx.clip();
+    const ms = lerp(1.25, 1.06, Ez.outC(prog(vt, 56.95, 58.2))) + Math.max(0, vt - 58.2) * 0.012;
+    const pinX = mxp + 560, pinY = myp + 150;
+    ctx.drawImage(IMG.map, pinX - 820 * ms, pinY - 518 * ms, IMG.map.width * ms, IMG.map.height * ms);
+    const sh = ctx.createLinearGradient(0, myp, 0, myp + mhp); sh.addColorStop(0, 'rgba(6,20,46,0.05)'); sh.addColorStop(1, 'rgba(6,20,46,0.45)');
+    ctx.fillStyle = sh; ctx.fillRect(mxp, myp, mwp, mhp);
+    // route
+    const rp = Ez.ioC(prog(vt, 57.3, 57.95));
+    if (rp > 0) {
+      const pts = [[mxp + 40, myp + mhp + 10], [mxp + 260, myp + 200], [pinX - 220, pinY + 120], [pinX, pinY + 4]];
+      ctx.save(); ctx.strokeStyle = C.blue2; ctx.lineWidth = 11; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.shadowColor = 'rgba(31,91,255,0.8)'; ctx.shadowBlur = 16;
+      ctx.beginPath(); let last = pts[0];
+      for (let i = 0; i <= 60 * rp; i++) {
+        const u = i / 60, a0 = Math.pow(1 - u, 3), a1 = 3 * Math.pow(1 - u, 2) * u, a2 = 3 * (1 - u) * u * u, a3 = u * u * u;
+        const x = a0 * pts[0][0] + a1 * pts[1][0] + a2 * pts[2][0] + a3 * pts[3][0], y = a0 * pts[0][1] + a1 * pts[1][1] + a2 * pts[2][1] + a3 * pts[3][1];
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); last = [x, y];
+      }
+      ctx.stroke(); ctx.restore();
+    }
+    // pin + ripples
+    if (vt > 57.15) {
+      for (let i = 0; i < 3; i++) {
+        const ph = ((vt - 57.35) * 0.8 + i / 3) % 1; if (vt < 57.35) break;
+        ctx.beginPath(); ctx.ellipse(pinX, pinY, 16 + ph * 110, (16 + ph * 110) * 0.45, 0, 0, TAU); ctx.strokeStyle = `rgba(247,129,5,${(1 - ph) * 0.9})`; ctx.lineWidth = 5; ctx.stroke();
+      }
+      const dp = Ez.outBack2(prog(vt, 57.15, 57.45));
+      ctx.save(); ctx.translate(pinX, pinY - (1 - dp) * 200); ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 8;
+      iPin(ctx, 0, 0, 92, C.orange); ctx.restore();
+    }
+    // address chip
+    const ap2 = Ez.outBack(prog(vt, 57.5, 57.8));
+    if (ap2 > 0) {
+      ctx.save(); ctx.translate(mxp + 24, myp + mhp - 24); ctx.scale(ap2, ap2);
+      const t1 = 'Bd Allal Al Fassi · Marrakech', cw = tw(ctx, t1, { s: 27, w: 800 }) + 84;
+      rr(ctx, 0, -60, cw, 60, 30); ctx.fillStyle = 'rgba(255,255,255,0.96)'; ctx.fill();
+      iPin(ctx, 34, -17, 30, C.orange);
+      txt(ctx, t1, 58, -29, { align: 'left', s: 27, w: 800, color: C.navy2 });
+      ctx.restore();
+    }
     ctx.restore();
+    ctx.save(); rr(ctx, mxp, myp, mwp * mr, mhp, 26); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(11,35,83,0.15)'; ctx.stroke(); ctx.restore();
   }
-  // pin drop + ripples
-  const dp = Ez.outBack2(prog(vt, 56.45, 56.75));
-  if (vt > 56.45) {
-    for (let i = 0; i < 3; i++) {
-      const ph = ((vt - 56.7) * 0.8 + i / 3) % 1; if (vt < 56.7) break;
-      ctx.beginPath(); ctx.ellipse(pinX, pinY, 20 + ph * 130, (20 + ph * 130) * 0.45, 0, 0, TAU); ctx.strokeStyle = `rgba(247,129,5,${(1 - ph) * 0.9})`; ctx.lineWidth = 6; ctx.stroke();
-    }
-    ctx.save(); ctx.translate(pinX, pinY - (1 - dp) * 300); ctx.scale(1, lerp(1.25, 1, dp));
-    ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 10;
-    iPin(ctx, 0, 0, 120, C.orange); ctx.restore();
-  }
-  ctx.restore();
-  ctx.save(); rr(ctx, mx + 1, my + 1, mw - 2, mh - 2, 36); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.stroke(); ctx.restore();
-  ctx.restore();
+  // perforation
+  ctx.save(); ctx.strokeStyle = '#C9D2E6'; ctx.lineWidth = 4; ctx.setLineDash([14, 12]);
+  ctx.beginPath(); ctx.moveTo(X + 44, NY); ctx.lineTo(X + Wd - 44, NY); ctx.stroke(); ctx.restore();
   // contacts
-  blurSnap(ctx);
-  CONTACTS.forEach(([t0, ic, label], i) => {
-    if (vt < t0) return;
-    const p = spring(vt - t0, 1.4, 6.5), y = 1080 + i * 106;
-    ctx.save(); ctx.translate((1 - p) * 700, 0); ctx.globalAlpha = clamp(p * 2);
-    frosted(ctx, 80, y - 45, 860, 90, 45, { tint: 'rgba(6,20,46,0.6)' });
-    ctx.beginPath(); ctx.arc(128, y, 34, 0, TAU); ctx.fillStyle = C.orange; ctx.fill();
-    ic(ctx, 128, y, 50, '#fff');
-    txt(ctx, label, 186, y + 2, { align: 'left', s: label.length > 18 ? 44 : 54, w: 800, dir: 'ltr' });
+  CONTACTS.forEach(([t0, ic, label, fs], i) => {
+    const p = Ez.outExpo(prog(vt, t0, t0 + 0.45)); if (p <= 0) return;
+    const y = 1100 + i * 82;
+    ctx.save(); ctx.globalAlpha *= p; ctx.translate((1 - p) * -60, 0);
+    ctx.beginPath(); ctx.arc(X + 76, y, 30, 0, TAU); ctx.fillStyle = '#FFF0E0'; ctx.fill();
+    ic(ctx, X + 76, y, 40, C.orange);
+    txt(ctx, label, X + 124, y + 2, { align: 'left', s: fs, w: 800, color: C.navy2, dir: 'ltr' });
     ctx.restore();
   });
+  // QR code -> www.flyhyani.ma
+  const qr = MAP.qr, n = qr.length, qs = 150, mod = qs / n, qx = X + Wd - 50 - qs, qy = 1072;
+  const qp = prog(vt, 57.6, 58.2);
+  if (qp > 0) {
+    ctx.save(); rr(ctx, qx - 10, qy - 10, qs + 20, qs + 20, 14); ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#E3E8F2'; ctx.stroke();
+    ctx.fillStyle = C.navy2;
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      if (qr[r][c] !== '1') continue;
+      if (rnd(r * 31 + c, 77) > qp * 1.15) continue;
+      ctx.fillRect(qx + c * mod, qy + r * mod, mod + 0.5, mod + 0.5);
+    }
+    ctx.restore();
+    txt(ctx, 'SCAN', qx + qs / 2, qy + qs + 30, { s: 20, w: 800, ls: 6, color: '#8A94A8', alpha: qp });
+  }
+  ctx.restore();
+  lightSweep(ctx, X, Y, Wd, Hd, prog(vt, 60.75, 61.5), 0.35);
+  ctx.restore();
   // CTA button
-  if (vt > 57.6) {
-    const p = spring(vt - 57.6, 1.4, 6), beat = 1 + 0.045 * Math.pow(Math.max(0, Math.cos((vt - 48.52) / 0.51168 * Math.PI)), 8);
-    ctx.save(); ctx.translate(540, 1555); ctx.scale(p * beat, p * beat);
-    ctx.shadowColor = 'rgba(247,129,5,0.7)'; ctx.shadowBlur = 40;
-    rr(ctx, -270, -62, 540, 124, 62); const g = ctx.createLinearGradient(0, -62, 0, 62); g.addColorStop(0, C.orange2); g.addColorStop(1, '#E35F00'); ctx.fillStyle = g; ctx.fill();
+  if (vt > 57.95) {
+    const p = spring(vt - 57.95, 1.4, 6), beat = 1 + 0.04 * Math.pow(Math.max(0, Math.cos((vt - 48.52) / 0.51168 * Math.PI)), 8);
+    ctx.save(); ctx.translate(540, 1490); ctx.scale(p * beat, p * beat);
+    ctx.shadowColor = 'rgba(247,129,5,0.6)'; ctx.shadowBlur = 40;
+    rr(ctx, -300, -62, 600, 124, 62); const g = ctx.createLinearGradient(0, -62, 0, 62); g.addColorStop(0, C.orange2); g.addColorStop(1, '#E35F00'); ctx.fillStyle = g; ctx.fill();
     ctx.shadowColor = 'transparent';
-    txt(ctx, 'سجّل دابا', 20, 4, { s: 64, w: 900 });
-    ctx.save(); ctx.translate(-190, 2); ctx.strokeStyle = '#fff'; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    txt(ctx, 'سجّل دابا', 30, 4, { s: 62, w: 900 });
+    ctx.save(); ctx.translate(-200, 2); ctx.strokeStyle = '#fff'; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.moveTo(18, -22); ctx.lineTo(-4, 0); ctx.lineTo(18, 22); ctx.moveTo(-4, 0); ctx.lineTo(40, 0); ctx.stroke(); ctx.restore();
-    ctx.save(); rr(ctx, -270, -62, 540, 124, 62); ctx.clip(); lightSweep(ctx, -270, -62, 540, 124, ((vt - 57.6) * 0.6) % 1, 0.5); ctx.restore();
+    ctx.save(); rr(ctx, -300, -62, 600, 124, 62); ctx.clip(); lightSweep(ctx, -300, -62, 600, 124, ((vt - 57.95) * 0.6) % 1, 0.5); ctx.restore();
     ctx.restore();
   }
 });

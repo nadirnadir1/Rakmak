@@ -579,9 +579,11 @@ sfx_at(11.68, impact(1.2), 0.75); sfx_at(11.68, glitch(0.3), 0.25)
 sfx_at(12.45, whoosh(0.4), 0.3)
 sfx_at(13.45, whoosh(0.3, False), 0.2); sfx_at(13.82, clink(), 0.35); sfx_at(14.15, clink(), 0.18)
 # map
-sfx_at(14.5, whoosh(0.4, True, 0.8), 0.35); sfx_at(14.8, shimmer(1.2, 3), 0.3)
-sfx_at(16.15, flyby(1.3), 0.4)
-for i, t in enumerate([16.65, 16.83, 17.01]): sfx_at(t, pop(900 + i * 150, 400), 0.25)
+sfx_at(14.5, whoosh(0.4, True, 0.8), 0.35); sfx_at(14.66, impact(0.4), 0.22)
+sfx_at(15.05, shimmer(0.8, 3), 0.28)
+sfx_at(15.9, whoosh(0.5, True, 0.7), 0.18)
+sfx_at(16.2, flyby(1.3), 0.38)
+for i, t in enumerate([16.70, 16.87, 17.05]): sfx_at(t, pop(900 + i * 150, 400), 0.25)
 for t in (17.45, 18.08, 18.76):
     sfx_at(t - 0.12, whoosh(0.22, True, 1.3), 0.18); sfx_at(t, impact(0.45), 0.28)
 # stamp
@@ -622,15 +624,20 @@ sfx_at(49.4, shimmer(0.7, 5), 0.3)
 sfx_at(50.12, pop(900, 350), 0.25); sfx_at(50.6, pop(1000, 380), 0.25)
 sfx_at(51.02, whoosh(0.32), 0.28)
 sfx_at(52.5, pop(900, 350), 0.25); sfx_at(53.2, pop(1000, 380), 0.25)
-# registration open
+# registration open (ticker bands + kinetic type)
 sfx_at(54.42, whoosh(0.32, True, 0.8), 0.3)
-sfx_at(54.92, impact(0.8), 0.6); sfx_at(55.34, impact(1.1), 0.7); sfx_at(55.34, shimmer(0.9, 6), 0.45)
-sfx_at(55.55, typing(0.45), 0.3)
-# CTA
-sfx_at(56.0, whoosh(0.35), 0.32)
-sfx_at(56.45, whoosh(0.2, False, 1.3), 0.25); sfx_at(56.72, pop(420, 160, 0.14), 0.6)
-for i, t in enumerate([56.85, 57.0, 57.15, 57.3]): sfx_at(t, pop(800 + i * 120, 350), 0.3)
-sfx_at(57.6, ding(1568), 0.35)
+sfx_at(54.5, whoosh(0.45, True, 1.2), 0.2, -0.4); sfx_at(54.62, whoosh(0.45, False, 1.0), 0.18, 0.4)
+sfx_at(54.86, impact(0.8), 0.55); sfx_at(55.28, impact(1.1), 0.65); sfx_at(55.4, shimmer(0.6, 6), 0.2)
+sfx_at(55.5, whoosh(0.3, True, 1.4), 0.12)
+# outro: boarding pass
+sfx_at(56.0, whoosh(0.35), 0.3)
+sfx_at(56.18, whoosh(0.5, True, 0.8), 0.28)
+sfx_at(56.75, flyby(0.7), 0.14)
+sfx_at(56.95, whoosh(0.3, True, 1.3), 0.14)
+sfx_at(57.15, whoosh(0.15, False, 1.4), 0.2); sfx_at(57.42, pop(420, 160, 0.14), 0.5)
+for i, t in enumerate([57.40, 57.52, 57.64, 57.76]): sfx_at(t, pop(800 + i * 120, 350), 0.2)
+sfx_at(57.6, shimmer(0.6, 7), 0.16)
+sfx_at(57.95, pop(700, 260), 0.3); sfx_at(58.02, ding(1568), 0.3)
 
 sfx = reverb(sfx, IR_SMALL, 0.18)
 
