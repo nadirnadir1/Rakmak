@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>EFH reel</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <div id="scenes"></div>
+  <div id="fx"></div>
+  <div id="captions"></div>
+  <div id="vignette"></div>
+  <div id="grain"></div>
+</div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="glow-o" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-w" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
+<script src="lib.js"></script>
+<script src="data.js"></script>
+<script src="map_data.js"></script>
+<script src="components.js"></script>
+<script src="captions.js"></script>
+<script src="scenes_1.js"></script>
+<script src="scenes_2.js"></script>
+<script src="scenes_3.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

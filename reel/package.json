@@ -1,0 +1,14 @@
+{
+  "name": "efh-reel",
+  "private": true,
+  "type": "module",
+  "description": "Motion-graphics reel for EFH (Ecole FLY HYANI Prive) - rendered frame by frame in Chromium",
+  "scripts": {
+    "render": "node tools/render.mjs"
+  },
+  "dependencies": {
+    "d3-geo": "3.1.1",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
+  }
+}
