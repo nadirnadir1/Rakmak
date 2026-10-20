@@ -116,3 +116,13 @@ html, body {
 #fx { z-index: 60; }
 .flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
 .leak { position: absolute; width: 1600px; height: 1600px; border-radius: 50%; mix-blend-mode: screen; opacity: 0; }
+
+/* brand header: EFH logo pinned at the top of every scene */
+#header { position: absolute; left: 0; top: 0; width: 1080px; height: 260px; z-index: 45; pointer-events: none; }
+#header .hbg { position: absolute; left: 0; top: 0; width: 1080px; height: 260px;
+  background: linear-gradient(180deg, rgba(3,10,31,.55) 0%, rgba(3,10,31,.25) 55%, rgba(3,10,31,0) 100%); }
+#header .hlogo { position: absolute; left: 380px; top: 104px; width: 320px; height: 72px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.65)); }
+#header .hshine { position: absolute; left: 380px; top: 96px; width: 320px; height: 90px; overflow: hidden;
+  -webkit-mask-image: url(../assets/img/logo_white.png); -webkit-mask-size: 320px 72px; -webkit-mask-position: 0 8px; -webkit-mask-repeat: no-repeat;
+  background: linear-gradient(100deg, rgba(255,255,255,0) 40%, rgba(255,214,150,.95) 50%, rgba(255,255,255,0) 60%); background-size: 300% 100%; }

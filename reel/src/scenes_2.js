@@ -161,15 +161,18 @@
   }
 
   function seal() {
+    // every glyph stays inside the blue disc: top text sits outside a r=100 arc (up to ~128),
+    // bottom text hangs inward from a r=114 arc (down to ~88); dashed ring at r=136
     const d = svgEl(340, 340, `<svg viewBox="0 0 340 340" width="340" height="340">
-      <defs><path id="sTop" d="M50,170 A120,120 0 0 1 290,170"/><path id="sBot" d="M40,170 A130,130 0 0 0 300,170"/>
+      <defs><path id="sTop" d="M70,170 A100,100 0 0 1 270,170"/><path id="sBot" d="M56,170 A114,114 0 0 0 284,170"/>
       <radialGradient id="sg" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#2a74ff"/><stop offset="1" stop-color="#003a9b"/></radialGradient></defs>
       <circle cx="170" cy="170" r="160" fill="#f5c86b"/>
-      <circle cx="170" cy="170" r="146" fill="url(#sg)"/>
-      <circle cx="170" cy="170" r="134" fill="none" stroke="#f5c86b" stroke-width="3" stroke-dasharray="6 6"/>
-      <text font-family="Montserrat" font-weight="900" font-size="34" fill="#fff" letter-spacing="4"><textPath href="#sTop" startOffset="50%" text-anchor="middle">EXEMPTION</textPath></text>
-      <text font-family="Montserrat" font-weight="900" font-size="32" fill="#f5c86b" letter-spacing="5"><textPath href="#sBot" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">ON DUTY</textPath></text>
-      <g transform="translate(118,118) scale(4.3)">${ICON.plane('#fff').replace('<svg viewBox="0 0 24 24">', '').replace('</svg>', '')}</g>
+      <circle cx="170" cy="170" r="148" fill="url(#sg)"/>
+      <circle cx="170" cy="170" r="136" fill="none" stroke="#f5c86b" stroke-width="3" stroke-dasharray="6 6"/>
+      <text font-family="Montserrat" font-weight="900" font-size="28" fill="#fff" letter-spacing="3"><textPath href="#sTop" startOffset="50%" text-anchor="middle">EXEMPTION</textPath></text>
+      <text font-family="Montserrat" font-weight="900" font-size="27" fill="#f5c86b" letter-spacing="4"><textPath href="#sBot" startOffset="50%" text-anchor="middle">ON DUTY</textPath></text>
+      <circle cx="104" cy="170" r="5" fill="#f5c86b"/><circle cx="236" cy="170" r="5" fill="#f5c86b"/>
+      <g transform="translate(134,134) scale(3)">${ICON.plane('#fff').replace('<svg viewBox="0 0 24 24">', '').replace('</svg>', '')}</g>
     </svg>`, { filter: 'drop-shadow(0 18px 40px rgba(0,0,0,.55))' });
     return d;
   }
@@ -214,10 +217,7 @@
   function docCard(kind) {
     const c = h('div', { class: 'abs', style: { width: '360px', height: '480px', borderRadius: '24px', boxShadow: '0 30px 70px rgba(0,0,0,.55)', overflow: 'hidden', transformOrigin: '50% 100%' } });
     if (kind === 'passport') {
-      c.style.background = 'linear-gradient(135deg,#1d5a3d,#0b2f20)';
-      c.innerHTML = `<div class="ar" style="position:absolute;top:40px;width:100%;text-align:center;color:#e8c36a;font-weight:800;font-size:32px">المملكة المغربية</div>
-        <svg viewBox="0 0 200 200" style="position:absolute;left:100px;top:120px;width:160px;height:160px"><circle cx="100" cy="104" r="62" fill="none" stroke="#e8c36a" stroke-width="5"/><polygon points="100,52 113,92 155,92 121,116 134,156 100,132 66,156 79,116 45,92 87,92" fill="none" stroke="#e8c36a" stroke-width="7" stroke-linejoin="round"/></svg>
-        <div class="mont" style="position:absolute;top:330px;width:100%;text-align:center;color:#e8c36a;font-weight:800;font-size:28px;letter-spacing:6px">PASSEPORT</div>`;
+      c.style.background = `#2a4a35 url("${SRC}passport_morocco.png") center / cover no-repeat`;
     } else if (kind === 'id') {
       c.style.background = '#fff';
       c.innerHTML = `<div style="position:absolute;left:0;top:0;width:100%;height:110px;background:linear-gradient(90deg,#003a9b,#1a5fd6)"></div>

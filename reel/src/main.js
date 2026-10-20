@@ -34,6 +34,23 @@
     window.__ready = true;
   }
 
+  // EFH logo pinned in the top header; steps aside while the big logo is on screen
+  function updateHeader(t) {
+    const hd = document.getElementById('header');
+    const hidden = [[49.0, 51.02], [56.3, 99]];
+    let o = 1;
+    for (const [a, b] of hidden) {
+      o = Math.min(o, 1 - M.env(t, a, b, 0.18, 0.18));
+    }
+    hd.style.opacity = o.toFixed(3);
+    // a light sweep across the logo on the big beats
+    const sh = hd.querySelector('.hshine');
+    let p = -1;
+    for (const tb of [0.15, 12.81, 45.69]) if (t >= tb && t < tb + 0.8) p = (t - tb) / 0.8;
+    sh.style.opacity = p < 0 ? 0 : 1;
+    sh.style.backgroundPosition = `${(100 - p * 100).toFixed(1)}% 0`;
+  }
+
   window.renderFrame = async function (t) {
     window.__pending = [];
     for (const sc of LIVE) {
@@ -43,6 +60,7 @@
     }
     CAPS.update(t);
     C.FX.update(t);
+    updateHeader(t);
     if (window.__pending.length) await Promise.all(window.__pending);
     // two rAFs so style/layout/paint have settled before the screenshot
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));

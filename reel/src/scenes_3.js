@@ -33,60 +33,98 @@
     },
   });
 
-  // ======================================================================= S12 drop: you + the crew (45.69 - 49.15)
+  // ======================================================================= S12 drop: your boarding pass to cabin crew (45.69 - 49.15)
+  function boardingPass() {
+    const W = 940, H = 520;
+    const card = h('div', { class: 'abs', style: { width: W + 'px', height: H + 'px', borderRadius: '30px', background: '#fff', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,.6)' } });
+    const head = h('div', { class: 'abs', style: { left: 0, top: 0, width: W + 'px', height: '118px', background: 'linear-gradient(90deg,#003a9b,#1a5fd6)' } });
+    const lg = Img(head, 'logo_white.png', { left: '34px', top: '27px', width: '286px', height: '64px' });
+    head.appendChild(h('div', { class: 'abs mont', style: { right: '38px', top: '24px', color: '#fff', fontWeight: 900, fontSize: '40px', letterSpacing: '5px', textAlign: 'right', lineHeight: '1.05' } }, 'BOARDING PASS'));
+    head.appendChild(h('div', { class: 'abs mont', style: { right: '38px', top: '72px', color: 'rgba(255,255,255,.75)', fontWeight: 700, fontSize: '20px', letterSpacing: '4px' } }, "CARTE D’EMBARQUEMENT"));
+    card.appendChild(head);
+    const lab = (txt, x, y) => card.appendChild(h('div', { class: 'abs mont', style: { left: x + 'px', top: y + 'px', color: '#8a96b3', fontWeight: 800, fontSize: '22px', letterSpacing: '3px' } }, txt));
+    const val = (txt, x, y, size = 54, color = '#061433') => {
+      const d = h('div', { class: 'abs mont', style: { left: x + 'px', top: y + 'px', color, fontWeight: 900, fontSize: size + 'px', letterSpacing: '2px', whiteSpace: 'nowrap' } }, txt);
+      card.appendChild(d);
+      return d;
+    };
+    lab('PASSENGER', 44, 146);
+    const name = val('', 44, 176, 66, '#f38100');
+    const caret = h('div', { class: 'abs', style: { left: '44px', top: '188px', width: '6px', height: '58px', background: '#f38100' } });
+    card.appendChild(caret);
+    lab('FROM', 44, 282); val('RAK', 44, 308, 70);
+    card.appendChild(h('div', { class: 'abs', html: ICON.plane('#1a5fd6'), style: { left: '214px', top: '318px', width: '60px', height: '60px', transform: 'rotate(90deg)' } }));
+    lab('TO', 300, 282); val('THE WORLD', 300, 318, 54);
+    lab('GATE', 44, 410); val('EFH', 44, 436, 46, '#1a5fd6');
+    lab('SEAT', 214, 410); val('1A', 214, 436, 46);
+    lab('CLASS', 340, 410);
+    const clsBox = h('div', { class: 'abs', style: { left: '336px', top: '432px', width: '330px', height: '66px', perspective: '400px' } });
+    const clsA = h('div', { class: 'abs mont', style: { left: 0, top: 0, color: '#061433', fontWeight: 900, fontSize: '42px', letterSpacing: '2px', whiteSpace: 'nowrap', transformOrigin: '50% 100%' } }, 'PASSENGER');
+    const clsB = h('div', { class: 'abs mont', style: { left: 0, top: 0, padding: '2px 16px 6px', borderRadius: '12px', background: 'linear-gradient(90deg,#f38100,#ffa53a)', color: '#fff', fontWeight: 900, fontSize: '40px', letterSpacing: '2px', whiteSpace: 'nowrap', transformOrigin: '50% 0%' } }, 'CABIN CREW');
+    clsBox.append(clsA, clsB);
+    card.appendChild(clsBox);
+    // perforation + stub
+    card.appendChild(h('div', { class: 'abs', style: { left: '700px', top: '130px', width: '0', height: '380px', borderLeft: '4px dashed #d5dbe8' } }));
+    card.appendChild(h('div', { class: 'abs', style: { left: '730px', top: '150px', width: '170px', height: '340px', background: 'repeating-linear-gradient(0deg,#061433 0 4px,transparent 4px 8px,#061433 8px 10px,transparent 10px 15px)', opacity: .9 } }));
+    const notchT = h('div', { class: 'abs', style: { left: '682px', top: '-20px', width: '40px', height: '40px', borderRadius: '50%', background: '#0b1f4d' } });
+    const notchB = h('div', { class: 'abs', style: { left: '682px', top: H - 20 + 'px', width: '40px', height: '40px', borderRadius: '50%', background: '#0b1f4d' } });
+    const shine = h('div', { class: 'abs', style: { left: '-300px', top: '-100px', width: '200px', height: '800px', background: 'linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.65),rgba(255,255,255,0))', transform: 'rotate(18deg)', mixBlendMode: 'overlay' } });
+    card.appendChild(shine);
+    return { card, name, caret, clsA, clsB, shine };
+  }
+
   SC.push({
     id: 's12', start: 45.69, end: 49.16, z: 15,
     build(el) {
       el.style.background = '#030a1f';
       const bg = ClipView(el, { w: 1080, h: 1920 });
-      const tint = h('div', { class: 'full', style: { background: 'linear-gradient(180deg, rgba(0,58,155,.55), rgba(6,20,51,.55) 45%, rgba(3,10,31,.92))' } });
-      el.appendChild(tint);
-      const rays = h('div', { class: 'abs', style: { left: '-460px', top: '-240px', width: '2000px', height: '2000px', background: 'repeating-conic-gradient(from 0deg at 50% 50%, rgba(140,200,255,.18) 0deg 5deg, rgba(140,200,255,0) 5deg 15deg)', maskImage: 'radial-gradient(circle, #000 0%, rgba(0,0,0,.5) 30%, transparent 60%)', WebkitMaskImage: 'radial-gradient(circle, #000 0%, rgba(0,0,0,.5) 30%, transparent 60%)' } });
-      el.appendChild(rays);
-      // the "you" silhouette
-      const you = h('div', { class: 'abs', style: { left: '290px', top: '330px', width: '500px', height: '760px' } });
-      you.innerHTML = `<svg viewBox="0 0 500 760" width="500" height="760"><defs><linearGradient id="yg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a5fd6" stop-opacity=".55"/><stop offset="1" stop-color="#1a5fd6" stop-opacity=".05"/></linearGradient></defs>
-        <g fill="url(#yg)" stroke="#8cc8ff" stroke-width="7" stroke-dasharray="20 14" stroke-linecap="round">
-        <circle cx="250" cy="190" r="120"/><path d="M40 760 C40 470 130 360 250 360 C370 360 460 470 460 760"/></g>
-        <text x="250" y="232" text-anchor="middle" font-family="Montserrat" font-weight="900" font-size="150" fill="#ffb547">?</text></svg>`;
-      el.appendChild(you);
-      const ring = h('div', { class: 'abs', style: { left: '290px', top: '270px', width: '500px', height: '500px', borderRadius: '50%', border: '6px solid rgba(255,181,71,.8)' } });
-      el.appendChild(ring);
-      // crew trio
-      const f1 = Img(el, SRC + 'crew_female_1.png', { left: '-150px', top: '520px', width: '640px', height: '800px' });
-      const f2 = Img(el, SRC + 'crew_female_2.png', { left: '560px', top: '560px', width: '700px', height: '700px' });
-      const m = Img(el, SRC + 'crew_male.png', { left: '170px', top: '470px', width: '740px', height: '740px' });
-      const fade = h('div', { class: 'abs', style: { left: 0, top: '1240px', width: '1080px', height: '680px', background: 'linear-gradient(180deg, rgba(3,10,31,0), #030a1f 55%)' } });
-      el.appendChild(fade);
-      const wings = h('div', { class: 'abs', html: WINGS('#f5c86b'), style: { left: '330px', top: '300px', width: '420px', height: '122px', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,.5))' } });
+      const shade = h('div', { class: 'full', style: { background: 'linear-gradient(180deg, rgba(3,10,31,.45) 0%, rgba(3,10,31,0) 22%, rgba(3,10,31,.15) 40%, rgba(3,10,31,.55) 70%, rgba(3,10,31,.85) 100%)' } });
+      el.appendChild(shade);
+      const glow = h('div', { class: 'abs', style: { left: '-60px', top: '480px', width: '1200px', height: '900px', borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(243,129,0,.35) 0%, rgba(243,129,0,0) 62%)' } });
+      el.appendChild(glow);
+      const bp = boardingPass();
+      const wrap = h('div', { class: 'abs', style: { left: '70px', top: '640px', width: '940px', height: '520px' } });
+      wrap.appendChild(bp.card);
+      el.appendChild(wrap);
+      const wings = h('div', { class: 'abs', html: WINGS('#f5c86b'), style: { left: '370px', top: '540px', width: '340px', height: '100px', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,.6))' } });
       el.appendChild(wings);
-      const crewTxt = h('div', { class: 'abs mont', style: { left: 0, top: '420px', width: '1080px', textAlign: 'center', color: '#fff', fontWeight: 900, fontSize: '64px', letterSpacing: '14px', textShadow: '0 6px 24px rgba(0,0,0,.6)' } }, 'CABIN CREW');
-      el.appendChild(crewTxt);
+      const parts = [];
+      const r = rng(77);
+      for (let i = 0; i < 26; i++) {
+        const d = h('div', { class: 'abs', style: { width: '12px', height: '12px', borderRadius: '50%', background: i % 3 ? '#ffb547' : '#ffffff', left: '540px', top: '900px', opacity: 0 } });
+        el.appendChild(d);
+        parts.push({ d, a: r() * Math.PI * 2, sp: 380 + r() * 520 });
+      }
       return (t) => {
         const t0 = T_DROP;
-        bg.set('v5', 0.2 + (t - t0) * 0.9, { cx: 0.32, cy: 0.4, zoom: 1.12 });
-        bg.el.style.filter = 'blur(9px) brightness(.8)';
-        rays.style.transform = `rotate(${(t * 10).toFixed(2)}deg)`;
-        // silhouette
-        const ty = Wt('انت').s - 0.12;
-        const py = spring(t - t0, { k: 260, c: 15 });
-        const tc = Wt('لعالم').s - 0.2;
-        const yOut = E.inOutCubic(clamp((t - tc) / 0.35));
-        S(you, { opacity: (1 - yOut).toFixed(3), transform: `scale(${(lerp(0.4, 1, py) * (1 + 0.04 * Math.sin((t - t0) * 9)) * (1 - 0.3 * yOut)).toFixed(3)})` });
-        const rp = ((t - t0) % 0.9) / 0.9;
-        S(ring, { opacity: ((1 - rp) * (1 - yOut)).toFixed(3), transform: `scale(${(0.6 + rp * 0.9).toFixed(3)})` });
-        // crew arrive on "لعالم مضيفي الطيران"
-        const a1 = spring(t - tc, { k: 170, c: 16 });
-        const a2 = spring(t - tc - 0.08, { k: 170, c: 16 });
-        const a3 = spring(t - tc - 0.16, { k: 170, c: 16 });
-        const bob = (k) => 6 * Math.sin((t - tc) * 2.4 + k);
-        S(f1, { opacity: t < tc ? 0 : 1, transform: `translate(${lerp(-500, 0, a1).toFixed(1)}px, ${bob(0).toFixed(1)}px)` });
-        S(f2, { opacity: t < tc + 0.08 ? 0 : 1, transform: `translate(${lerp(500, 0, a2).toFixed(1)}px, ${bob(1).toFixed(1)}px)` });
-        S(m, { opacity: t < tc + 0.16 ? 0 : 1, transform: `translateY(${(lerp(800, 0, a3) + bob(2)).toFixed(1)}px)` });
-        const pw = spring(t - tc - 0.3, { k: 260, c: 16 });
-        S(wings, { opacity: t < tc + 0.3 ? 0 : 1, transform: `scale(${pw.toFixed(3)})` });
-        const pt = spring(t - tc - 0.4, { k: 200, c: 18 });
-        S(crewTxt, { opacity: t < tc + 0.4 ? 0 : 1, transform: `translateY(${lerp(30, 0, pt).toFixed(1)}px)`, letterSpacing: `${lerp(40, 14, pt).toFixed(1)}px` });
+        bg.set('v5', 0.15 + (t - t0) * 0.92, { cx: 0.36, cy: 0.38, zoom: 1.04 + 0.03 * (t - t0) });
+        // boarding pass flies in on the drop
+        const ti = t0 + 0.2;
+        const pi = spring(t - ti, { k: 150, c: 15 });
+        const float = 6 * Math.sin((t - ti) * 2.2);
+        S(wrap, { opacity: t < ti ? 0 : 1, transform: `perspective(1600px) translateY(${(lerp(1000, 0, pi) + float).toFixed(1)}px) rotateX(${lerp(55, 2, pi).toFixed(2)}deg) rotate(${lerp(8, -2, pi).toFixed(2)}deg)` });
+        glow.style.opacity = (t < ti ? 0 : 0.6 + 0.3 * Math.sin((t - ti) * 4)).toFixed(3);
+        // passenger name types "YOU" on "انت"
+        const tn = Wt('انت').s - 0.05;
+        const full = 'YOU';
+        const n = Math.round(full.length * clamp((t - tn) / 0.25));
+        bp.name.textContent = full.slice(0, n);
+        S(bp.caret, { left: 44 + n * 52 + 'px', opacity: t < ti + 0.2 ? 0 : (n < 3 || Math.sin(t * 16) > 0 ? 1 : 0).toFixed(2) });
+        // class flips PASSENGER -> CABIN CREW on "مضيفي الطيران"
+        const tf = Wt('مضيفي').s - 0.1;
+        const f = clamp((t - tf) / 0.36);
+        S(bp.clsA, { opacity: f < 0.5 ? 1 : 0, transform: `rotateX(${(-180 * Math.min(f, 0.5)).toFixed(1)}deg)` });
+        S(bp.clsB, { opacity: f >= 0.5 ? 1 : 0, transform: `rotateX(${(f >= 0.5 ? 90 - 180 * (f - 0.5) : 90).toFixed(1)}deg) scale(${(1 + 0.15 * Math.sin(Math.PI * clamp((t - tf - 0.18) / 0.3))).toFixed(3)})` });
+        const pw = spring(t - (tf + 0.25), { k: 260, c: 14 });
+        S(wings, { opacity: t < tf + 0.25 ? 0 : 1, transform: `translateY(${lerp(60, 0, pw).toFixed(1)}px) scale(${pw.toFixed(3)})` });
+        bp.shine.style.left = lerp(-300, 1200, clamp((t - (tf + 0.3)) / 0.6)) + 'px';
+        // confetti burst when the pass becomes crew
+        const tb = tf + 0.2;
+        for (const p of parts) {
+          const u = clamp((t - tb) / 0.9);
+          const rr = p.sp * E.outCubic(u);
+          S(p.d, { opacity: t < tb ? 0 : (1 - u).toFixed(3), transform: `translate(${(Math.cos(p.a) * rr).toFixed(1)}px, ${(Math.sin(p.a) * rr * 0.75 + 140 * u * u).toFixed(1)}px)` });
+        }
         const xo = P(t, 49.06, 0.1, E.inCubic);
         el.style.opacity = (1 - xo).toFixed(3);
       };
@@ -255,7 +293,7 @@
       const l2 = lab('STEWARDS', 'linear-gradient(90deg,#003a9b,#1a5fd6)');
       S(l1, { left: '60px', top: '520px' });
       S(l2, { left: '520px', top: '760px' });
-      const form = h('div', { class: 'abs mont', style: { left: 0, top: '150px', width: '1080px', textAlign: 'center', color: '#fff', fontWeight: 900, fontSize: '50px', letterSpacing: '12px', opacity: 0 } }, 'FORMATION');
+      const form = h('div', { class: 'abs mont', style: { left: 0, top: '196px', width: '1080px', textAlign: 'center', color: '#fff', fontWeight: 900, fontSize: '42px', letterSpacing: '12px', opacity: 0 } }, 'FORMATION');
       el.appendChild(form);
       return (t) => {
         const t0 = 52.5;

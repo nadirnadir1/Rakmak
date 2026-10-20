@@ -115,7 +115,9 @@ add(Wt("فيزا", 2) - 0.35, "whoosh", -15); add(Wt("فيزا", 2) - 0.2, "pape
 add(43.62, "riser", -12)
 add(44.53, "whoosh_rev", -15)
 add(45.66, "impact", -8); add(45.69, "bassdrop", -11)
-add(Wt("لعالم") - 0.22, "whoosh_long", -12); add(Wt("لعالم") + 0.1, "sparkle", -16)
+add(45.86, "whoosh_long", -13); add(45.95, "paper", -16)  # boarding pass flies in
+add(Wt("انت") - 0.05, "typing_short", -19)  # "YOU"
+add(Wt("مضيفي") - 0.1, "flap", -17); add(Wt("مضيفي") + 0.12, "success", -15); add(Wt("مضيفي") + 0.15, "sparkle", -17)
 # S13a logo
 add(47.85, "flyby", -13)
 add(49.45, "hit", -13); add(49.6, "swish", -17); add(49.8, "pop_lo", -17)

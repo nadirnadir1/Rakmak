@@ -181,23 +181,12 @@
 
   // ======================================================================= S3 both Moroccan (9.08 - 11.94)
   function passport(n) {
-    const w = 330, hh = 460;
-    const el = h('div', { class: 'abs', style: { width: w + 'px', height: hh + 'px', borderRadius: '18px 26px 26px 18px', background: 'linear-gradient(135deg,#1d5a3d 0%,#0f3d29 55%,#0b2f20 100%)', boxShadow: '0 30px 70px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.06)', overflow: 'hidden' } });
-    const gold = '#e8c36a';
+    // the client's own passport artwork
+    const w = 330, hh = 469;
+    const el = h('div', { class: 'abs', style: { width: w + 'px', height: hh + 'px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 70px rgba(0,0,0,.55)' } });
     el.innerHTML = `
-      <div style="position:absolute;left:0;top:0;width:26px;height:100%;background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0))"></div>
-      <div class="ar" style="position:absolute;top:34px;width:100%;text-align:center;color:${gold};font-weight:800;font-size:30px;">المملكة المغربية</div>
-      <div class="mont" style="position:absolute;top:80px;width:100%;text-align:center;color:${gold};font-weight:700;font-size:17px;letter-spacing:3px;">ROYAUME DU MAROC</div>
-      <svg viewBox="0 0 200 200" style="position:absolute;left:85px;top:126px;width:160px;height:160px">
-        <circle cx="100" cy="104" r="62" fill="none" stroke="${gold}" stroke-width="5"/>
-        <polygon points="100,52 113,92 155,92 121,116 134,156 100,132 66,156 79,116 45,92 87,92" fill="none" stroke="${gold}" stroke-width="7" stroke-linejoin="round"/>
-        <path d="M70 34 L80 20 L90 30 L100 14 L110 30 L120 20 L130 34 Z" fill="${gold}"/>
-        <rect x="70" y="34" width="60" height="8" rx="3" fill="${gold}"/>
-      </svg>
-      <div class="ar" style="position:absolute;top:318px;width:100%;text-align:center;color:${gold};font-weight:800;font-size:34px;">جواز السفر</div>
-      <div class="mont" style="position:absolute;top:368px;width:100%;text-align:center;color:${gold};font-weight:700;font-size:22px;letter-spacing:6px;">PASSEPORT</div>
-      <svg viewBox="0 0 60 40" style="position:absolute;left:142px;top:408px;width:46px;height:30px"><rect x="2" y="2" width="56" height="36" rx="6" fill="none" stroke="${gold}" stroke-width="4"/><circle cx="30" cy="20" r="8" fill="none" stroke="${gold}" stroke-width="4"/></svg>
-      <div class="sheen" style="position:absolute;left:-200px;top:-50px;width:160px;height:600px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28),rgba(255,255,255,0));transform:rotate(18deg)"></div>`;
+      <img src="${SRC}passport_morocco.png" style="position:absolute;left:0;top:0;width:${w}px;height:${hh}px">
+      <div class="sheen" style="position:absolute;left:-200px;top:-50px;width:160px;height:600px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.24),rgba(255,255,255,0));transform:rotate(18deg)"></div>`;
     const badge = numBadge(n, n === 1 ? '#fff' : '#f38100', n === 1 ? '#061433' : '#fff');
     S(badge, { left: '-34px', top: '-34px' });
     const wrap = h('div', { class: 'abs', style: { width: w + 'px', height: hh + 'px' } });
