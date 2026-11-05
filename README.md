@@ -14,11 +14,15 @@ Final video: `output/EFH_Marche_Verte_51.mp4` (2:08, under the 3-minute limit).
 | 0:00 | Hook | Archive photo 1975 → beat drop → students today, year rolls 1975 → 2026, «نفس العلم • نفس الروح» |
 | 0:04 | Title | «الذكرى 51 للمسيرة الخضراء المظفرة» over the students' entrance |
 | 0:08 | School montage | Logo card, beat-synced cuts: وحدة · وفاء · انتماء · فخر |
-| 0:18 | Speech 1 (English) | Every word kept, long pauses shortened; Arabic translated subtitles |
-| 0:55 | Speech 2 (Arabic) | Every word kept, long pauses shortened; Arabic karaoke subtitles, archive inserts, 350.000 counter, map, «عاش الملك…» finale |
+| 0:18 | Speech 1 — Siham (English) | Every word kept, long pauses shortened; Arabic translated subtitles; archive photos |
+| 0:55 | Speech 2 — Ahmed Amine (Arabic) | Every word kept, long pauses shortened; Arabic karaoke subtitles, Hassan II portrait, archive photos, 350.000 counter, map, punchy «عاش الملك…» finale |
 | 1:53 | Outro | Cheering, group photo «كل عام والمغرب بخير», end card |
 
 ### Editing style
+
+* School identity: EFH logo badge at the top, name tags «سهام» / «أحمد أمين — متدرب لدى مدرسة FLY HYANI»
+  in the school blue and orange with the logo mark.
+* Subtitles in Almarai ExtraBold; the real flag image (gently waving) in the outro and end card.
 
 * Clean editorial motion: text rises from a mask, focus pulls, smooth photo inserts with a slow
   zoom inside, hard cuts on the beat, a flag-colour wipe into each speech, crossfades in the outro.

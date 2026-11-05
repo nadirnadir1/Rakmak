@@ -155,14 +155,6 @@ def imread(path):
     return img
 
 
-def key_logo(img):
-    """Black-background logo -> colour sprite."""
-    f = img.astype(np.float32)
-    a = np.clip((f.max(axis=2) - 28) / 80.0, 0, 1)[..., None]
-    col = np.clip(f / np.maximum(a, 1e-3), 0, 255) / 255.0
-    return np.concatenate([col * a, a], axis=2).astype(np.float32)
-
-
 def key_white(img):
     """White-background artwork (the map) -> sprite."""
     f = img.astype(np.float32)
@@ -240,16 +232,31 @@ if _m.shape[2] == 4:
     _a = _m[..., 3:4].astype(np.float32) / 255
     _m = (_m[..., :3].astype(np.float32) * _a + 255 * (1 - _a)).astype(np.uint8)
 img_map = _m
-img_logo = imread(P("src", "img_logo.jpg"))
+img_hassan = imread(P("src", "img_hassan2.webp"))
+img_quran = imread(P("src", "img_hist_quran.jpg"))
+img_crowd = imread(P("src", "img_hist_crowd.jpg"))
+img_portraits = imread(P("src", "img_hist_portraits.webp"))
 
 st_march = Still(img_march)
 st_hall = Still(img_hall)
 st_group = Still(img_group)
 st_flag = Still(img_flag)
 
-logo_col = key_logo(img_logo)
-ys, xs = np.where(logo_col[..., 3] > 0.05)
-logo_col = logo_col[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+def rgba_sprite(path):
+    im = np.asarray(Image.open(path).convert("RGBA")).astype(np.float32) / 255
+    a = im[..., 3:4]
+    return np.ascontiguousarray(np.concatenate([im[..., 2::-1] * a, a], axis=2))
+
+
+def trim(spr):
+    ys, xs = np.where(spr[..., 3] > 0.05)
+    return spr[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+
+
+_logo_full = rgba_sprite(P("src", "img_logo_new.webp"))
+logo_col = trim(_logo_full)
+logo_mark = trim(_logo_full[:, :570])        # plane + swoosh only
+EFH_BLUE, EFH_ORANGE = (0, 58, 154), (243, 130, 0)
 
 
 def logo_card(width=700):
@@ -285,6 +292,7 @@ SPEECH_MUL = (VIG * bottom_scrim(1080, H, 0.55)).astype(np.float32)
 
 F_CAIRO = lambda s, w=900: font("Cairo-VF.ttf", s, w)  # noqa: E731
 F_TAJ = lambda s: font("Tajawal-ExtraBold.ttf", s)  # noqa: E731
+F_SUB = lambda s: font("Almarai-ExtraBold.ttf", s)  # noqa: E731  subtitles
 F_RUQAA = lambda s: font("ArefRuqaa-Bold.ttf", s)  # noqa: E731
 F_ANTON = lambda s: font("Anton-Regular.ttf", s)  # noqa: E731
 F_MONT = lambda s, w=600: font("Montserrat-VF.ttf", s, w)  # noqa: E731
@@ -357,7 +365,7 @@ def year_values(t):
 SUB_MAXW = 900
 
 
-def split_lines(words, fnt):
+def split_lines(words, fnt):  # noqa: C901
     kw = dict(font=fnt, direction="rtl", language="ar")
     d = ImageDraw.Draw(Image.new("RGBA", (4, 4)))
     if d.textlength(" ".join(words), **kw) <= SUB_MAXW or len(words) < 3:
@@ -371,10 +379,10 @@ def split_lines(words, fnt):
 
 
 class Caption:
-    def __init__(self, t0, t1, words, starts=None, static_hl=(), size=70, key=False):
+    def __init__(self, t0, t1, words, starts=None, static_hl=(), size=68, key=False):
         self.t0, self.t1 = t0, t1
         fs = size + (10 if key else 0)
-        fnt = F_TAJ(fs)
+        fnt = F_SUB(fs)
         self.lines, idx = [], 0
         for ln in split_lines(words, fnt):
             self.lines.append((WordLine(ln, fnt, static_hl=static_hl, hl_fill=GOLD), idx))
@@ -442,59 +450,146 @@ def speech_base(name, tight, frames, prep_in, t, cx, cy, finale_from=None):
     k = tight.index(tn)
     a, b = tight.iv[k]
     z = frames[k] + 0.02 * ease_in_out_sine(prog(t_orig, a, b - a))
+    dx = dy = 0.0
     if finale_from is not None and t_orig >= finale_from:
-        z = 1.0 + 0.12 * ease_in_out_sine(prog(t_orig, finale_from, 71.9 - finale_from))
+        z = 1.02 + 0.01 * prog(t_orig, finale_from, 67.70 - finale_from)
+        for tk, zk in FINALE_ZOOM:
+            if t_orig >= tk:
+                z = zk + 0.01 * prog(t_orig, tk, 1.2)
+        dx, dy, _ = finale_shake(t)
     f = clips[name].frame(int(round((t_orig - prep_in) * FPS))).astype(np.float32)
-    return zoom(f, z, cx, cy)
+    return zoom(f, z, cx, cy, dx, dy)
 
 
 # ------------------------------------------------------------------ overlay pieces
-def speaker_tag(title):
-    def mk():
-        t1 = text_pil(title, F_CAIRO(54, 800), fill=WHITE)
-        t2 = text_pil("École FLY HYANI Privé", F_MONT(26, 600), fill=(200, 212, 232), rtl=False)
-        w = max(t1.size[0], t2.size[0]) + 60
-        h = t1.size[1] + t2.size[1] + 6
-        img = Image.new("RGBA", (w + 16, h), (0, 0, 0, 0))
-        d = ImageDraw.Draw(img)
-        d.rounded_rectangle((0, 0, w, h - 1), radius=22, fill=NAVY + (220,))
-        d.rectangle((w - 10, 14, w + 2, h // 2), fill=RED + (255,))
-        d.rectangle((w - 10, h // 2, w + 2, h - 15), fill=(20, 150, 80, 255))
-        img.alpha_composite(t1, (w - 26 - t1.size[0], -2))
-        img.alpha_composite(t2, (w - 26 - t2.size[0], t1.size[1] - 14))
-        return to_sprite(img)
-    return S(("tag", title), mk)
+def name_tag_parts(name, role):
+    """School-coloured lower third: blue name bar, white role bar with the logo mark, orange stripe."""
+    t1 = text_pil(name, F_CAIRO(56, 800), fill=WHITE)
+    t2 = text_pil(role, F_CAIRO(30, 700), fill=EFH_BLUE)
+    mark = resize_sprite(logo_mark, int(logo_mark.shape[1] * 36 / logo_mark.shape[0]))
+    h1, h2 = 88, 58
+    w1 = max(300, t1.size[0] + 52)
+    w2 = t2.size[0] + mark.shape[1] + 64
+
+    def bar(w, h, fill):
+        img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        ImageDraw.Draw(img).rounded_rectangle((0, 0, w - 1, h - 1), radius=10, fill=fill + (255,))
+        return img
+
+    b1 = bar(w1, h1, EFH_BLUE)
+    b1.alpha_composite(t1, (w1 - 26 - t1.size[0], (h1 - t1.size[1]) // 2 - 2))
+    b2 = bar(w2, h2, WHITE)
+    b2.alpha_composite(t2, (w2 - 22 - t2.size[0], (h2 - t2.size[1]) // 2 - 1))
+    s1, s2 = to_sprite(b1), to_sprite(b2)
+    y0 = (h2 - mark.shape[0]) // 2
+    reg = s2[y0:y0 + mark.shape[0], 18:18 + mark.shape[1]]
+    reg[:] = mark + reg * (1 - mark[..., 3:4])
+    stripe = np.zeros((h1 + 6 + h2, 12, 4), np.float32)
+    stripe[..., :3] = np.array(EFH_ORANGE[::-1], np.float32) / 255
+    stripe[..., 3] = 1
+
+    def shadow(spr):
+        a = spr[..., 3]
+        pad = 18
+        big = cv2.copyMakeBorder(a, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=0)
+        big = cv2.GaussianBlur(big, (0, 0), 8) * 0.45
+        return np.dstack([np.zeros_like(big)] * 3 + [big]).astype(np.float32)
+    return stripe, s1, s2, shadow(s1), shadow(s2)
 
 
-def draw_tag(frame, t, title, t0, t1):
+def draw_name_tag(frame, t, name, role, t0, t1, x_right=1010, y_top=1070):
     if not (t0 <= t <= t1):
         return
-    e = ease_out_quint(prog(t, t0, 0.55))
-    q = ease_in_cubic(prog(t, t1 - 0.35, 0.35))
-    a = min(prog(t, t0, 0.2), 1 - q)
-    blit(frame, speaker_tag(title), 1040 + (1 - e) * 110 + q * 50, 300, opacity=a, anchor=(1.0, 0.5))
+    stripe, b1, b2, sh1, sh2 = S(("nt", name), lambda: name_tag_parts(name, role))
+    q = ease_in_cubic(prog(t, t1 - 0.4, 0.4))
+    ps = ease_out_quint(prog(t, t0, 0.3)) * (1 - ease_in_cubic(prog(t, t1 - 0.15, 0.15)))
+    p1 = ease_out_quint(prog(t, t0 + 0.12, 0.6)) * (1 - q)
+    p2 = ease_out_quint(prog(t, t0 + 0.26, 0.6)) * (1 - q)
+    hh = int(stripe.shape[0] * ps)
+    if hh > 1:
+        blit(frame, stripe[:hh], x_right - stripe.shape[1] / 2, y_top + hh / 2)
+    xb = x_right - stripe.shape[1] - 4
+    yb1 = y_top + b1.shape[0] / 2
+    yb2 = y_top + b1.shape[0] + 6 + b2.shape[0] / 2
+    for spr, sh, p, y in ((b1, sh1, p1, yb1), (b2, sh2, p2, yb2)):
+        if p <= 0.001:
+            continue
+        blit(frame, wipe_rtl(sh, p, 0.03), xb + 18, y + 18 + 6, anchor=(1.0, 0.5))
+        blit(frame, wipe_rtl(spr, p, 0.03), xb, y, anchor=(1.0, 0.5))
+
+
+def top_badge():
+    lg = resize_sprite(logo_col, 290)
+    w, h, pad = lg.shape[1] + 48, lg.shape[0] + 28, 26
+    img = Image.new("RGBA", (w + 2 * pad, h + 2 * pad), (0, 0, 0, 0))
+    sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(sh).rounded_rectangle((pad, pad + 6, pad + w, pad + h + 6), radius=h // 2, fill=(0, 0, 0, 80))
+    img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(10)))
+    ImageDraw.Draw(img).rounded_rectangle((pad, pad, pad + w, pad + h), radius=h // 2, fill=(255, 255, 255, 242))
+    spr = to_sprite(img)
+    reg = spr[pad + 14:pad + 14 + lg.shape[0], pad + 24:pad + 24 + lg.shape[1]]
+    reg[:] = lg + reg * (1 - lg[..., 3:4])
+    return spr
+
+
+TOP_BADGE = top_badge()
+
+
+def draw_top_badge(frame, t):
+    a = window(t, 0.4, SEG["O3"][0] + 0.3, 0.4, 0.5)
+    m1a, m1b = SEG["M1"]
+    a *= 1 - window(t, m1a - 0.15, m1b + 0.15, 0.2, 0.25)    # the big logo card is on screen
+    if a > 0.002:
+        blit(frame, TOP_BADGE, W / 2, 150, opacity=a)
+
+
+def waving_flag(t, w=240):
+    """The real flag image with a gentle wave."""
+    h = int(w * 0.6)
+    src = S(("flagsrc", w), lambda: cv2.resize(img_flag, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32))
+    ys, xs = np.mgrid[0:h, 0:w].astype(np.float32)
+    ph = 2 * np.pi * (xs / 130.0) - 2 * np.pi * 1.1 * t
+    dy = 4.5 * (xs / w) * np.sin(ph)
+    warped = cv2.remap(src, xs, ys + dy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+    warped *= (1 + 0.07 * (xs / w) * np.cos(ph))[..., None]
+    return photo_card(np.clip(warped, 0, 255).astype(np.uint8), border=0, radius=10, shadow=16, shadow_op=0.5)
 
 
 class Inset:
     """Photo / video card on the right side; slides in, slow zoom inside, slides out."""
 
-    def __init__(self, t0, t1, img=None, clip=None, label=None, cx=785, cy=520, cw=500, ch=320):
+    def __init__(self, t0, t1, img=None, clip=None, label=None, cx=785, cy=520, cw=500, ch=320,
+                 img2=None, t_swap=None, frame_rgb=None, caption=None):
         self.t0, self.t1, self.clip, self.label = t0, t1, clip, label
         self.cx, self.cy, self.cw, self.ch = cx, cy, cw, ch
         self.cm = CardMaker(cw, ch)
+        if frame_rgb is not None:              # coloured frame (e.g. gold)
+            col = np.array(frame_rgb[::-1], np.float32) / 255
+            base = self.cm.base
+            white = (base[..., :3] > 0.97 * base[..., 3:4]) & (base[..., 3:4] > 0.95)
+            base[..., :3] = np.where(white, col * base[..., 3:4], base[..., :3])
         self.big = fit(img, int(cw * 1.15), int(ch * 1.15)) if img is not None else None
+        self.big2 = fit(img2, int(cw * 1.15), int(ch * 1.15)) if img2 is not None else None
+        self.t_swap = t_swap
+        self.caption = caption
+
+    def _crop(self, src, z):
+        h, w = src.shape[:2]
+        cw, ch = int(w / z), int(h / z)
+        x0, y0 = (w - cw) // 2, (h - ch) // 2
+        return cv2.resize(src[y0:y0 + ch, x0:x0 + cw], (self.cw, self.ch), interpolation=cv2.INTER_AREA)
 
     def content(self, t):
         z = 1.0 + 0.15 * ease_in_out_sine(prog(t, self.t0, self.t1 - self.t0))
         if self.clip:
             i = int(round((t - self.t0) * FPS))
-            src = fit(clips[self.clip].frame(max(0, i)), int(self.cw * 1.15), int(self.ch * 1.15))
-        else:
-            src = self.big
-        h, w = src.shape[:2]
-        cw, ch = int(w / z), int(h / z)
-        x0, y0 = (w - cw) // 2, (h - ch) // 2
-        return src[y0:y0 + ch, x0:x0 + cw]
+            return self._crop(fit(clips[self.clip].frame(max(0, i)), int(self.cw * 1.15), int(self.ch * 1.15)), z)
+        c = self._crop(self.big, z)
+        if self.big2 is not None and t >= self.t_swap - 0.25:
+            a = ease_in_out_sine(prog(t, self.t_swap - 0.25, 0.5))
+            z2 = 1.0 + 0.12 * ease_in_out_sine(prog(t, self.t_swap, self.t1 - self.t_swap))
+            c = (c.astype(np.float32) * (1 - a) + self._crop(self.big2, z2).astype(np.float32) * a).astype(np.uint8)
+        return c
 
     def draw(self, frame, t):
         if not (self.t0 <= t <= self.t1):
@@ -505,17 +600,28 @@ class Inset:
         x = self.cx + (1 - e) * 130 + q * 70
         blit(frame, self.cm.make(self.content(t)), x, self.cy, opacity=a)
         if self.label:
-            spr = S(("lab", self.label), lambda: pill(self.label, F_ANTON(46), rtl=False, padx=20, pady=8))
+            spr = S(("lab", self.label), lambda: pill(self.label, F_ANTON(46) if self.label.isdigit() else F_CAIRO(34, 800),
+                                                      rtl=not self.label.isdigit(), padx=20, pady=8))
             la = min(prog(t, self.t0 + 0.35, 0.25), 1 - q)
             le = ease_out_quint(prog(t, self.t0 + 0.35, 0.5))
             blit(frame, spr, x - self.cw / 2 + spr.shape[1] / 2 + 6, self.cy - self.ch / 2 + 4 + (1 - le) * 16,
                  opacity=la)
+        if self.caption:
+            spr = S(("cap", self.caption), lambda: pill(self.caption, F_CAIRO(38, 800), fill=(0, 98, 51),
+                                                        padx=26, pady=10))
+            la = min(prog(t, self.t0 + 0.4, 0.3), 1 - q)
+            le = ease_out_quint(prog(t, self.t0 + 0.4, 0.55))
+            blit(frame, spr, x, self.cy + self.ch / 2 + 62 + (1 - le) * 18, opacity=la)
 
 
 INSETS_G = [Inset(gv(5.40), gv(10.20), img=img_trucks, label="1975"),
+            Inset(gv(10.40), gv(15.10), img=img_crowd),
             Inset(gv(16.20), gv(21.60), clip="I2", label="2026")]
-INSETS_B = [Inset(bv(15.50), bv(23.10), img=img_truck_bw, label="1975"),
-            Inset(bv(23.30), bv(34.40), img=img_march)]
+INSETS_B = [Inset(bv(15.50), bv(18.80), img=img_truck_bw, label="1975"),
+            Inset(bv(18.85), bv(23.10), img=img_hassan, cx=770, cy=540, cw=560, ch=360,
+                  frame_rgb=(212, 175, 55), caption="المغفور له الحسن الثاني"),
+            Inset(bv(23.30), bv(34.40), img=img_march, img2=img_quran, t_swap=bv(29.05)),
+            Inset(bv(35.40), bv(44.40), img=img_portraits, label="مسيرة سلمية")]
 
 
 def draw_counter(frame, t):
@@ -545,26 +651,37 @@ def draw_map(frame, t):
 
 
 def draw_finale(frame, t):
-    """'عاش الملك / عاش الوطن / عاش الشعب / وعاش المغرب': each line rises in, the previous rises out."""
-    hold_end = SEG["O1"][0] + 1.5
+    """'عاش الملك / عاش الوطن / عاش الشعب / وعاش المغرب': each line slams in on the voice."""
+    hold_end = SEG["O1"][0] + 1.4
     for i, (tk, text) in enumerate(FINALE):
         t_next = FINALE[i + 1][0] if i + 1 < len(FINALE) else hold_end
         if t < tk or t > t_next + 0.2:
             continue
         last = i == len(FINALE) - 1
         spr = S(("fin", i), lambda: text_sprite(text, F_CAIRO(150 if last else 132, 1000),
-                                                fill=GOLD if last else WHITE, stroke=6,
+                                                fill=GOLD if last else WHITE, stroke=7,
                                                 stroke_fill=(12, 12, 18), shadow=(0, 10, 16, 0.6)))
-        p = ease_out_quint(prog(t, tk, 0.32))
-        y, a = 1340.0, 1.0
+        e = ease_out_cubic(prog(t, tk, 0.16))
+        a, dy = prog(t, tk, 0.06), 0.0
         if t > t_next:
-            q = ease_in_cubic(prog(t, t_next, 0.18))
-            y -= 60 * q
-            a = 1 - q
-        blit(frame, reveal_up(spr, p), W / 2, y, opacity=a)
-        lw = 420 * ease_out_quint(prog(t, tk + 0.08, 0.45))
-        if lw > 4:
-            blit(frame, bar(lw, 10, [RED, (20, 150, 80)]), W / 2, y + 110, opacity=a)
+            q = prog(t, t_next, 0.12)
+            a *= 1 - q
+            dy = -90 * ease_out_cubic(q)
+        blit(frame, spr, W / 2, 1340 + dy, scale=1.5 - 0.5 * e, opacity=a)
+
+
+def finale_shake(t):
+    dx = dy = fl = 0.0
+    for tk, _ in FINALE:
+        if tk <= t < tk + 0.25:
+            k = 1 - prog(t, tk, 0.25)
+            rng = np.random.default_rng(int(t * 1000))
+            dx, dy = rng.uniform(-9, 9) * k, rng.uniform(-9, 9) * k
+            fl = 0.16 * (1 - prog(t, tk, 0.12))
+    return dx, dy, fl
+
+
+FINALE_ZOOM = [(67.70, 1.06), (69.20, 1.10), (70.20, 1.14), (71.10, 1.18)]   # one step per "عاش"
 
 
 def draw_word(frame, t, word, t0, t1, y=960):
@@ -677,7 +794,7 @@ def overlays_for(k, frame, t):
         draw_word(frame, t, words[k], a, b)
         return
     if k == "G":
-        draw_tag(frame, t, "كلمة الطالبة", SEG["G"][0] + 0.3, SEG["G"][0] + 4.6)
+        draw_name_tag(frame, t, "سهام", "متدربة لدى مدرسة FLY HYANI", SEG["G"][0] + 0.45, SEG["G"][0] + 5.2)
         for ins in INSETS_G:
             ins.draw(frame, t)
         for c in CAPTIONS:
@@ -690,7 +807,7 @@ def overlays_for(k, frame, t):
                  opacity=1 - prog(t, g1 - 0.25, 0.25))
         return
     if k == "B":
-        draw_tag(frame, t, "كلمة الطالب", SEG["B"][0] + 0.35, SEG["B"][0] + 4.6)
+        draw_name_tag(frame, t, "أحمد أمين", "متدرب لدى مدرسة FLY HYANI", SEG["B"][0] + 0.45, SEG["B"][0] + 5.2)
         for ins in INSETS_B:
             ins.draw(frame, t)
         draw_counter(frame, t)
@@ -714,9 +831,8 @@ def overlays_for(k, frame, t):
         s2 = T("bikhayr", "والمغرب بخير", F_CAIRO(100, 1000), fill=GOLD)
         blit(frame, reveal_up(s1, ease_out_quint(prog(t, a + 0.3, 0.55))), W / 2, 560)
         blit(frame, reveal_up(s2, ease_out_quint(prog(t, a + 0.6, 0.55))), W / 2, 690)
-        fl = S("flag_icon", lambda: flag_icon(110))
         ef = ease_out_quint(prog(t, a + 1.0, 0.5))
-        blit(frame, fl, W / 2, 1400 + (1 - ef) * 20, opacity=prog(t, a + 1.0, 0.25))
+        blit(frame, waving_flag(t), W / 2, 1420 + (1 - ef) * 20, opacity=prog(t, a + 1.0, 0.25))
         return
     if k == "O3":
         a, b = SEG["O3"]
@@ -732,9 +848,8 @@ def overlays_for(k, frame, t):
         blit(frame, s2, W / 2, 1250, scale=drift, opacity=prog(t, a + 1.2, 0.4))
         s3 = T("end3", "عاش المغرب", F_CAIRO(74, 1000), fill=GOLD)
         blit(frame, reveal_up(s3, ease_out_quint(prog(t, a + 1.6, 0.55))), W / 2, 1380, scale=drift)
-        fl = S("flag_icon", lambda: flag_icon(110))
         ef = ease_out_quint(prog(t, a + 1.9, 0.5))
-        blit(frame, fl, W / 2, 1490 + (1 - ef) * 20, scale=drift, opacity=prog(t, a + 1.9, 0.25))
+        blit(frame, waving_flag(t), W / 2, 1525 + (1 - ef) * 20, scale=drift, opacity=prog(t, a + 1.9, 0.25))
 
 
 def compose(k, t):
@@ -766,6 +881,9 @@ def render_frame(fi):
         b = SEG[nk][0]
         if b - 0.3 <= t < b + 0.3:
             frame = brand_wipe(frame, prog(t, b - 0.3, 0.6))
+    if k == "B":
+        frame = flash(frame, finale_shake(t)[2])
+    draw_top_badge(frame, t)
     if t < 0.12:
         frame = frame * prog(t, 0, 0.12)
     if t > TOTAL - 1.2:
