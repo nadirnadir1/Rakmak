@@ -14,12 +14,13 @@ from scipy.signal import butter, lfilter, lfilter_zi, sosfilt
 WORK, OUT = sys.argv[1], sys.argv[2]
 SR = 48000
 
-# must match render.py
-SEG_G0, SEG_B0, SEG_O1, SEG_O3, TOTAL = 18.890, 57.090, 128.790, 136.000, 144.500
-GIRL_IN, GIRL_OUT = 0.70, 38.90
-BOY_IN, BOY_OUT = 0.30, 75.30
-SONG_OFF_MAIN = 27.57      # song time = video time + offset (hook / montage)
-SONG_OFF_OUTRO = 102.70    # song time = video time + offset (outro: final chord at end card)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from timeline import SONG_OFF_MAIN, Timeline  # noqa: E402
+
+TL = Timeline(WORK)                       # same timeline as render.py
+SEG = TL.SEG
+SEG_G0, SEG_B0, SEG_O1, SEG_O3, TOTAL = SEG["G"][0], SEG["B"][0], SEG["O1"][0], SEG["O3"][0], TL.TOTAL
+SONG_OFF_OUTRO = TL.song_off_outro        # final chord of the song lands on the end card
 
 N = int(round(TOTAL * SR))
 
@@ -99,7 +100,7 @@ place(mix, fade(m, 0.01, 0.05), v0)
 # ---------------------------------------------------------------- 2. bed under the speeches
 lp = butter(6, 700 / (SR / 2), btype="low", output="sos")   # warm pad only: keep clear of the speech band
 intro = sosfilt(lp, song[int(0.5 * SR):int(26.0 * SR)], axis=0).astype(np.float32)
-bed_v0, bed_v1 = 19.0, 130.4
+bed_v0, bed_v1 = 19.0, SEG_O1 + 1.6
 need = int((bed_v1 - bed_v0) * SR)
 xf = int(2.5 * SR)
 bed = np.zeros((need + len(intro), 2), np.float32)
@@ -118,19 +119,29 @@ bed *= env(tb, [(bed_v0, -60), (bed_v0 + 1.2, BED_DB), (SEG_B0 - 0.6, BED_DB), (
                 (SEG_B0 + 1.0, BED_DB), (bed_v1 - 1.4, BED_DB), (bed_v1, -60)])[:, None]
 place(stems["bed"], bed, bed_v0)
 
-# ---------------------------------------------------------------- 3. speeches (already cleaned & at -14.5 LUFS)
-g = girl[int(GIRL_IN * SR):int(GIRL_OUT * SR)]
-place(stems["speech"], fade(g, 0.03, 0.6) * db(SPEECH_DB), SEG_G0)
-b = boy[int(BOY_IN * SR):int(BOY_OUT * SR)]
-place(stems["speech"], fade(b, 0.03, 1.0) * db(SPEECH_DB), SEG_B0)
+# ---------------------------------------------------------------- 3. speeches (cleaned, -14.5 LUFS), pauses tightened
+def assemble(src, tight, f_end):
+    """Concatenate the kept pieces; 12 ms fades at each joint (joints sit inside silences)."""
+    out = np.zeros((int(round(tight.dur * SR)) + SR, 2), np.float32)
+    last = len(tight.iv) - 1
+    for k, ((a, b), s) in enumerate(zip(tight.iv, tight.starts)):
+        piece = src[int(round(a * SR)):int(round(b * SR))]
+        piece = fade(piece, 0.03 if k == 0 else 0.012, f_end if k == last else 0.012)
+        place(out, piece, s)
+    return out[:int(round(tight.dur * SR))]
+
+
+place(stems["speech"], assemble(girl, TL.girl, 0.6) * db(SPEECH_DB), SEG_G0)
+place(stems["speech"], assemble(boy, TL.boy, 1.0) * db(SPEECH_DB), SEG_B0)
 
 # ---------------------------------------------------------------- 4. outro music (song's real ending)
-o0 = 128.2
+o0 = SEG_O1 - 0.6
 s0 = int((o0 + SONG_OFF_OUTRO) * SR)
 o = song[s0:s0 + int((TOTAL - o0) * SR)].copy()
 to = o0 + np.arange(len(o)) / SR
-o = sweep_lowpass(o, to, [(o0, 380), (129.9, 16000), (TOTAL, 18000)])
-o *= env(to, [(o0, -40), (129.4, -13), (131.9, -13), (132.6, -7.0), (142.6, -7.0), (TOTAL, -60)])[:, None]
+o = sweep_lowpass(o, to, [(o0, 380), (SEG_O1 + 1.1, 16000), (TOTAL, 18000)])
+o *= env(to, [(o0, -40), (SEG_O1 + 0.6, -13), (SEG_O1 + 3.1, -13), (SEG_O1 + 3.8, -7.0),
+              (TOTAL - 1.9, -7.0), (TOTAL, -60)])[:, None]
 place(stems["music"], o, o0)
 
 # ---------------------------------------------------------------- 5. sound design (procedural, subtle)
@@ -184,8 +195,10 @@ def riser(t0, t1, level=-27):
 
 riser(0.55, 2.18)
 boom(2.20, -12)
-for tc in (4.567, 8.720, 18.890, 57.090, 128.790, 132.200):
-    whoosh(tc, 0.5, -26)
+for tc in (SEG["T1"][0], SEG["M1"][0]):
+    whoosh(tc, 0.5, -28)
+for tc in (SEG_G0, SEG_B0):            # flag-colour wipes into each speech
+    whoosh(tc, 0.6, -25)
 boom(SEG_O3, -16)
 
 # ---------------------------------------------------------------- master: sum + look-ahead peak limiter

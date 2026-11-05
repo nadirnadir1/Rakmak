@@ -5,7 +5,7 @@
 Vertical (9:16, 1080×1920, 30 fps) montage for the **51st anniversary of the Green March**
 (6 November 1975 – 6 November 2026), made from the school's ceremony footage.
 
-Final video: `output/EFH_Marche_Verte_51.mp4` (~2:25, under the 3-minute limit).
+Final video: `output/EFH_Marche_Verte_51.mp4` (2:08, under the 3-minute limit).
 
 ### Structure
 
@@ -14,9 +14,17 @@ Final video: `output/EFH_Marche_Verte_51.mp4` (~2:25, under the 3-minute limit).
 | 0:00 | Hook | Archive photo 1975 → beat drop → students today, year rolls 1975 → 2026, «نفس العلم • نفس الروح» |
 | 0:04 | Title | «الذكرى 51 للمسيرة الخضراء المظفرة» over the students' entrance |
 | 0:08 | School montage | Logo card, beat-synced cuts: وحدة · وفاء · انتماء · فخر |
-| 0:18 | Speech 1 (English) | Full length, unedited; Arabic translated subtitles |
-| 0:57 | Speech 2 (Arabic) | Full length, unedited; Arabic karaoke subtitles, archive inserts, 350.000 counter, map, «عاش الملك…» finale |
-| 2:08 | Outro | Cheering, group photo «كل عام والمغرب بخير», end card |
+| 0:18 | Speech 1 (English) | Every word kept, long pauses shortened; Arabic translated subtitles |
+| 0:55 | Speech 2 (Arabic) | Every word kept, long pauses shortened; Arabic karaoke subtitles, archive inserts, 350.000 counter, map, «عاش الملك…» finale |
+| 1:53 | Outro | Cheering, group photo «كل عام والمغرب بخير», end card |
+
+### Editing style
+
+* Clean editorial motion: text rises from a mask, focus pulls, smooth photo inserts with a slow
+  zoom inside, hard cuts on the beat, a flag-colour wipe into each speech, crossfades in the outro.
+* No bounce, shake, flashes or automatic zoom jumps; framing changes only at real cuts.
+* `montage/timeline.py` shortens silent pauses in the speeches (no words removed) and keeps
+  picture, sound and subtitles in sync.
 
 ### Privacy
 
