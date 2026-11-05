@@ -1,0 +1,6 @@
+# raw footage and intermediates stay out of git (privacy + size)
+work/
+*.wav
+*.mp3
+__pycache__/
+*.pyc
